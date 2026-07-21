@@ -1,0 +1,87 @@
+﻿ 
+@model  List<Kader.DTOs.Units.UnitsDto>
+ 
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+    <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>الوحدات (</span>
+    </nav>
+</div>
+ 
+<fieldset>
+    <legend><h2>الوحدات (</h2></legend>
+<div class="page-section">
+    <div class="container">
+        
+        <table id="myTable" border="1" class="display table table-separate table-head-custom table-foot-custom">
+            <thead>
+                <tr>
+                        <th>الوحدات</th>
+                        <th>استعادة </th>
+                       
+                        
+                        
+                </tr>
+            </thead>
+            <tbody>
+                    @if (Model != null)
+            {
+                        foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.UnitName
+                        </td>
+
+                        <td>   <input type="button" value="استعادة الوحدة" class="Delete btn2 btn-default" data-val="@item.UnitId"   /></td>
+                                  </tr>
+                }
+            }
+           </tbody>
+        </table>
+
+    </div>
+</div>
+</fieldset>
+
+<script>
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الاستعادة")) {
+            var requrl = "/Backend/Archive/RestoreDeleteUnits";
+
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+               // cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data-val') },
+                success: function (json) {
+                    console.log(json);
+                    alert(JSON.stringify(json));
+                    location.reload();
+                },
+              
+                    error: function (xhr, status, error) {
+                        console.log("XHR Response: " + xhr.responseText);
+                        console.log("Status: " + status);
+                        console.log("Error: " + error);
+                        alert("حدث خطأ: " + xhr.responseText);
+                    }
+                
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+
+</script>
+
+

@@ -1,0 +1,34 @@
+﻿@model Kader.DTOs.Catogry.Catogry_backendDto
+<form asp-controller="Catogry_gomla" asp-action="Index" method="post">
+
+    <input type="hidden" asp-for="NewItem.CatogryId" name="NewItem.CatogryId" class="form-control" value="@Model.NewItem.CatogryId"/>
+    <input type="hidden" asp-for="NewItem.CatLevel" name="NewItem.CatLevel" class="form-control" value="1" />
+            <div class="form-group"><label>اسم الفئة</label>
+        @{
+            string word = "";
+        }
+        @if (Model.NewItem.CatogryId != 0)
+        {
+            word = Model.NewItem.CatogryName;
+            // Replace with your actual model property
+            @if (word.EndsWith("-جملة"))
+            {
+                word = word.Substring(0, word.Length - "-جملة".Length);
+            }
+        }
+        <input type="text" asp-for="NewItem.CatogryName" name="NewItem.CatogryName" class="form-control" value="@word" />
+        @Html.ValidationMessageFor(model => model.NewItem.CatogryName)
+               
+            </div>
+             
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                    <button type="submit">حفظ الفئة</button>
+                    </div>
+                </div>
+
+     </form>
+  
+
+    
+  

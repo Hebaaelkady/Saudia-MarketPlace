@@ -1,0 +1,149 @@
+﻿@using Kader.Infrastructure.Shared.Implementations
+@using Kader.Infrastructure.Shared.Interfaces
+@model  Kader.DTOs.Product.HomeBackendDto 
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+@{
+    IKeys _keys = new Keys();
+}
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="homes" asp-action="Index">الصفحة الرئيسية  </a></span>  
+    </nav>
+</div>
+
+
+    <div class="page-section">
+        <div class="container">
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray2 text-center">
+            <h6>منتجات جملة</h6>@Model.ProductGomla
+            </div>
+        </div>
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray2 text-center"><h6>منتجات قطاعي</h6>@Model.ProductQta3</div>
+        </div> 
+            <div class="col-sm-2 float-left ">
+                <div class=" box-height box bg-gray text-center"><h6>طلبات جديدة</h6>@Model.NewOrder</div>
+        </div>
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray text-center"><h6>طلبات جديدة مخصصة لمخزن</h6>@Model.AssignedToStores</div>
+        </div>
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray text-center"><h6>طلبات  قيد الفحص</h6>@Model.UnderCheck</div>
+        </div>
+         <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray text-center"><h6>طلبات مخصصة للشحن</h6>@Model.AssignedToShipping</div>
+        </div>
+       
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray text-center"><h6>طلبات تم شحنها </h6>@Model.underShipent</div>
+        </div>
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray text-center"><h6>طلبات سيتم شحنها داخليا</h6>@Model.InnerunderShipent</div>
+        </div>
+        
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray text-center"><h6>طلبات تم ارسالها</h6>@Model.completedOrders</div>
+        </div> 
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray text-center"><h6>طلبات لم يتم ايصالها</h6>@Model.NotcompletedOrders</div>
+        </div>
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray1 text-center"><h6>طلبات ارتجاع جديدة</h6>@Model.NewReturnOrder</div>
+        </div>
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray1 text-center"><h6>طلبات  الارتجاع قيد الفحص</h6>@Model.UnderCheckReturnOrder</div>
+        </div>
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray1 text-center"><h6>طلبات تم شحنها للارتجاع </h6>@Model.underShipentReturnOrder</div>
+        </div>
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray1 text-center"><h6>طلبات تم ارتجاع الفلوس للعميل</h6>@Model.completedReturnOrder</div>
+        </div>
+    </div>
+        <div class="col-sm-2 float-left ">
+            <div class=" box-height box bg-gray1 text-center"><h6>طلبات مرفوضة</h6>@Model.RejectedReturnOrders</div>
+        </div>
+
+    <div class="col-sm-2 float-left ">
+        <div class=" box-height box bg-red  text-center"><h6>منتجات جملة قربت النفاذ</h6>@Model.HomeProductGomla.Count()</div>
+    </div>
+    <div class="col-sm-2 float-left ">
+        <div class=" box-height box bg-red  text-center"><h6>منتجات قطاعي قربت النفاذ</h6>@Model.HomeProductQta3.Count()</div>
+    </div>
+        <div class="clearfix"></div>
+            <div class="col-sm-6 col-md-6 float-left">
+        <div class="box-height box-big">
+            <h4>منتجات جملة اوشكت علي نفاذ الكمية</h4>
+            
+            <table id="myTable1" width="100%" border="1" class="display table table-5.separate table-head-custom table-foot-custom">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th> المنتج</th>
+                        <th>الكمية المتبقية</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        @if (Model.HomeProductGomla != null)
+                    {
+                        int co = 1;
+                        foreach (var item in Model.HomeProductGomla)
+                        {
+                            <tr>
+                                <td>@co@{ co++;}
+                                </td>
+                                <td> @Html.DisplayFor(modelItem => item.SubCatogryTitle) </td>
+                                <td> @item.QuantityAvailable </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            </div>
+        </div>
+            <div class="col-sm-6 col-md-6 float-right">
+        <div class="box-height box-big">
+            <h4>منتجات قطاعي اوشكت علي نفاذ الكمية</h4>
+                <table id="myTable2" width="100%" border="1" class="display table table-5.separate table-head-custom table-foot-custom">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th> المنتج</th>
+                            <th>الكمية المتبقية</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.HomeProductQta3 != null)
+                        {
+                            int co = 1;
+                            foreach (var item1 in Model.HomeProductQta3)
+                            {
+                                <tr>
+                                    <td>
+                                        @co@{
+                                            co++;
+                                        }
+                                    </td>
+                                    <td> @Html.DisplayFor(modelItem => item1.SubCatogryTitle) </td>
+                                    <td> @item1.QuantityAvailable </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div><div class="clearfix"></div>
+    </div>
+
+
+
+ 

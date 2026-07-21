@@ -1,0 +1,22 @@
+﻿@model Kader.DTOs.Units.Units_backendDto
+<form asp-controller="Setting" asp-action="Units" method="post">
+
+    <input type="hidden" asp-for="NewItem.UnitId" name="NewItem.UnitId" class="form-control" value="@Model.NewItem.UnitId" />
+    <div class="form-group"><label>اسم الوحدة</label>
+     
+        <input type="text" asp-for="NewItem.UnitName" name="NewItem.UnitName" class="form-control" value="@Model.NewItem.UnitName" />
+        @Html.ValidationMessageFor(model => model.NewItem.UnitName)
+               
+            </div>
+             
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                    <button type="submit">حفظ الوحدة</button>
+                    </div>
+                </div>
+
+     </form>
+  
+
+    
+  

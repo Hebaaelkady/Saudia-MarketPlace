@@ -1,0 +1,32 @@
+﻿@model Kader.DTOs.Stores.Stores_backendDto
+<form asp-controller="Setting" asp-action="Colors" method="post">
+
+    <input type="hidden" asp-for="NewStores.StoreId" name="NewStores.StoreId" class="form-control" value="@Model.NewStores.StoreId" />
+    <div class="form-group"> 
+            <label>اسم المخزن</label>
+        
+        
+        <input type="text" asp-for="NewStores.StoreName" name="NewStores.StoreName" class="form-control" value="@Model.NewStores.StoreName" />
+        @Html.ValidationMessageFor(model => model.NewStores.StoreName)
+       </div>
+    <div class="form-group">
+        <label>عنوان المخزن</label>
+
+
+        <input type="text" asp-for="NewStores.Address" name="NewStores.Address" class="form-control" value="@Model.NewStores.Address" />
+        @Html.ValidationMessageFor(model => model.NewStores.Address)
+    </div>
+    
+             
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                    <button type="submit">حفظ </button>
+                    </div>
+                </div>
+
+     </form>
+ 
+  
+
+    
+  

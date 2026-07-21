@@ -1,0 +1,75 @@
+﻿@model List<Kader.DTOs.GetInsideUserViewByDateRange.GetInsideUserViewByDateRangeDto>
+
+@{
+    ViewBag.Title = "Stores Account Monitor";
+}
+
+<h2>متابعة الحسابات</h2>
+
+<input type="date" id="fromDate">
+<input type="date" id="toDate">
+<button id="filterBtn">بحث</button>
+
+<table id="dataTable" border="1" class="display table">
+    <thead>
+        <tr>
+            <th>المخزن</th>
+            <th>اسم مندوب النقل الداخلي</th>
+            <th>رقم التليفون</th>
+            <th>عدد الطلبات</th>
+            <th>عدد ماتم تسليمه</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        <tr><td colspan="5">يرجى اختيار تاريخ والضغط على زر البحث.</td></tr>
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $("#filterBtn").click(function () {
+            var fromDate = $("#fromDate").val();
+            var toDate = $("#toDate").val();
+
+            if (!fromDate || !toDate) {
+                alert("يرجى اختيار كلا التاريخين!");
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("InsideDeliveryData", "Reports")',
+                
+                type: 'GET',
+                data: { fromDate: fromDate, toDate: toDate },
+              
+                success: function (response) {
+                    console.log("✅ Success Response:", response);
+
+                    $("#tableBody").empty(); // Clear previous data
+
+                    if (!response.success || !response.data || response.data.length === 0) {
+                        $("#tableBody").append('<tr><td colspan="5">لا توجد بيانات.</td></tr>');
+                        return;
+                    }
+
+                    response.data.forEach(function (item) {
+                        var row = `<tr>
+                            <td>${item.storeName || ""}</td>
+                            <td>${item.firstName} ${item.lastName}</td>
+                            <td>${item.phoneNumber}</td>
+                            <td>${item.counT1}</td>
+                                <td>${item.counT_Status_14}</td>
+                        </tr>`;
+                        $("#tableBody").append(row);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("❌ خطأ أثناء جلب البيانات:", xhr.responseText);
+                    alert("حدث خطأ أثناء جلب البيانات. تحقق من وحدة التحكم (Console) للمزيد من التفاصيل.");
+                }
+            });
+        });
+    });
+
+
+
+</script>

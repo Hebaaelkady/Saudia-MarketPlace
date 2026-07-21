@@ -1,0 +1,226 @@
+﻿@model List<Kader.DTOs.ShippingPrice.ShippingPriceDto>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.SuccessMessage
+    </div>
+}
+else if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+@if (ViewBag.check != true)
+{
+    <h3 class="validtion">
+        ملحوظة تم اضافة سعر شحن ثابت لهذا المنتج يرجي حذف السعر الثابت
+        <span> حتى يتم ظهور السعر المتغير </span>
+    </h3>
+}
+
+@{
+    var hasExistingShippingPrice = Model.Any(m => m.ShippingPriceId != 0);
+}
+
+<form asp-controller="Product" asp-action="EditShippingPrice" method="post">
+    <div class="form-horizontal">
+        <hr />
+
+        <input type="checkbox" value="true" name="IsODD_Even" id="IsODD_Even" @(Convert.ToBoolean(ViewBag.IsODD_Even ?? false) ? "checked" : "") />
+        <label for="IsODD_Even"> تفعيل وضع القيم التلقائية </label>
+
+        @if (Model.Count != 0)
+        {
+            int j = 1; 
+            <table border="1">
+                <tr>
+                    <th>#</th>
+                    <th>الكمية</th>
+                    <th>السعر</th>
+                    <th>حذف</th>
+                </tr>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="hidden" name="ShippingPriceDto[@i].ShippingPriceId" value="@Model[i].ShippingPriceId" />
+                            @j
+                            
+                            @{j++;}
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <input type="text" name="ShippingPriceDto[@i].VarQuantity" class="form-control"
+                                       value="@(Model[i].ShippingPriceId > 0 ? Model[i].VarQuantity?.ToString() : "")" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <input type="text" name="ShippingPriceDto[@i].VarPrice" class="form-control"
+                                       value="@(Model[i].ShippingPriceId > 0 ? Model[i].VarPrice?.ToString() : "")" />
+                            </div>
+                        </td>
+                        <td>
+                            <input type="button" value="حذف" class="Delete btn2 btn-danger" data="@Model[i].ShippingPriceId" />
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+
+        <!-- Dynamic Input Section -->
+        <div id="variable_content1">
+            <div id="variable_content">
+                <div class="input-group">
+                    @{
+                        int lastIndex = Model != null ? Model.Count : 0;
+                    }
+                    <input type="hidden" value="@ViewBag.id" name="ShippingPriceDto[@lastIndex].ProductId" />
+                    <div class="form-group">
+                        <label>الكمية</label>
+                        <input type="text" name="ShippingPriceDto[@lastIndex].VarQuantity" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>السعر</label>
+                        <input type="text" name="ShippingPriceDto[@lastIndex].VarPrice" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="add_more" class="btn btn-primary">إضافة المزيد</button>
+        </div>
+
+        <div id="example_rows"></div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-success">تعديل</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        var i = @Model.Count + 1; // Start index for manually added rows
+        function generateExampleRows() {
+            var baseQuantity = parseInt($('input[name="ShippingPriceDto[0].VarQuantity"]').val());
+            var basePrice = parseInt($('input[name="ShippingPriceDto[0].VarPrice"]').val());
+
+            $("#example_rows").empty(); // Clear previous rows
+
+            if (!isNaN(baseQuantity) && !isNaN(basePrice) && baseQuantity > 0 && basePrice > 0) {
+                $("#example_rows").append("<h3>مثال</h3>");
+                for (var j = 1; j <= 5; j++) {
+                    var newQuantity = baseQuantity * j; // 2, 4, 6, 8, 10
+                    var newPrice = basePrice * j; // 30, 60, 90, 120, 150
+
+                    $("#example_rows").append(
+                        '<div class="input-group">' +
+                        '<div class="form-group"><label> الكمية </label>' +
+                        '<span> ' + newQuantity + ' </span> ' +
+                        ' <label> السعر </label>' +
+                        '<span> ' + newPrice + ' </span></div>' +
+                        '</div>'
+                    );
+                }
+            }
+        }
+        $(document).on("input", 'input[name="ShippingPriceDto[0].VarQuantity"], input[name="ShippingPriceDto[0].VarPrice"]', function () {
+            if ($("#IsODD_Even").is(":checked")) {  debugger;
+                generateExampleRows(); $("#example_rows").show();
+            }
+        });
+        function toggleManualInputFields() {
+            var isChecked = $("#IsODD_Even").is(":checked");
+            var hasExistingShippingPrice = @Html.Raw(Model.Any(m => m.ShippingPriceId != 0).ToString().ToLower());
+            debugger;
+           
+            if (isChecked && hasExistingShippingPrice) {
+                $("#variable_content1").hide(); // Hide manual input fields
+                 // ✅ Show example_rows
+               
+                keepOnlyFirstRow(); // Remove extra rows
+                generateExampleRows();
+            }
+            else if (isChecked) {
+                $("#example_rows").show();
+                $("#add_more").hide();
+            }
+            else {
+                $("#variable_content1").show(); // Show manual input fields
+                $("#example_rows").hide(); // ✅ Ensure example_rows is always visible
+                $("#add_more").show();
+            }
+        }
+
+
+        // Keep only the first row in the table
+        function keepOnlyFirstRow() {
+            var tableRows = $("table tr").not(':first'); // Exclude header row
+            if (tableRows.length > 1) {
+                tableRows.slice(1).remove(); // Remove all except the first data row
+            }
+        }
+
+        // Ensure at least one row exists
+        function ensureFirstRowExists() {
+            if ($("#variable_content .input-group").length === 0) {
+                $("#variable_content").append(
+                    '<div class="input-group">' +
+                    '<div class="form-group"><label> الكمية </label>' +
+                    '<input type="text" name="ShippingPriceDto[0].VarQuantity" class="form-control quantity-input" /></div>' +
+                    '<div class="form-group"><label> السعر </label>' +
+                    '<input type="text" name="ShippingPriceDto[0].VarPrice" class="form-control price-input" /></div>' +
+                    '</div>'
+                );
+            }
+        }
+
+        // Run on page load
+        toggleManualInputFields();
+        ensureFirstRowExists();
+
+        // Handle checkbox change event
+        $("#IsODD_Even").change(function () {
+            toggleManualInputFields();
+        });
+
+        // Handle "Add More" button click
+        $('#add_more').click(function () {
+            $('#variable_content').append(
+                '<div class="input-group">' +
+                '<div class="form-group"><label> الكمية </label>' +
+                '<input type="text" name="ShippingPriceDto[' + i + '].VarQuantity" class="form-control quantity-input" /></div>' +
+                '<div class="form-group"><label> السعر </label>' +
+                '<input type="text" name="ShippingPriceDto[' + i + '].VarPrice" class="form-control price-input" /></div>' +
+                '</div>'
+            );
+            i++;
+        });
+
+        // Handle Delete button (removes row via AJAX)
+        $(".btn2").on("click", function () {
+            if (confirm("هل انت متأكد من الحذف؟")) {
+                var requrl = '@Url.Action("DeleteShippingPrice")';
+                $.ajax({
+                    type: "post",
+                    dataType: 'json',
+                    url: requrl,
+                    data: { id: $(this).attr('data') },
+                    success: function (data) {
+                        alert(data);
+                        location.reload();
+                    },
+                    error: function (failure) {
+                        alert(failure.responseText);
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+

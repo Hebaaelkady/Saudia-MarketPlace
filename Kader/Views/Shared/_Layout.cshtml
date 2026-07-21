@@ -1,0 +1,681 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Updates and statistics" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>متجر جينا الالكتروني</title>
+    <meta charset="UTF-8">
+
+
+    @using System.Security.Claims;
+    @using Microsoft.AspNetCore.Http
+    @using Newtonsoft.Json;
+     
+    <script src="~/lib/jquery/dist/jquery-3.7.1.min.js"></script>
+    <link href="~/assets/css/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    @* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+ *@
+
+    @RenderSection("Heads", required: false)
+
+
+    <link rel="stylesheet" type="text/css" href="~/slick/slick.css">
+    <link rel="stylesheet" type="text/css" href="~/slick/slick-theme.css">
+    <style>
+
+
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+
+        #searchResults #searchResults1 {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #searchResults li, #searchResults1 li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+            #searchResults li:hover, #searchResults1 li:hover {
+                background-color: #f1f1f1;
+            }
+
+    </style> 
+    <link href="https://cdn.moyasar.com/mpf/1.14.0/moyasar.css" rel="stylesheet" />
+    <!-- Moyasar Scripts -->
+   @*  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=fetch" integrity="sha512-mos6pb0V+gq3aesFtVk0lo7ZfIwencH3rWm8FJBzIr2Ur/sIAzPywbsBNXvTfFHl+mC976Vr4ixT4BRHjAjLDQ==" crossorigin="anonymous"></script>
+     *@
+    <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=fetch"></script>
+     <script src="https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"></script>
+   @*  <script src="~/assets/js/moyasar.js"></script> *@
+
+   @*  <link rel="preconnect" href="https://fonts.gstatic.com"> *@
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" integrity="sha512-XXIZ3kiGbLBvSwU/mbx931L+ZTthrZoh3yRwLqwFzpJydZvAhcNbELrZFlieU+KcF11hYVnaD0GHq0RDvcW8Uw==" crossorigin="anonymous">
+    <!-- Font Awesome -->
+@* <link href="~/assets/css/fonts/font-awesome-4.7.0/css/all.min.css" rel="stylesheet" /> *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ==" crossorigin="anonymous">
+    <!-- Libraries Stylesheet -->
+    <link href="~/online-shop/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="~/online-shop/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/online-shop/css/style.css" rel="stylesheet">
+    <link href="~/online-shop/style-front.css" rel="stylesheet" />
+</head>
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row bg-secondary py-1 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center h-100" style="font-size:12px">
+                    <a href="@Url.Action("Index", "Home")" class="text-body mr-3">الرئيسية</a>
+                    <a class="text-body mr-3" href=" @Url.Action("Terms_Conditions", "Page", new { id = 2 },null)"> الشروط والأحكام</a>
+                    <a class="text-body mr-3" href=" @Url.Action("privacy_policy", "Page", new { id = 3 }, null)"> سياسة الخصوصية</a>
+                    <a class="text-body mr-3" href=" @Url.Action("Exchange_return_policy", "Page", new { id = 3 }, null)"> سياسة للاستبدال والارجاع</a>
+
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-left">
+                <div class="d-inline-flex align-items-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">حسابي</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            @if (Context.User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value != null)
+
+                            {
+                                <button class="dropdown-item"
+                                        type="button"
+                                        onclick="location.href='@Url.Action("AccountCustomer", "Account")'">
+                                    <span>مرحبا : </span>    @Context.User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value;
+                                </button>
+                                <br />
+                                <button class="dropdown-item"
+                                        type="button" onclick="Site_Module.Logout(); return false;" target="_blank">
+                                    تسجيل خروج
+                                </button>
+
+
+                            }
+                            else
+                            {
+                                <button class="dropdown-item"
+                                        type="button"
+                                        onclick="location.href='@Url.Action("Login", "Account")'">
+                                    تسجيل دخول
+                                </button>
+                                <button class="dropdown-item"
+                                        type="button"
+                                        onclick="location.href='@Url.Action("Register", "Account")'">
+                                    مستخدم جديد
+                                </button>
+                            }
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="d-inline-flex align-items-center d-block d-lg-none">
+                    <a href="" class="btn px-0 ml-2">
+                        <i class="fas fa-heart text-dark"></i>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                    </a>
+                    <a href="" class="btn px-0 ml-2">
+                        <i class="fas fa-shopping-cart text-dark"></i>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
+            <div class="col-lg-4">
+                <a href="" class="text-decoration-none" style="   font-family: monospace;">
+                    <img src="~/online-shop/logo1.png" />
+                </a>
+            </div>
+            <div class="col-lg-4 col-6 text-left">
+                <form action="">
+                    <div class="input-group">
+
+                        <input type="text"
+                               id="searchBox"
+                               placeholder="ابحث عن منتج  "
+                               class="form-control"
+                               autocomplete="off" />
+                        <ul id="searchResults" class="dropdown-menu"></ul>
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-4 col-6 text-right">
+                <p class="m-0">خدمة العملاء</p>
+                <h5 class="m-0" style="    direction: ltr;">+966 503 060 889</h5>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+    <!-- Navbar Start -->
+    <div class="container-fluid bg-dark mb-30">
+        <div class="row px-xl-5">
+            <div class="col-lg-3  d-lg-block">
+                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
+                    <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>جميع المنتجات</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
+                    <div class="navbar-nav w-100">
+                        <div class="nav-item dropdown dropright">
+                            <a href="#" class="nav-link dropdown-toggle" id="menu-trigger" data-toggle="dropdown">منتجات جملة <i class="fa fa-angle-left float-left mt-1"></i></a>
+                            <div id="menu" class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                            </div>
+                        </div>
+                        <div class="nav-item dropdown dropright">
+                            <a href="#" class="nav-link dropdown-toggle" id="menu-trigger" data-toggle="dropdown">منتجات قطاعي <i class="fa fa-angle-left float-left mt-1"></i></a>
+                            <div id="menuqt3" class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                            </div>
+                        </div>
+
+                    </div>
+                </nav>
+            </div>
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
+
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="@Url.Action("Index", "Home")" class="nav-item nav-link active">الرئيسية</a>
+                            <a href=" @Url.Action("AboutUS", "Page", new { id = 5 }, null)" class="nav-item nav-link">
+                                من نحن
+                            </a>
+                            <a href=" @Url.Action("Index", "Gomla")" class="nav-item nav-link">
+                                <span class="text">تسوق (جملة)</span>
+                            </a>
+                            <a href=" @Url.Action("Index", "Qt3")" class="nav-item nav-link">
+                                <span class="text">تسوق (قطاعي)</span>
+                            </a>
+                            <a href=" @Url.Action("AccountCustomer", "Account")" class="nav-item nav-link">
+                                <span class="text">حسابي</span>
+                            </a>
+                            @*   <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">اخري <i class="fa fa-angle-down mt-1"></i></a>
+                            <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
+                            <a href="cart.html" class="dropdown-item">Shopping Cart</a>
+                            <a href="checkout.html" class="dropdown-item">Checkout</a>
+                            </div>
+                            </div> *@
+                            <a href=" @Url.Action("ContactUs", "Page", new { id = 1 }, null)" class="nav-item nav-link">
+                                اتصل بنا
+                            </a>
+
+
+                        </div>
+                        <div class="navbar-nav ml-auto py-0   d-lg-block">
+                            <div class="btn px-0  ml-3 white-bg">
+                                @if (Context.User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value != null)
+                                {
+                                    <span>مرحبا : </span>  <a href=" @Url.Action("AccountCustomer", "Account")" class="">
+                                        @Context.User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value;
+                                    </a>
+                                    <br />
+                                    <a href="#" onclick="Site_Module.Logout(); return false;" target="_blank">تسجيل خروج</a>
+                                }
+                                else
+
+                                {
+                                    <a href=" @Url.Action("Login", "Account")">تسجيل دخول</a>
+                                }
+
+                            </div>
+
+                            <a class="btn px-0 ml-3 white-bg" href="@Url.Action("ViewCart", "Cart")">
+                                العربة
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;"><span id="checkoutIcon"></span></span>
+
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    @RenderBody()
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
+        <div class="row px-xl-5 pt-5">
+            <div class="col-lg-2 col-md-12 mb-5 pr-3 pr-xl-5">
+                <h5 class="text-secondary text-uppercase mb-4">منتجات جملة</h5>
+                <div class="d-flex flex-column justify-content-start">
+
+                    <a class="text-secondary mb-2" href=" @Url.Action("Index", "Gomla", new { id = 2 }, null)"><i class="fa fa-angle-left mr-2"></i>القهوة</a>
+                    <a class="text-secondary mb-2" href=" @Url.Action("Index", "Gomla", new { id = 3 }, null)">
+                        <i class="fa fa-angle-left mr-2"></i>
+                        البهارات
+                    </a>
+                    <a class="text-secondary mb-2" href=" @Url.Action("Index", "Gomla", new { id = 4 }, null)"><i class="fa fa-angle-left mr-2"></i>البقوليات</a>
+
+                    <a class="text-secondary" href=" @Url.Action("Index", "Gomla", new { id = 6 }, null)">
+                        <i class="fa fa-angle-left mr-2"></i>حلويات و مكسرات
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-12 mb-5 pr-3 pr-xl-5">
+                <h5 class="text-secondary text-uppercase mb-4">منتجات قطاعي</h5>
+                <div class="d-flex flex-column justify-content-start">
+
+                    <a class="text-secondary mb-2" href=" @Url.Action("Index", "Qt3", new { id = 2 }, null)"><i class="fa fa-angle-left mr-2"></i>القهوة</a>
+                    <a class="text-secondary mb-2" href=" @Url.Action("Index", "Qt3", new { id = 3 }, null)">
+                        <i class="fa fa-angle-left mr-2"></i>
+                        البهارات
+                    </a>
+                    <a class="text-secondary mb-2" href=" @Url.Action("Index", "Qt3", new { id = 4 }, null)"><i class="fa fa-angle-left mr-2"></i>البقوليات</a>
+
+                    <a class="text-secondary" href=" @Url.Action("Index", "Qt3", new { id = 6 }, null)">
+                        <i class="fa fa-angle-left mr-2"></i>حلويات و مكسرات
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5 class="text-secondary text-uppercase mb-4">خدمة العملاء</h5>
+                        <div class="d-flex flex-column justify-content-start">
+
+                            <a class="text-secondary mb-2" href=" @Url.Action("Terms_Conditions", "Page", new { id = 2 },null)"><i class="fa fa-angle-left mr-2"></i>الشروط والأحكام</a>
+                            <a class="text-secondary mb-2" href=" @Url.Action("privacy_policy", "Page", new { id = 3 }, null)"><i class="fa fa-angle-left mr-2"></i>سياسة الخصوصية</a>
+                            <a class="text-secondary mb-2" href=" @Url.Action("Exchange_return_policy", "Page", new { id = 3 }, null)"><i class="fa fa-angle-left mr-2"></i>سياسة للاستبدال والارجاع</a>
+
+                            <a class="text-secondary" href=" @Url.Action("Contactus", "Page", new { id = 1 }, null)"><i class="fa fa-angle-left mr-2"></i>اتصل بنا</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <h5 class="text-secondary text-uppercase mb-4">العميل</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a href="@Url.Action("Index", "Home")" class="text-secondary mb-2"><i class="fa fa-angle-left mr-2"></i>الرئيسية</a>
+                            <a href="@Url.Action("AccountCustomer", "Account")" class="text-secondary mb-2"><i class="fa fa-angle-left mr-2"></i>حسابي</a>
+                            <a href="@Url.Action("AddAddress", "Account")" class="text-secondary mb-2"><i class="fa fa-angle-left mr-2"></i>اضافة عنوان جديد</a>
+                            <a href="@Url.Action("AllOrders", "Account")" class="text-secondary mb-2"><i class="fa fa-angle-left mr-2"></i>طلباتي</a>
+
+                            <a class="text-secondary" href="@Url.Action("AllAddress", "Account")"><i class="fa fa-angle-left mr-2"></i>عناوني</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-5">
+
+                        <h6 class="text-secondary text-uppercase mt-4 mb-3">تابعنا</h6>
+                        <div class="d-flex">
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-6 px-xl-0">
+                <p class="mb-md-0 text-center text-md-left text-secondary">
+                    &copy;  جينا ماركت 2025 © جميع الحقوق محفوظة
+
+                </p>
+            </div>
+            @*   <div class="col-md-6 px-xl-0 text-center text-md-right">
+            <img class="img-fluid" src="img/payments.png" alt="">
+            </div> *@
+        </div>
+    </div>
+    <!-- Footer End -->
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+    <partial name="_ValidationScriptsPartial" />
+    <!-- JavaScript Libraries -->
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+    <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+   
+    <script src="~/lib/jquery/dist/bootstrap.bundle.min.js"></script>
+     <script src="~/online-shop/lib/easing/easing.min.js"></script>
+    <script src="~/online-shop/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="~/online-shop/js/main.js"></script>
+
+
+
+
+
+    <script src="~/assets/plugins/custom/jstree/jstree.min.js"></script>
+    <script src="~/slick/slick.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/assets/plugins/custom/datatables/datatables.bundle.js"></script> 
+    <script src="~/js/js.cookie.min.js"></script>
+
+
+
+    <script>
+
+        var Site_Module = (function () {
+            function Logout() {
+
+                Cookies.remove('user');
+                window.location.href = '/Home/Index'; // Replace 'your-redirect-url' with the URL you
+            }
+            return {
+                Logout: Logout
+            };
+        })();
+
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            Cookies.remove('userSession');
+            $('#myTable').DataTable();
+
+        });
+
+    </script>
+
+    <script>
+
+
+        //اضافة عدد المشتريات للسلة من خلال cookie في جميع الصفحات
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+
+            if (parts.length == 2) return parts.pop().split(";").shift();
+
+        }
+        function updateCheckoutIcon() {
+
+            // Retrieve the cart data from cookies
+            var cartDataString = getCookie('cartData');
+
+            // Decode the URL-encoded string
+            var decodedString = decodeURIComponent(cartDataString);
+
+            // Parse the cart data string into an array of items
+            var cartData = decodedString ? JSON.parse(decodedString) : [];
+
+            // Calculate the total quantity of items in the cart
+            var totalQuantity = cartData.reduce(function (accumulator, currentItem) {
+                return accumulator + Number(currentItem.Quantity);
+            }, 0);
+
+            // Update the checkout icon with the total quantity
+            var checkoutIcon = $('#checkoutIcon'); // Use jQuery selector
+
+            if (checkoutIcon.length) { // Check if element exists before accessing content
+                checkoutIcon.text(totalQuantity); // Set text using jQuery's .text() method
+            } else {
+                console.error('Element with id "checkoutIcon" not found');
+            }
+        }
+
+        // Call this function on page load and after updating the cart
+        updateCheckoutIcon();
+        //انتهاء اضافة عدد المشتريات للسلة من خلال cookie في جميع الصفحات
+
+
+        $(document).ready(function () {
+            var currentPath = window.location.pathname.split("/").pop();
+            $('.sidenav a').each(function () {
+                if ($(this).attr('href').includes(currentPath)) {
+                    $(this).addClass('active');
+                }
+            });
+        });
+
+
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+
+    <script type="text/javascript">
+        $(document).on('ready', function () {
+            $(".vertical-center-4").slick({
+                dots: true,
+                vertical: true,
+                centerMode: true,
+                slidesToShow: 4,
+                slidesToScroll: 2
+            });
+            $(".vertical-center-3").slick({
+                dots: true,
+                vertical: true,
+                centerMode: true,
+                slidesToShow: 3,
+                slidesToScroll: 3
+            });
+            $(".vertical-center-2").slick({
+                dots: true,
+                vertical: true,
+                centerMode: true,
+                slidesToShow: 2,
+                slidesToScroll: 2
+            });
+            $(".vertical-center").slick({
+                dots: true,
+                vertical: true,
+                centerMode: true,
+            });
+            $(".vertical").slick({
+                dots: true,
+                vertical: true,
+                slidesToShow: 3,
+                slidesToScroll: 3
+            });
+            $(".regular").slick({
+                dots: true,
+                infinite: true,
+                slidesToShow: 5,
+                slidesToScroll: 5
+            });
+            $(".center").slick({
+                dots: true,
+                infinite: true,
+                centerMode: true,
+                slidesToShow: 5,
+                slidesToScroll: 3
+            });
+            $(".variable").slick({
+                dots: true,
+                infinite: true,
+                variableWidth: true
+            });
+            $(".lazy").slick({
+                lazyLoad: 'ondemand', // ondemand progressive anticipated
+                infinite: true
+            });
+        });
+
+        function generateMenu(nodes, baseUrl) {
+            let html = `<a class="dropdown-item" href="${baseUrl}">كل المنتجات</a>`;
+            nodes.forEach(function (node) {
+                const url = `${baseUrl}${node.id}`;
+                html += `<a class="dropdown-item" href="${url}">${node.nameTy}</a>`;
+            });
+            return html;
+        }
+        $(document).ready(function () {
+            $.ajax({
+                url: '@Url.Action("GetRoot", "Home")',
+                method: 'GET',
+                success: function (data) {
+                    const menuHtml = generateMenu(data, '@Url.Content("~/Gomla/Index/")');
+                    $('#menu').html(menuHtml);
+                },
+                error: function (error) {
+                    console.error("Error loading Gomla menu:", error);
+                }
+            });
+
+            $.ajax({
+                url: '@Url.Action("GetRootQt2a", "Home")',
+                method: 'GET',
+                success: function (data) {
+                    const menuHtml = generateMenu(data, '@Url.Content("~/Qt3/Index/")');
+                    $('#menuqt3').html(menuHtml);
+                },
+                error: function (error) {
+                    console.error("Error loading Qt3 menu:", error);
+                }
+            });
+        });
+
+
+
+    </script>
+
+    @* search Gomla *@
+    <script>
+        $(document).ready(function () {
+            $('#searchBox').on('input', function () {
+                let query = $(this).val();
+
+                if (query.length >= 3) {
+                    // Call the API to fetch products
+                    // Example: Display search results in a dropdown
+                    $.ajax({
+                        url: '/Gomla/SearchGomla',
+                        type: 'GET',
+                        data: { searchTerm: query },
+                        success: function (response) {
+                            const products = response.products; // Use the filtered product list
+                            const $results = $('#searchResults');
+
+                            $results.empty(); // Clear old results
+
+                            if (products.length > 0) {
+                                products.forEach(product => {
+                                    const catType = product.catTypeId === 1 ? "جملة - " : "قطاعي - ";
+                                    $results.append(
+                                        `<li data-id="${product.productId}" data-cattype="${product.catTypeId}">${catType}${product.subCatogryTitle}</li>`
+                                    );
+                                });
+                                $results.show();
+                            } else {
+                                $results.hide();
+                            }
+
+                        },
+                        error: function () {
+                            console.error('Error fetching products');
+                        }
+                    });
+
+                } else {
+                    $('#searchResults').hide();
+                }
+            });
+
+            // Handle click on dropdown item
+            $('#searchResults').on('click', 'li', function () {
+                const productId = $(this).data('id'); // Get product ID from the clicked item
+                const catTypeId = $(this).data('cattype');
+                if (catTypeId === 1) {
+                    window.location.href = `/Gomla/Details/${productId}`;
+                } else {
+                    window.location.href = `/qt3/Details/${productId}`;
+                }
+            });
+
+            // Hide dropdown when clicking outside
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('#searchBox, #searchResults').length) {
+                    $('#searchResults').hide();
+                }
+            });
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#searchBox1').on('input', function () {
+                let query = $(this).val();
+
+                if (query.length >= 3) {
+                    // Call the API to fetch products
+                    // Example: Display search results in a dropdown
+                    $.ajax({
+                        url: '/Gomla/SearchQt3a',
+                        type: 'GET',
+                        data: { searchTerm: query },
+                        success: function (response) {
+                            const products = response.products; // Use the filtered product list
+                            const $results = $('#searchResults1');
+
+                            $results.empty(); // Clear old results
+
+                            if (products.length > 0) {
+                                products.forEach(product => {
+                                    $results.append(
+                                        `<li data-id="${product.productId}">${product.subCatogryTitle}</li>`
+                                    );
+                                });
+                                $results.show();
+                            } else {
+                                $results.hide();
+                            }
+                        },
+                        error: function () {
+                            console.error('Error fetching products');
+                        }
+                    });
+
+                } else {
+                    $('#searchResults1').hide();
+                }
+            });
+
+            // Handle click on dropdown item
+            $('#searchResults1').on('click', 'li', function () {
+                const productId = $(this).data('id'); // Get product ID from the clicked item
+
+                // Redirect to product details page
+                window.location.href = `/Qt3/Details/${productId}`;
+            });
+
+            // Hide dropdown when clicking outside
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('#searchBox, #searchResults').length) {
+                    $('#searchResults1').hide();
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

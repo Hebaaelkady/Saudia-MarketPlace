@@ -1,0 +1,434 @@
+﻿@model Kader.DTOs.Product.ApiEditProductDto
+<style>
+    .jstree-node > .jstree-anchor > .jstree-checkbox {
+        display: none;
+    }
+
+    /* Show checkbox for leaf nodes */
+    .jstree-leaf > .jstree-anchor > .jstree-checkbox {
+        display: inline-block;
+    }
+</style>
+@{
+    string id = Context.Request.Query["ApiProdID"];
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.SuccessMessage
+    </div>
+}
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.ErrorMessage
+    </div>
+}
+<form asp-controller="Product" id="yourForm" asp-action="Product" method="post" enctype="multipart/form-data">
+   <fieldset><legend>بيانات اساسية</legend>
+    <div class="float-left col-sm-12 col-md-4">
+       
+            <div class="form-group">
+                <label>اختار الصنف</label>
+                <input type="hidden" id="ApiProdID" name="ApiProdID" value="@Model.p_id" /> 
+           
+                    <input type="hidden" id="ProductId" name="ProductId" value="@ViewBag.ProductId" />
+              
+            </div>
+        </div>
+
+        <input type="hidden" id="ApiProdID" name="ApiProdID" value="@Model.p_id" />
+        @* <input type="hidden" id="CatogryID" name="CatogryID" value="@Model.categories.FirstOrDefault()" /> *@
+    <div class="float-left col-sm-12 col-md-8">
+    
+            @if (@Model != null)
+            {
+               
+
+                <div class="form-group">
+                    <label> اسم المنتج</label>
+                    <input type="text" value="@Model.title" readonly  class="form-control" />
+                     
+                </div>
+                <div class="form-group">
+                    <label> كود المنتج</label>
+                    <input type="text" value="@Model.barcode" readonly  class="form-control" />
+                    
+
+                </div>
+                <div class="form-group">
+                    <label>عنوان فرعي</label>
+                    <input type="text" value="@Model.SubCatogryTitle" name="SubCatogryTitle" class="form-control" />
+                    @* @Html.ValidationMessageFor(model => model.NewItem.SubCatogrysubTitle) *@
+
+
+                </div>
+                <div class="form-group">
+                    <label> الوصف</label>
+                    <textarea value="@Model.Description" name="Description" cols="8" rows="5" class="form-control">@Model.Description</textarea>
+                    
+
+                </div>
+               
+
+                <div class="form-group">
+                    <label> الكمية المتاحة</label>
+                    <input type="text" value="@Model.stock" id="stock" readonly class="form-control" />
+                 
+                </div>
+                <div class="form-group">
+                    <label> وحدة الكمية</label>
+
+                    <input type="text" value=" @Model.unites1" readonly class="form-control" />
+                    <input type="hidden" value=" @Model.tax_ID" name="tax_ID" readonly class="form-control" />
+                    <input type="hidden" value=" @Model.unit_Id" name="unit_Id" readonly class="form-control" />
+                </div>
+                @*   <div class="form-group">
+        <label>(قطاعي) اكبر كمية يمكن للمستخدم شراؤها</label>
+        @if(id==null)
+                    {
+                        <input type="number" value="100" name="MaxQuantityToShipQta3a" class="form-control" />
+
+                    }
+                    else
+                    {
+                        <input type="number" value="@Model.MaxQuantityToShipQta3a" name="MaxQuantityToShipQta3a" class="form-control" />
+         
+                    }
+                    
+                    <span class="validtion">  @ViewBag.MaxQuantityToShipQta3a</span>
+    </div> *@
+                <div class="form-group">
+                    <label> اقل كمية يمكن للمستخدم شراؤها (جملة) </label>
+
+                    <input type="number"   min="0" value="@(Model.MinQuantityToShipJomla ?? 100)" style="width:80%" name="MinQuantityToShipJomla" class="form-control" />
+                       @*  <span>% من الكمية الاساسية</span> *@
+                     
+                    <div id="MinQuantity"></div>
+                    <span class="validtion">  @ViewBag.MinQuantityToShipJomla</span>
+                </div>
+                <div class="form-group">
+                    <label> اللون(ان وجد)</label>
+                    @Html.DropDownList("ColorId", null,"اختار اللون" ,htmlAttributes: new { @class = "form-control" })
+
+
+                </div> 
+                
+                <div class="form-group  float-left col-sm-12 col-md-4">
+                    <label> يظهر في الصفحة الرئيسية</label>
+                    
+                         @Html.CheckBox("ApearInHomePage", Model.ApearInHomePage ?? false)
+                     
+                </div>
+                <div class="form-group  float-left col-sm-12 col-md-4">
+                    <label> عروض خاصة</label>
+                    @Html.CheckBox("SpecialOrder", Model.SpecialOrder ?? false)
+                </div>
+                <div class="clearfix"></div>
+            }
+        </div>
+    </fieldset>
+    @if (@Model != null)
+    {   <fieldset><legend>السعر</legend>
+        <div class="form-group">
+            <label> السعر قبل الخصم للوحدة</label>
+                <input type="text" id="price" name="price" value="@Model.price" readonly class="form-control" />
+            @* @Html.ValidationMessageFor(model => model.NewItem.Price) *@
+            <span class="validtion">  @ViewBag.Price</span>
+        </div>
+            <div class="form-group">
+                <label>(ان وجد) السعر بعد  الخصم للوحدة</label>
+                <input type="text" title="الرجاء إدخال أرقام فقط." value="@Model.AfterDiscount" class="form-control" name="AfterDiscount" />
+             @*    <span>%</span> *@
+            </div>
+      @*   <div class="form-group">
+            <label>(ان وجد) السعر بعد الخصم للوحدة</label>
+                <input type="text" id="resultDiv"   name="AfterDiscountpercent" class="form-control" readonly />
+
+                 
+           
+        </div> *@
+
+        @* <div class="form-group">
+            <label> تاريخ بداية الخصم</label>
+                @{
+                    string formattedDate1 = "";
+                    if (Model.discountBeginDate.HasValue)
+                    {
+                        formattedDate1 = Model.discountBeginDate.Value.ToString("yyyy-MM-dd");
+                }
+                }
+                <input type="date" value="@formattedDate1" name="discountBeginDate" id="discountBeginDate" class="form-control" />
+          
+        </div>
+
+        <div class="form-group">
+                <label> تاريخ نهاية الخصم</label>
+                @{
+                    string formattedDate = "";
+                    if (Model.DiscountEndDate.HasValue)
+                    {
+                        formattedDate = Model.DiscountEndDate.Value.ToString("yyyy-MM-dd");
+                    }
+                }
+                <input type="date" value="@formattedDate" name="DiscountEndDate" id="DiscountEndDate" class="form-control" />
+            
+        </div> *@
+        </fieldset>
+        <fieldset><legend>تكلفة النقل</legend>
+            @if (Model.ShippingPriceDto.Count != 0)
+            {
+            <span class="validtion">ملحوظة يوجد سعر نقل متغير تم تخصيصة يرجي مسحه اولا اذا كنت تريد وضع سعر ثابت والا سيتم ظهور سعر النقل الثابت فقط</span>
+            }
+            @if (Model.ShippingPrice != null || Model.ShippingPriceDto.Count != 0)
+           
+            {
+                
+                <label> سعر النقل الثابت</label>
+                <input type="text" value="@Model.ShippingPrice" name="ShippingPrice" id="ShippingPrice" class="form-control" />
+            }
+
+
+            else if (Model.ShippingPriceDto.Count == 0 && Model.ShippingPrice == null)
+            {
+               
+                <div class="form-group">
+        <label> سعر النقل :</label>
+        <div>
+        <input type="radio" name="toggle" value="static"> السعر ثابت لاي كمية
+        &nbsp;&nbsp;
+        <input type="radio" name="toggle" value="variable"> السعر متغير حسب كمية
+                    </div>
+        <div id="static_content">
+
+            <input type="text" value="@Model.ShippingPrice" name="ShippingPrice" id="ShippingPrice" class="form-control" />
+            @Html.ValidationMessageFor(model => model.ShippingPrice)
+        </div>
+        <div id="variable_content1">
+            <div id="variable_content">
+            <div class="input-group">
+                                <div class="form-group" style="">
+                                    <label> الكمية</label>
+                                    <input type="text" name="ShippingPriceDto[0].VarQuantity" class="form-control" />
+                                </div>
+                                <div class="form-group" style="">
+                                    <label>السعر</label>
+                                    <input type="text" name="ShippingPriceDto[0].VarPrice" class="form-control" />
+                                </div>
+                               
+                
+            </div>
+                    </div>  <button type="button" id="add_more">اضافة المزيد</button>
+        </div>
+
+                </div>
+            }
+     
+            <span class="validtion">  @ViewBag.ShippingPrice</span>
+            <div class="clearfix"></div>
+        </fieldset>
+            
+           <fieldset><legend>صور المنتج</legend>
+    @if (Model.ProductImgDto.Count != 0)
+    {
+        foreach (var item2 in Model.ProductImgDto)
+        {
+            <a href="~/Images/@item2.ProductImgName">
+                <img width="20px" height="20" src=~/Images/@item2.ProductImgName />
+            </a>  
+                <input type="button" value="حذف" class="btn2 btn-default" data="@item2.ProductImgId" />
+            }
+    }
+            <div class="form-group">
+    <input type="file" accept="image/*"  name="ProductImg" multiple></div>
+    <div>مقاس الصورة 500px * 500px </div>
+    </fieldset>
+                <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            @if (@id==null)
+            {
+                <button type="submit">حفظ المنتج</button>
+
+            }
+            else
+            {
+
+                    <button type="submit">تعديل المنتج</button>
+            }
+                
+                    </div>
+                </div>
+
+    }
+     </form>
+  <script>
+    function m() {
+
+
+        var beforeDiscount = $('#stock').val();
+
+        if (beforeDiscount && $.isNumeric(beforeDiscount)) {
+            var discountPercent = $('input[name="MinQuantityToShipJomla"]').val();
+
+            if ($.isNumeric(discountPercent)) {
+                discountPercent = parseFloat(discountPercent);
+
+                if (discountPercent > 0 && discountPercent <= 100) {
+                    var afterDiscount = parseFloat(beforeDiscount) - (parseFloat(beforeDiscount) - (parseFloat(beforeDiscount) * discountPercent / 100));
+
+                    // تحديث القيمة في div آخر
+                    $('#MinQuantity').html(afterDiscount.toFixed(2));
+                } else if (discountPercent > 100) {
+                    alert("MinQuantityToShipJomla cannot be greater than 100. Resetting to default value.");
+                    $('input[name="MinQuantityToShipJomla"]').val(100); // Reset to default value
+                    var afterDiscount = parseFloat(beforeDiscount) - (parseFloat(beforeDiscount) * 100 / 100);
+                    $('#MinQuantity').html(afterDiscount.toFixed(2));
+                } else {
+                    alert("MinQuantityToShipJomla must be greater than 0.");
+                }
+            } else {
+                alert("Please enter a valid numeric value for MinQuantityToShipJomla.");
+            }
+        } else {
+            alert("Please enter a valid numeric value for stock.");
+        }
+
+    }
+    $(document).ready(function () {
+        m();
+        $('input[name="AfterDiscount"]').on('keyup change', function () {
+            var beforeDiscount = $('#price').val();
+            if (beforeDiscount && $.isNumeric(beforeDiscount)) {
+                var discountPercent = parseFloat($(this).val())   ;
+                if ($.isNumeric(discountPercent)) {
+                    var afterDiscount = parseFloat(beforeDiscount) - (parseFloat(beforeDiscount) * discountPercent/100);
+                    // تحديث القيمة في div آخر
+                    $('#resultDiv').val(afterDiscount.toFixed(2));
+                } else {
+                    alert('الرجاء إدخال نسبة خصم صحيحة.');
+                }
+            } else {
+                alert('الرجاء إدخال السعر قبل الخصم.');
+            }
+        });
+
+        $('input[name="MinQuantityToShipJomla"]').on('keyup change', function () {
+      m();
+        });
+    });
+
+
+    $('#Type').change(function (e) {
+                e.preventDefault();
+        var requrl = '@Url.Action("GetCatogryByType")';
+                $.ajax({
+                    type: "post",
+                    dataType: 'json',
+                    cashe: true,
+                    url: requrl,
+            data: { Type: $('#Type').val() },
+                    success: function (data) {
+                $('#CatId').empty();
+
+                $('#CatId').append("<option value='" + "0" + "'>" + "--اختار الدرس--" + "</option>");
+                        $.each(data, function (key, value) { 
+                            
+                        $('#CatId').append("<option value='" + value.value + "'>" + value.text + "</option>");
+                        })
+                    },
+                    error: function (failure) {
+                        alert(failure.responseText);
+                    }
+                });
+            });
+</script>
+<script>
+    $(".btn2").on("click", function () {
+
+        var requrl = '@Url.Action("DeleteImg")';
+       
+        $.ajax({
+            type: "post",
+            dataType: 'json',
+            cashe: true,
+            url: requrl,
+            data: { id: $(this).attr('data') },
+            success: function (data) {
+
+                alert(data);
+                location.reload();
+
+                if (data == "") {
+                }
+                else {
+
+                }
+
+            },
+            error: function (failure) {
+
+                alert(failure.responseText);
+            }
+        });
+
+    });
+
+    $(document).ready(function () {
+        $('#static_content').hide();
+        $('#variable_content1').hide();
+        $('input[type=radio][name=toggle]').change(function () {
+            if (this.value == 'static') {
+                $("#ShippingPriceDto.VarQuantity").val("");
+                $("#ShippingPriceDto.VarPrice").val(""); 
+                $('#static_content').show();
+                $('#variable_content1').hide();
+            }
+            else if (this.value == 'variable') {
+                $("#ShippingPrice").val(""); 
+                $('#static_content').hide();
+                $('#variable_content1').show();
+            }
+        });
+    });
+
+    
+
+    $(document).ready(function () {
+        var i = 1;                   
+        $('#add_more').click(function () {
+            $('#variable_content').append('<div class="input-group"><div class="form-group"><label> الكمية</label><input type="text" name="ShippingPriceDto[' + i + '].VarQuantity" class="form-control" /> </div><div class="form-group"> <label>السعر</label><input type="text" name="ShippingPriceDto[' + i + '].VarPrice" class="form-control" /></div></div>');
+            i++;
+        });
+    });
+
+
+    $(document).ready(function () {
+        $('#discountBeginDate').change(function () {
+            var beginDate = $(this).val();
+            $('#DiscountEndDate').attr('min', beginDate);
+        });
+    });
+
+    $(document).ready(function () {
+        $('input[name="AfterDiscount"]').on('input', function () {
+            var beforeDiscount = parseFloat($('input[name="BeforeDiscount"]').val());
+            var afterDiscount = parseFloat($(this).val());
+
+            if (afterDiscount > beforeDiscount) {
+                alert('السعر بعد الخصم يجب أن يكون أقل من السعر قبل الخصم');
+                $(this).val('');
+            }
+        });
+    });
+    $(document).ready(function () {
+        $('input[name="BeforeDiscount"]').on('input', function () {
+            var afterDiscount = parseFloat($('input[name="AfterDiscount"]').val());
+            var beforeDiscount = parseFloat($(this).val());
+
+            if (afterDiscount > beforeDiscount) {
+                alert('السعر قبل الخصم يجب أن يكون اكبر من السعر قبل الخصم');
+                $(this).val('');
+            }
+        });
+    });
+</script>

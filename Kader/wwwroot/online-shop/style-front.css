@@ -1,0 +1,222 @@
+﻿@font-face {
+    font-family: "DIN-BOLD";
+    src: url(DIN-BOLD.ttf) format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'droidkufi-regular';
+    src: url('../fonts/droidkufi-regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'notokufiarabic-regular';
+    src: url('../fonts/notokufiarabic-regular.ttf') format('truetype');
+}
+body {
+    font-family: 'droidkufi-regular';
+    direction:rtl;
+    text-align:right
+}
+body{
+    font-size:14px
+}
+h2 {
+    font-size: 20px
+}
+#header-carousel {
+    text-align: left
+}
+#header-carousel, .slick-slider {
+    direction: ltr
+}
+
+.mr-2, .mx-2 {
+    margin-left: 0.5rem !important; 
+}
+.mr-3, .mx-3 {
+    margin-left: 1rem !important; 
+}
+.mb-4, .my-4 {
+    margin-left: 1rem !important; 
+}
+.mr-auto, .mx-auto{
+    margin-right:0px !important
+}
+.dropright .dropdown-menu {
+    left: auto;
+    right: 100%;
+    text-align:right
+}
+.ml-auto, .mx-auto {
+    margin-left: 0 !important;
+}
+
+.loading {
+    background-color: #000;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.4;
+    z-index: 99999999
+}
+    .loading-img {
+        position: absolute;
+        top: 10%;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
+
+.custom-control-input{
+    right:0px !important;
+    z-index:1
+}
+.custom-control-label::before, .custom-control-label::after {
+    right: 0px !important
+}
+.custom-control-label {
+    padding-right: 20px !important
+}
+.quantity-controls input[type="text"]{
+    width:30%
+}
+.pagination{
+display:contents
+}
+.dropdown-menu {
+    right: 0px;
+    float: right;
+    text-align:right
+}
+.btn.btn-primary {
+    color: #fff !important
+}
+
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999; 
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ccc;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin:10% auto auto auto
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.font-weight {
+    font-weight: bold;
+}
+.list li{
+line-height:35px
+}
+.no-border-input {
+    border: none;
+    width: 40%;
+    text-align: right;
+    margin: auto;
+}
+
+.product-img .pro-label.off, .card .pro-label.off {
+    background-color: #e13737;
+}
+
+.product-img .pro-label, .card .pro-label {
+    margin-bottom: 5px;
+    line-height: 26px;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+    border-radius: 13px;
+    padding: 0 10px;
+    white-space: nowrap;
+    width: max-content;
+}
+.product-img .labels, .card .labels {
+    position: absolute;
+    top: 12px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    right: 4%;
+}
+
+
+.navbar-dark .navbar-nav .nav-link {
+    color: #fff !important;
+}
+ 
+.bg-primary {
+    background-color: #A53849 !important;
+}
+.text-dark {
+    color: #fff !important;
+}
+.navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav .nav-link.active {
+    color: #A53849 !important;
+    font-weight:bold
+}
+a {
+    color: #A53849 !important;
+}
+.text-primary {
+    color: #A53849 !important;
+}
+.border-secondary {
+    border-color: #000 !important;
+}
+#checkoutIcon {
+    color: #000 !important;
+}
+.btn-primary {
+    color: #212529;
+    background-color: #A53849 !important;
+    border-color: #A53849 !important;
+}
+.white-bg {
+    background: #fff;
+    padding: 5px !important;
+}
+.page-item.active .page-link{
+    color:#fff !important
+}
+.breadcrumb .text-dark {
+    color: #3D464D !important;
+}
+
+@media only screen and (max-width: 768px) {
+    .dropright .dropdown-menu {
+        left: 0;
+        right: 0;
+        top: 30px;
+        text-align: right;
+    }
+}
+.img-fluid {
+ 
+    height: 200px !important;
+}

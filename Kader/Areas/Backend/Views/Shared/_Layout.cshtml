@@ -1,0 +1,578 @@
+﻿@using System.Security.Claims;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+    //if (Context.Request.Headers.All(a => a.Key != "Authorization")/* || Context.User.Identity?.IsAuthenticated == false*/)
+    //{
+    //    //Disable this in the developing environment
+    //    Context.Response.Redirect("/Login");
+    //}
+    //if (Context.User.Identity.IsAuthenticated == false)
+    //{
+    //    Context.Response.Redirect("/Login");
+    //}
+}
+@*@{
+    var stringRoles = Context.User.FindFirst(ClaimTypes.Role)?.Value ?? "[]";
+    if (stringRoles.Contains("1"))
+    {
+        <div id="role" data="1"></div>
+    }
+
+}*@
+
+<!DOCTYPE html>
+
+<html direction="rtl" dir="rtl" style="direction: rtl" lang="ar-eg">
+ 
+
+
+
+<head> 
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>متجر جينا الالكتروني</title>
+    <meta name="description" content="Updates and statistics" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!--begin::Fonts-->
+  
+    <script src="~/lib/jquery/dist/jquery-3.7.1.min.js"></script>
+     
+     
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+ 
+    <link href="~/assets/plugins/custom/jstree/jstree.bundle.rtl.css" rel="stylesheet" type="text/css" />
+    <!--begin::Page Vendors Styles(used by this page)-->
+    <link href="~/assets/plugins/custom/fullcalendar/fullcalendar.bundle.rtl.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" />
+    <!--end::Page Vendors Styles--> 
+     @RenderSection("Heads", required: false) 
+    <script src="~/plugins/scripts/ckeditor.js"></script> 
+     
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body">
+  
+    <!--end::Header Mobile-->
+    <div class="d-flex flex-column flex-root">
+        <!--begin::Page-->
+        <div  >
+            <div style="margin:auto;text-align:center">
+                @* <img src="~/assets/media/logos/banner.jpg" /> *@
+            </div>
+        </div>
+
+        @{
+            var stringPaths = Context.User.FindFirst("Paths")?.Value ?? "[]";
+            List<string> pathsList = (JsonConvert.DeserializeObject<string[]>(stringPaths)).ToList();
+        }
+        <div class="topnav" id="myTopnav">
+            @Html.ActionLink("الصفحة الرئيسية", "Index", "Homes", null, new { @class = "active" })
+            @if (pathsList.Any(rd => rd.EndsWith("Setting/Colors")))
+            {
+                <div class="dropdown">
+                    <button class="dropbtn">
+                       الاساسيات
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        @if (pathsList.Any(rd => rd.EndsWith("Setting/Colors")))
+                        {
+                            @Html.ActionLink("الالوان", "Colors", "Setting")
+                        } @if (pathsList.Any(rd => rd.EndsWith("Setting/Units")))
+                        {
+                            @Html.ActionLink("الوحدات", "Units", "Setting")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Setting/Stores")))
+                        {
+                            @Html.ActionLink("المخازن", "Stores", "Setting")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Setting/GetBannerImgs")))
+                        {
+                            @Html.ActionLink("البانر الرئيسي", "GetBannerImgs", "Setting")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Setting/Ads")))
+                        {
+                            @Html.ActionLink("الاعلانات", "Ads", "Setting")
+                        }
+                    </div>
+                </div>
+            }
+            @if (pathsList.Any(rd => rd.EndsWith("Pages/Contactus/1")))
+            {
+            <div class="dropdown">
+                <button class="dropbtn">
+                    صفحات اخري
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    @Html.ActionLink("اتصل بنا", "Contactus", "Pages", new { id = 1 }, null)                   
+                
+                        @Html.ActionLink("من نحن", "AboutUS", "Pages", new { id = 5 }, null)
+                    
+                        @Html.ActionLink("الشروط والأحكام", "Terms_Conditions", "Pages", new { id = 2 }, null)
+                
+                        @Html.ActionLink("سياسة ا لخصوصية", "privacy_policy", "Pages", new { id = 3 }, null)
+                    
+                        @Html.ActionLink("سياسة للاستبدال والارجاع", "Exchange_return_policy", "Pages", new { id = 4 }, null)
+                    </div>
+            </div>
+            }
+            @if (pathsList.Any(rd => rd.EndsWith("Catogry_gomla/Catogry")))
+            {
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        الفئات
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        @if (pathsList.Any(rd => rd.EndsWith("Catogry_gomla/Catogry")))
+                        {
+                            @Html.ActionLink("الفئات الرئيسية الجملة ", "Catogry", "Catogry_gomla")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Catogry_qta3a/Catogry")))
+                        {
+                            @Html.ActionLink("الفئات الرئيسية القطاعي ", "Catogry", "Catogry_qta3a")
+                        }
+                         </div>
+                </div>
+            }
+            @if (pathsList.Any(rd => rd.EndsWith("Product/CreateProduct_gomla"))){
+            <div class="dropdown">
+                <button class="dropbtn">
+                    المنتجات
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                  @*   @if (pathsList.Any(rd => rd.EndsWith("Product/Product")))
+                    {
+                        @Html.ActionLink("جميع المنتجات في Api", "Product", "Product")
+                    } *@
+                    @if (pathsList.Any(rd => rd.EndsWith("Product/CreateProduct_gomla")))
+                    {
+                        @Html.ActionLink("اضافة منتجات جملة للمتجر", "CreateProduct_gomla", "Product")
+                    }
+                    @if (pathsList.Any(rd => rd.EndsWith("Product/CreateProduct_qta3a")))
+                    {
+                        @Html.ActionLink("اضافة منتجات قطاعي للمتجر", "CreateProduct_qta3a", "Product")
+                    }
+                    @if (pathsList.Any(rd => rd.EndsWith("Product/Product_gomla")))
+                    {
+                        @Html.ActionLink("المنتجات الجملة للمتجر", "Product_gomla", "Product")
+                    }
+                    @if (pathsList.Any(rd => rd.EndsWith("Product/Product_qta3a")))
+                    {
+                        @Html.ActionLink("المنتجات القطاعي للمتجر", "Product_qta3a", "Product")
+                    }
+                    @* @if (pathsList.Any(rd => rd.EndsWith("Product/Product_gomla_Added")))
+                    {
+                        @Html.ActionLink("المنتجات الجملة للمتجر", "Product_gomla", "Product")
+                    }
+                    @if (pathsList.Any(rd => rd.EndsWith("Product/Product_qta3a_Added")))
+                    {
+                        @Html.ActionLink("المنتجات القطاعي للمتجر", "Product_qta3a_Added", "Product")
+                    } *@
+                </div>
+            </div>}
+            @if (pathsList.Any(rd => rd.EndsWith("Orders/underShipent")) || pathsList.Any(rd => rd.EndsWith("Orders/InnerunderShipent")) || pathsList.Any(rd => rd.EndsWith("Orders/AssignedToStores")))
+                    {
+            <div class="dropdown">
+                <button class="dropbtn">
+                    الطلبات
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    @if (pathsList.Any(rd => rd.EndsWith("Orders/NewOrders")))
+                    {
+                        @Html.ActionLink("الطلبات الجديدة", "NewOrders", "Orders")
+                    }
+                        @if (pathsList.Any(rd => rd.EndsWith("Orders/AssignedToStores")))
+                    {
+                            @Html.ActionLink("طلبات جديدة مخصصة لمخزن", "AssignedToStores", "Orders")
+                    }
+                    @if (pathsList.Any(rd => rd.EndsWith("Orders/UnderCheck")))
+                    {
+                        @Html.ActionLink("الطلبات قيد الفحص", "UnderCheck", "Orders")
+                    }
+                    @if (pathsList.Any(rd => rd.EndsWith("Orders/AssignedToShipping")))
+                    {
+                        @Html.ActionLink("طلبات مخصصة للشحن", "AssignedToShipping", "Orders")
+                    }
+                    
+                    @if (pathsList.Any(rd => rd.EndsWith("Orders/underShipent")))
+                    {
+                        @Html.ActionLink("الطلبات تم شحنها لشركة الشحن", "underShipent", "Orders")
+                    }
+                        @if (pathsList.Any(rd => rd.EndsWith("Orders/InnerunderShipent")))
+                        {
+                            @Html.ActionLink("طلبات سيتم شحنها داخليا", "InnerunderShipent", "Orders")
+                        }
+                    @if (pathsList.Any(rd => rd.EndsWith("Orders/completedOrders")))
+                    {
+                        @Html.ActionLink("الطلبات تم ارسالها", "completedOrders", "Orders")
+                    }
+                        @if (pathsList.Any(rd => rd.EndsWith("Orders/NotcompletedOrders")))
+                        {
+                            @Html.ActionLink("الطلبات لم يتم ارسالها", "NotcompletedOrders", "Orders")
+                        }
+                </div>
+               
+            </div>}
+
+            @if (pathsList.Any(rd => rd.EndsWith("MSG/MsgNotSendToUser")) || pathsList.Any(rd => rd.EndsWith("MSG/MsgNotSendToDelivery")) )
+            {
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        رسايل الطلبات
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        @if (pathsList.Any(rd => rd.EndsWith("MSG/MsgNotSendToUser")))
+                        {
+                            @Html.ActionLink("الطلبات لم يتم ارسال رسالة للعميل", "MsgNotSendToUser", "MSG")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("MSG/MsgNotSendToDelivery")))
+                        {
+                            @Html.ActionLink("طلبات لم يتم ارسال رسالة للمندوب", "MsgNotSendToDelivery", "MSG")
+                        }
+                      
+                     
+                    </div>
+
+                </div>
+            }
+            @if (pathsList.Any(rd => rd.EndsWith("ReturnOrders/AssignedToStores")))
+            {
+            <div class="dropdown">
+                <button class="dropbtn">
+                    طلبات ارتجاع
+                    <i class="fa fa-caret-down"></i>
+                </button>
+              
+                <div class="dropdown-content">
+                    @if (pathsList.Any(rd => rd.EndsWith("ReturnOrders/NewReturnOrders")))
+                    {
+                        @Html.ActionLink("طلبات ارتجاع جديدة", "NewReturnOrders", "ReturnOrders")
+                    }
+                        @if (pathsList.Any(rd => rd.EndsWith("ReturnOrders/AssignedToStores")))
+                        {
+                            @Html.ActionLink("طلبات ارتجاع جديدة مخصصة لمخزن", "AssignedToStores", "ReturnOrders")
+                        }
+                    @if (pathsList.Any(rd => rd.EndsWith("ReturnOrders/UnderCheck")))
+                    {
+                        @Html.ActionLink("طلبات الارتجاع قيد الفحص", "UnderCheck", "ReturnOrders")
+                    }
+                    @if (pathsList.Any(rd => rd.EndsWith("ReturnOrders/underShipent")))
+                    {
+                            @Html.ActionLink("طلبات تم شحنها للارتجاع", "underShipent", "ReturnOrders")
+                    }
+                        @if (pathsList.Any(rd => rd.EndsWith("ReturnOrders/underShipentfromCustomer")))
+                        {
+                            @Html.ActionLink("طلبات سيتم ارجاعها من خلال العميل", "underShipentfromCustomer", "ReturnOrders")
+                        }
+                    @if (pathsList.Any(rd => rd.EndsWith("ReturnOrders/completedWithRefundOrders")))
+                    {
+                        @Html.ActionLink("طلبات الارتجاع تم ارتجاع الفلوس للعميل", "completedWithRefundOrders", "ReturnOrders")
+                    }
+                    @if (pathsList.Any(rd => rd.EndsWith("ReturnOrders/RejectedReturnOrders")))
+                    {
+                        @Html.ActionLink("طلبات مرفوضة", "RejectedReturnOrders", "ReturnOrders")
+                    }
+                </div>
+            </div>
+            }
+            @if (pathsList.Any(rd => rd.EndsWith("Account/Register")))
+            {
+                    @Html.ActionLink("إدارة مستخدمين", "Register", "Account")
+            }
+            @if (pathsList.Any(rd => rd.EndsWith("Reports/UserPhone")))
+            {
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        تقارير
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        @if (pathsList.Any(rd => rd.EndsWith("Reports/UserPhone")))
+                        {
+                            @Html.ActionLink("تليفونات العملاء", "UserPhone", "Reports")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Reports/StoresAccountMoniter")))
+                        {
+                            @Html.ActionLink("تقرير مستخدمي المخازن", "StoresAccountMoniter", "Reports")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Reports/TopProductBuy")))
+                        {
+                            @Html.ActionLink("المنتجات الاكثر شراء", "TopProductBuy", "Reports")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Reports/InsideDelivery")))
+                        {
+                            @Html.ActionLink("تقرير مندوب النقل الداخلي", "InsideDelivery", "Reports")
+                        }
+                    </div>
+                </div>
+            }
+            @if (pathsList.Any(rd => rd.EndsWith("Archive/Colors")))
+            {
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        الارشيف
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        @if (pathsList.Any(rd => rd.EndsWith("Archive/Colors")))
+                        {
+                            @Html.ActionLink("الالوان", "Colors", "Archive")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Archive/Units")))
+                        {
+                            @Html.ActionLink("الوحدات", "Units", "Archive")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Archive/Catogry")))
+                        {
+                            @Html.ActionLink("الاصناف الجملة", "Catogry", "Archive")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Archive/Catogry_qta3a")))
+                        {
+                            @Html.ActionLink("الاصناف القطاعي", "Catogry_qta3a", "Archive")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Archive/Product_gomla")))
+                        {
+                            @Html.ActionLink("المنتجات الجملة", "Product_gomla", "Archive")
+                        }
+                        @if (pathsList.Any(rd => rd.EndsWith("Archive/Product_qta3a")))
+                        {
+                            @Html.ActionLink("المنتجات القطاعي", "Product_qta3a", "Archive")
+                        }
+                    </div>
+                </div>
+            }
+            <a href="#" onclick="Site_Module.Logout(); return false;" target="_blank" class="float-right btn btn-light-primary font-weight-bold">تسجيل خروج</a>
+            <a href="#" class="float-right"> <span>مرحيا : </span>  @Context.User.Claims.FirstOrDefault(c => c.Type == "UserName")?.Value;</a>
+            <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+            
+        </div>
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+
+                    <div class="subheader py-2 py-lg-4 subheader-solid" id="kt_subheader">
+                        <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+                            <!--begin::Info-->
+                            <div class="align-items-center mr-2">
+                                @{
+                                    string back = string.Empty;
+                                    if (ViewBag.back == null)
+                                    {
+                                        back = "window.history.back();";
+                                    }
+                                    else
+                                    {
+                                        back = $"location.replace({ViewBag.back})";
+                                    }
+                                }
+                               @*  <a href="#" onclick="@back"
+                                   class="btn btn-clean btn-hover-light-primary btn-sm font-weight-bold font-size-base d-inline no-print">
+                                    <i class="icon-md fas fa-arrow-right pr-0"></i> رجوع
+                                </a> *@
+                               
+                            </div>
+                            <br />
+
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column-fluid">
+                        <!--begin::Container-->
+                        <div class="container">
+                          
+                            @RenderBody()
+                        </div>
+                    </div>
+                </div>
+                <!--end::Content-->
+                <!--begin::Footer-->
+        <div class="footer" style="text-align:center" id="kt_footer">
+                    <span style="text-align:center"> </span> 
+                </div>
+                <!--end::Footer-->
+            
+    <!--end::Main-->
+      
+    @*JQuery Validation*@
+  @*   <script src="~/lib/jquery/dist/jquery.js"></script> *@
+
+    <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    
+    <partial name="_ValidationScriptsPartial" /> 
+        <script src="~/plugins/scripts/ckeditor.js"></script> 
+        <script src="~/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+        <script src="~/js/js.cookie.min.js"></script>
+    
+    <script>
+      
+        var Site_Module = (function () {
+            function Logout() {
+                
+                Cookies.remove('userSession');
+                location.reload();
+            }
+            return {
+                Logout: Logout
+            };
+        })();
+      
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable();
+                $('#myTable1').DataTable({
+                    scrollCollapse: true,
+                    scrollY: '200px'
+                });
+                $('#myTable2').DataTable({
+                    scrollCollapse: true,
+                    scrollY: '200px'
+                });
+
+        });
+        
+    </script>
+    <script src="~/assets/plugins/custom/jstree/jstree.min.js"></script>
+    <script src="~/assets/plugins/custom/jstree/jstree.js"></script> 
+    <script>
+        var groupColumn = 0;
+        var table = $('#example').DataTable({
+            columnDefs: [{ visible: false, targets: groupColumn }],
+            order: [[groupColumn, 'asc']],
+            displayLength: 25,
+            drawCallback: function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+
+                api.column(groupColumn, { page: 'current' })
+                    .data()
+                    .each(function (group, i) {
+                        if (last !== group) {
+                            $(rows)
+                                .eq(i)
+                                .before(
+                                    '<tr class="group"><td colspan="3">' +
+                                    group +
+                                    '</td></tr>'
+                                );
+
+                            last = group;
+                        }
+                    });
+            }
+        });
+         
+        // Order by the grouping
+        $('#example tbody').on('click', 'tr.group', function () {
+            var currentOrder = table.order()[0];
+            if (currentOrder[0] === groupColumn && currentOrder[1] === 'asc') {
+                table.order([groupColumn, 'desc']).draw();
+            }
+            else {
+                table.order([groupColumn, 'asc']).draw();
+            }
+        });
+        var isProgrammaticCheck = false;
+        $('#treeview').jstree({
+            plugins: ['search', 'wholerow'],
+            core: {
+
+                data: {
+                    url: function (node) {
+                        return node.id === '#' ? '../product/GetRoot_gomla' : '../product/GetChildren_gomla/' + node.id;
+                    },
+                    data: function (node) {
+                        return { id: node.id };
+                    }
+                }
+            }, 'plugins': ['checkbox'],
+            'checkbox': {
+                'whole_node': false,
+                'tie_selection': false
+            }
+        }).on('check_node.jstree', function (e, data) {
+            if (!isProgrammaticCheck) {
+                var node = data.node.id
+                $('#CatogryId').val(node);
+                isProgrammaticCheck = true;
+                $('#treeview').jstree('uncheck_all');
+                $('#treeview').jstree('check_node', data.node);
+                isProgrammaticCheck = false;
+            }
+
+        });
+
+            $('#treeview1').jstree({
+                plugins: ['search', 'wholerow'],
+                core: {
+
+                    data: {
+                        url: function (node) {
+                            return node.id === '#' ? '../product/GetRoot_qta3a' : '../product/GetChildren_qta3a/' + node.id;
+                        },
+                        data: function (node) {
+                            return { id: node.id };
+                        }
+                    }
+                }, 'plugins': ['checkbox'],
+                'checkbox': {
+                    'whole_node': false,
+                    'tie_selection': false
+                }
+            }).on('check_node.jstree', function (e, data) {
+                if (!isProgrammaticCheck) {
+                    var node = data.node.id
+                    $('#CatogryId').val(node);
+                    isProgrammaticCheck = true;
+                    $('#treeview1').jstree('uncheck_all');
+                    $('#treeview1').jstree('check_node', data.node);
+                    isProgrammaticCheck = false;
+                }
+
+            });
+        $('#yourForm').on('submit', function (e) {
+            // Prevent the default form submission
+            e.preventDefault();
+
+            // Now submit the form with the selected category ID
+            this.submit();
+        });
+
+
+
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        }
+        </script>   <script>
+            CKEDITOR.replace('PageContent', {
+                on: {
+                    'instanceReady': function () {
+                        // Update the input value with CKEditor content
+                        this.document.on('submit', function () {
+                            var content = CKEDITOR.instances.PageContent.getData();
+                            document.getElementById('PageContent').value = content;
+                        });
+                    }
+                }
+            });
+        </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+<!--end::Body-->
+
+</html>

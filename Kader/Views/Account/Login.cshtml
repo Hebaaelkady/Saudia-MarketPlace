@@ -1,0 +1,68 @@
+﻿ 
+ 
+
+
+@using Kader.DTOs.Users
+@model LoginDto
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>تسجيل الدخول </span>
+    </nav>
+</div>
+<div class="container col-md-5">
+    <div class="box ">
+        <h3>تسجيل الدخول </h3>
+        <a asp-action="Register"  >مستخدم جديد</a>
+        <form asp-controller="Account" asp-action="Login" method="post"  >
+       
+            <div>
+                الأعضاء المسجلين
+                إذا كان لديك حساب، سجل الدخول باستخدام رقم تليفونك.
+            </div>
+            <div>
+                <label class="label" for="email"><span>رقم التليفون</span></label>
+                <input type="text" asp-for="userName" class="form-control" id="AimsDD" />
+                <span asp-validation-for="userName" class="text-danger"></span>
+            </div>
+                <div class="form-group">
+                <label class="label" for="email"><span>كلمة المرور</span></label>
+
+                    <div >
+                    <input type="password" asp-for="Userpass" class="form-control" id="AimsDD"  />
+                    <span asp-validation-for="Userpass" class="text-danger"></span>
+                    </div>
+                </div>
+                @*<div class="form-group">
+
+                        @Html.CheckBoxFor(m => m.RememberMe)
+                        @Html.LabelFor(m => m.RememberMe)
+
+                    </div>*@
+                <div class="form-group">
+                    <div >
+                    <button type="submit" class="btn btn-block btn-primary font-weight-bold py-3">دخول</button>
+                    </div>
+                </div>
+
+     </form>
+         <div class="alert alert-danger">
+                    @ViewBag.error
+                    </div>
+        <a asp-action="ForgotPassword">نسيت كلمة المرور</a>
+    </div>
+    <div class="clear"></div>
+</div>
+   
+ 
+
+
+
+ 

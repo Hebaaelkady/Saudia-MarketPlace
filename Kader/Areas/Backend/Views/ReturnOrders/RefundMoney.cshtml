@@ -1,0 +1,133 @@
+﻿@model Kader.DTOs.Cart.RefundRequestDto
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية </a></span> /
+        <span>استرجاع الفلوس للعميل</span>
+    </nav>
+</div>
+<fieldset>
+    <legend><h2>استرجاع الفلوس للعميل </h2></legend>
+    <div class="page-section">
+        <div class="container">
+
+            @if (ViewBag.Error != null)
+            {
+                <div style="color: red;">@ViewBag.Error</div>
+            }
+            @if (ViewBag.Message != null)
+            {
+                <div style="color: green;">@ViewBag.Message</div>
+            }
+            <table border="1" class="table-items" style="width:90%">
+                <thead>
+                    <tr>
+                        <th>اسم المنتج </th>
+                       
+                        <th>السعر </th>
+                        <th>الكميّة </th>
+                        <th>الإجمالي </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @for (int i = 0; i < Model.ReturnsItemsDto.Count; i++)
+                    {
+                        var item = Model.ReturnsItemsDto[i];
+                        <tr id="row-@item.ProductId" data-product-id="@item.ProductId">
+                            <td width="50%">
+                                <div>
+                                    <input type="text" style="border:none" readonly name="Itemslist[@i].SubCatogryTitle" class="no-border-input SubCatogryTitle-@item.ProductId" value="@item.ProductName" />
+                                </div>
+
+                            </td>
+                            <td class="price">
+                                <input type="text" style="border:none" readonly name="Itemslist[@i].PriceItem" class="no-border-input price-@item.ProductId" value="@item.PriceItem" />
+                            </td>
+
+                            <td>
+                                <input type="text" style="border:none" name="Itemslist[@i].Quantity" readonly class="no-border-input Quantity quantity-@item.ProductId" value="@item.Quantity">
+                            </td>
+                            <td>
+                                <span class="item-total" id="item-total-@item.ProductId"></span>
+                            </td>
+                        </tr>
+                        <script>
+                            $(document).ready(function () {
+                                function updateItemTotal(productId) {
+                                    var price = parseInt($('#row-' + productId).find('.price-' + productId).val(), 10);
+                                    var quantity = parseInt($('#row-' + productId).find('.quantity-' + productId).val(), 10);
+                                    if (!isNaN(price) && !isNaN(quantity)) {
+                                        var itemTotal = (price * quantity);
+                                        $('#item-total-' + productId).text(itemTotal.toFixed(2));
+                                    }
+                                }
+                                updateItemTotal(@item.ProductId);
+
+                            });
+                        </script>
+                    }
+                </tbody>
+            </table>
+
+            <div>
+                <div>
+                    اجمالي قيمة المشتريات:  <span id="cartTotalDisplay"> </span><span>ر.س</span>
+                </div>
+            </div>
+
+            <form asp-controller="ReturnOrders" asp-action="RefundMoney" method="post">
+
+                <input type="hidden" value="@ViewBag.id" name="id" id="id" />
+                <input type="hidden" value="@Model.p_id" name="p_id" id="p_id" />
+                <div style="display:none"> 
+                    <input type="hidden" name="PaymentId" value="@Model.PaymentId" readonly="@(string.IsNullOrEmpty(Model.PaymentId) ? "" : "readonly")" />
+                </div>
+                <div style="display:none"> 
+                    <input type="number" asp-for="Amount" id="refundAmount" />
+                </div>
+                <input type="hidden" id="cartTotal" name="Amount" value="" />
+
+                <div>
+                    <button type="submit">استرجاع الفلوس للعميل</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</fieldset>
+<script>
+    $(document).ready(function () {
+        function calculateAndSetCartTotal() {
+            let cartTotal = 0;
+            $('.item-total').each(function () {
+                const itemTotalText = $(this).text();
+                const itemTotal = parseFloat(itemTotalText)
+                if (!isNaN(itemTotal)) {
+                    cartTotal += itemTotal
+                }
+            });
+
+            $('#cartTotalDisplay').text(cartTotal.toFixed(2));
+            $('#cartTotal').val(cartTotal.toFixed(2)); // set value to hidden input as int only
+
+        }
+
+        calculateAndSetCartTotal();
+    });
+
+</script>
+<script>
+    function disableSubmitButton(form) {
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true; // Disable the button
+            submitButton.textContent = "Processing..."; // Optional: Update button text
+        }
+    }
+</script>

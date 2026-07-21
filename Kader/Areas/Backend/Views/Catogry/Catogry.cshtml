@@ -1,0 +1,128 @@
+﻿@model List<Kader.DTOs.Catogry.ApiCatogryDto>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+    <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>الفئات الرئيسية  </span>
+    </nav>
+</div>
+<fieldset>
+    <legend>
+         
+    </legend> 
+</fieldset>
+<fieldset>
+    <legend><h2>الفئات الرئيسية  </h2></legend>
+<div class="page-section">
+    <div class="container">
+        
+        <table id="myTable" border="1" class="display table table-separate table-head-custom table-foot-custom">
+            <thead>
+                <tr>
+                        <th>الفئات  الرئيسية</th>
+                        <th>  </th>
+                       
+                        <th>  </th>
+                        
+                </tr>
+            </thead>
+            <tbody>
+                    @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                     
+                    
+                    <tr>
+                        <td>
+                                    @item.name
+                        </td>
+                                <td>
+                                    <form id="form-gomla" asp-action="Catogry" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" value="@item.id" name="id" />
+                                        <input type="hidden" value="@item.name" name="name2" />
+                                        <input type="button" value=" اضافة للصلاحيات " />
+                                    </form></td><td>
+                                  @*   <form id="form-qta3" asp-action="Catogry" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" value="@item.id" name="id" />
+                                        <input type="hidden" value="@item.name" name="name2" />
+                                        <input type="button" value="اضافة للصلاحيات القطاعي" />
+                                    </form> *@
+                                </td>
+
+                    </tr>
+                }
+            }
+           </tbody>
+        </table>
+
+    </div>
+</div>
+</fieldset>
+ 
+
+<script>
+    $(document).ready(function () {
+        $('#form-gomla').click(function (event) {
+        event.preventDefault();
+        var form = $(this);
+        var t = form.find('input[name="id"]').val();
+        var name1 = form.find('input[name="name2"]').val();
+       
+        $.ajax({
+            type: 'POST',
+                url: '@Url.Action("AddRolegomla", "Catogry")',
+            data: { id: t, name: name1 },
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            processData: true,
+            success: function (response) {
+     
+                if (response.success) {
+                   
+                    form.append('<div class="alert alert-success">' + response.message + '</div>');
+                } else {
+                    form.append('<div class="alert alert-danger">' + response.message + '</div>');
+                }
+            },
+            error: function () {
+              
+                form.append('<div class="alert alert-danger">حدثت مشكلة اثناء الحفظ!</div>');
+            }
+        });
+        });
+    });
+    $(document).ready(function () {
+        $('#form-qta3').click(function (event) {
+            event.preventDefault();
+            var form = $(this);
+            var t = form.find('input[name="id"]').val();
+            var name1 = form.find('input[name="name2"]').val();
+       
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddRoleqta3a", "Catogry")',
+                data: { id: t, name: name1 },
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                processData: true,
+                success: function (response) {
+                  
+                    if (response.success) {
+
+                        form.append('<div class="alert alert-success">' + response.message + '</div>');
+                    } else {
+                        form.append('<div class="alert alert-danger">' + response.message + '</div>');
+                    }
+                },
+                error: function () {
+                
+                    form.append('<div class="alert alert-danger">حدثت مشكلة اثناء الحفظ!</div>');
+                }
+            });
+        });
+    });
+</script>

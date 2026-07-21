@@ -1,0 +1,96 @@
+﻿@model List<Kader.DTOs.Orderss.OrderssDto>
+@using Kader.Infrastructure.Shared;
+@using Kader.Infrastructure.Shared.Implementations;
+@using Kader.Infrastructure.Shared.Interfaces;
+
+@{
+    ViewData["Title"] = "View";
+    IKeys _keys = new Keys();
+}
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية</a></span> /
+        <span>طلبات لم يتم ارسال رسالة للعميل</span>
+    </nav>
+</div>
+
+<fieldset>
+    <legend><h2>طلبات لم يتم ارسال رسالة للعميل</h2></legend>
+    <div class="page-section container">
+        @if (Model != null)
+        {
+            <div class="box">
+                <br />
+                <table id="myTable" width="100%" border="1" class="display table table-5 separate table-head-custom table-foot-custom">
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>التاريخ</th>
+                            <th>إجمالي المبلغ</th>
+                            <th>تفاصيل</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderByDescending(g => g.InsertDate))
+                        {
+                            <tr>
+                                <td>@item.Idorders</td>
+                                <td>@item.InsertDate?.ToString("yyyy-MM-dd HH:mm")</td>
+
+                                <td>
+                                    @{
+                                        var f = item.TotalPrice + item.TotalTransportShippPrice;
+                                    }
+                                    @f <span>ريال سعودي</span>
+                                </td>
+                                <td>
+                                    @Html.ActionLink("تفاصيل", "OrderDetails", "Orders", new { id = item.OrderPayment }, null)
+                                </td>
+                                <td>
+                                    <form method="post" enctype="multipart/form-data" class="delivery-form">
+                                        <input type="hidden" value="@item.OrderPayment" name="id" />
+                                        <button type="button" class="send-to-delivery btn btn-primary">ارسال رسالة للعميل</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</fieldset>
+
+@section Scripts {
+    <script>
+        $(document).on('click', '.send-to-delivery', function (event) {
+            event.preventDefault();
+
+            var $form = $(this).closest('form');
+            var orderId = $form.find('input[name="id"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("sendMsgToUser", "MSG")',
+                data: { id: orderId },
+                success: function (response) {
+                    $form.find('.alert').remove(); // clear old alerts
+                    if (response.success) {
+
+                        $form.append('<div class="alert alert-success mt-2">' + response.message + '</div>');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        $form.append('<div class="alert alert-danger mt-2">' + response.message + '</div>');
+                    }
+                },
+                error: function () {
+                    $form.find('.alert').remove();
+                    $form.append('<div class="alert alert-danger mt-2">حدثت مشكلة اثناء الحفظ!</div>');
+                }
+            });
+        });
+    </script>
+}

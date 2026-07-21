@@ -1,0 +1,440 @@
+﻿@using System.Security.Claims;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+    //if (Context.Request.Headers.All(a => a.Key != "Authorization")/* || Context.User.Identity?.IsAuthenticated == false*/)
+    //{
+    //    //Disable this in the developing environment
+    //    Context.Response.Redirect("/Login");
+    //}
+    if (Context.User.Identity.IsAuthenticated == false)
+    {
+        Context.Response.Redirect("/Login");
+    }
+}
+@*@{
+    var stringRoles = Context.User.FindFirst(ClaimTypes.Role)?.Value ?? "[]";
+    if (stringRoles.Contains("1"))
+    {
+        <div id="role" data="1"></div>
+    }
+
+}*@
+
+<!DOCTYPE html>
+
+<html direction="rtl" dir="rtl" style="direction: rtl" lang="ar-eg">
+ 
+
+
+
+<head>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>الكادر</title>
+    <meta name="description" content="Updates and statistics" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+
+
+
+    <!--end::Fonts
+
+    @*<link href="~/assets/plugins/custom/jstree/jstree.bundle.rtl.css" rel="stylesheet" type="text/css" />*@
+    <!--begin::Page Vendors Styles(used by this page)-->
+    @*<link href="~/assets/plugins/custom/fullcalendar/fullcalendar.bundle.rtl.css" rel="stylesheet" type="text/css" />*@
+    <link href="~/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" />
+    <!--end::Page Vendors Styles-->
+    <!--begin::Global Theme Styles(used by all pages)-->
+    <link href="~/assets/plugins/global/plugins.bundle.rtl.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/custom/prismjs/prismjs.bundle.rtl.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/style.bundle.rtl.css" rel="stylesheet" type="text/css" />
+
+    <!--end::Global Theme Styles-->
+    <!--begin::Layout Themes(used by all pages)-->
+    <link href="~/assets/css/themes/layout/aside/light.rtl.css" rel="stylesheet" type="text/css" />
+
+
+    @RenderSection("Heads", required: false)
+
+    <link href="~/assets/css/vts-rtl-style.css" rel="stylesheet" type="text/css" />
+
+
+    <link rel="shortcut icon" href="~/assets/media/logos/favicon.ico" />
+    <style>
+        body, table, table.dataTable td {
+            font-family: Arial !important
+        }
+
+        .aside-menu .menu-nav .menu-item .active {
+            background-color: #F3F6F9;
+        }
+
+            .aside-menu .menu-nav .menu-item .active .menu-text {
+                color: #000 !important
+            }
+
+        .flaticon-information:before {
+            color: #3699FF;
+            font-size: 50px
+        }
+
+        select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.selectpicker {
+            display: block !important
+        }
+    </style>
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body">
+    <!--begin::Main-->
+    <!--begin::Header Mobile-->
+    <div id="kt_header_mobile" class="header-mobile align-items-center header-mobile-fixed">
+        <!--begin::Logo-->
+        
+        <!--end::Logo-->
+        <!--begin::Toolbar-->
+        <div class="d-flex align-items-center">
+            <!--begin::Aside Mobile Toggle-->
+            <button class="btn p-0 burger-icon burger-icon-left" id="kt_aside_mobile_toggle">
+                <span></span>
+            </button>
+            <!--end::Aside Mobile Toggle-->
+            <!--begin::Header Menu Mobile Toggle-->
+            <button class="btn p-0 burger-icon ml-4" id="kt_header_mobile_toggle">
+                <span></span>
+            </button>
+            <!--end::Header Menu Mobile Toggle-->
+            <!--begin::Topbar Mobile Toggle-->
+            <button class="btn btn-hover-text-primary p-0 ml-2" id="kt_header_mobile_topbar_toggle">
+                <span class="svg-icon svg-icon-xl">
+                    <!--begin::Svg Icon | path:~/assets/media/svg/icons/General/User.svg-->
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <polygon points="0 0 24 0 24 24 0 24" />
+                            <path d="M12,11 C9.790861,11 8,9.209139 8,7 C8,4.790861 9.790861,3 12,3 C14.209139,3 16,4.790861 16,7 C16,9.209139 14.209139,11 12,11 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" />
+                            <path d="M3.00065168,20.1992055 C3.38825852,15.4265159 7.26191235,13 11.9833413,13 C16.7712164,13 20.7048837,15.2931929 20.9979143,20.2 C21.0095879,20.3954741 20.9979143,21 20.2466999,21 C16.541124,21 11.0347247,21 3.72750223,21 C3.47671215,21 2.97953825,20.45918 3.00065168,20.1992055 Z" fill="#000000" fill-rule="nonzero" />
+                        </g>
+                    </svg>
+                    <!--end::Svg Icon-->
+                </span>
+            </button>
+            <!--end::Topbar Mobile Toggle-->
+        </div>
+        <!--end::Toolbar-->
+    </div>
+    <!--end::Header Mobile-->
+    <div class="d-flex flex-column flex-root">
+        <!--begin::Page-->
+        <div style=" background: url('../assets/media/logos/rep.jpg') repeat-x ;height:135px;">
+            <div style="margin:auto;text-align:center">
+                <img src="~/assets/media/logos/banner.jpg" />
+            </div>
+        </div>
+        <partial name="_sidebar" />
+        <div class="d-flex flex-row flex-column-fluid page">
+       
+            <!--begin::Wrapper-->
+            <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+                <!--begin::Header-->
+                <div id="kt_header" class="header header-fixed">
+                    <!--begin::Container-->
+                    <div class="container-fluid d-flex align-items-stretch justify-content-between">
+                        <!--begin::Header Menu Wrapper-->
+                        <div class="header-menu-wrapper header-menu-wrapper-left" id="kt_header_menu_wrapper">
+                            <!--begin::Header Menu-->
+                            <div id="kt_header_menu" class="header-menu header-menu-mobile header-menu-layout-default">
+                                <!--begin::Header Nav-->
+                                <ul class="menu-nav">
+                                    <li class="menu-item menu-item-open menu-item-here menu-item-submenu menu-item-rel menu-item-open menu-item-here menu-item-active" data-menu-toggle="click" aria-haspopup="true">
+
+
+                                    </li>
+
+
+                                </ul>
+                                <!--end::Header Nav-->
+                            </div>
+                            <!--end::Header Menu-->
+                        </div>
+                        <!--end::Header Menu Wrapper-->
+                        <!--begin::Topbar-->
+                        <div class="topbar">
+                            <!--begin::Search-->
+                            <!--end::Search-->
+                            <!--begin::Languages-->
+                            <!--end::Languages-->
+                            <!--begin::User-->
+                            <div class="dropdown">
+                                <!--begin::Toggle-->
+                                <div class="topbar-item" data-toggle="dropdown" data-offset="0px,0px">
+                                    <div class="btn btn-icon w-auto btn-clean d-flex align-items-center btn-lg px-2">
+
+
+                                        <span class="symbol symbol-35 symbol-light-success">
+                                            <span class="symbol-label font-size-h5 font-weight-bold">@Context.User.Identity?.Name</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!--end::Toggle-->
+                                <!--begin::Dropdown-->
+                                <div class="dropdown-menu p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-lg p-0">
+                                    <!--begin::Header-->
+                                    <div class="d-flex align-items-center p-8 rounded-top">
+                                        <!--begin::Symbol-->
+                                        <div class="symbol symbol-md bg-light-primary mr-3 flex-shrink-0">
+                                            <img src="/assets/media/users/300_25.gif" alt="" />
+                                        </div>
+                                        <!--end::Symbol-->
+                                        <!--begin::Text-->
+                                        <div class="text-dark m-0 flex-grow-1 mr-3 font-size-h5">@Context.User.Identity?.Name</div>
+
+                                        <!--end::Text-->
+                                    </div>
+                                    <div class="separator separator-solid"></div>
+                                    <!--end::Header-->
+                                    <!--begin::Nav-->
+                                    <div class="navi navi-spacer-x-0 pt-2">
+
+
+                                        <div class="navi-footer px-8 py-5">
+                                            <a href="#" onclick="Site_Module.Logout(); return false;" target="_blank" class="btn btn-light-primary font-weight-bold">تسجيل خروج</a>
+
+                                        </div>
+                                        <!--end::Footer-->
+                                    </div>
+                                    <!--end::Nav-->
+                                </div>
+                                <!--end::Dropdown-->
+                            </div>
+
+                            <!--end::User-->
+                        </div>
+                        <!--end::Topbar-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Header-->
+                <!--begin::Content-->
+                <!--begin::Subheader-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+
+                    <div class="subheader py-2 py-lg-4 subheader-solid" id="kt_subheader">
+                        <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+                            <!--begin::Info-->
+                            <div class="align-items-center mr-2">
+                                @{
+                                    string back = string.Empty;
+                                    if (ViewBag.back == null)
+                                    {
+                                        back = "window.history.back();";
+                                    }
+                                    else
+                                    {
+                                        back = $"location.replace({ViewBag.back})";
+                                    }
+                                }
+                                <a href="#" onclick="@back"
+                                   class="btn btn-clean btn-hover-light-primary btn-sm font-weight-bold font-size-base d-inline no-print">
+                                    <i class="icon-md fas fa-arrow-right pr-0"></i>
+                                </a>
+                                @RenderSection("PageTitle", required: false)
+                                <h2 class="text-dark font-weight-bold mt-2 mb-2 mr-5 din-bold d-inline">@ViewData["MainTitle"]</h2>
+
+                            </div>
+                            <div class="d-flex align-items-center">
+                                @RenderSection("HeaderActions", required: false)
+                                @if (ViewData["AddUrl"] != null)
+                                {<a href="@ViewData["AddUrl"]" class="btn btn-primary font-weight-bold btn-square font-weight-bold font-size-base mr-1 din-bold"> @ViewData["Add"] </a>}
+
+                            </div>
+                            <!--end::Info-->
+
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column-fluid">
+                        <!--begin::Container-->
+                        <div class="container">
+                            @RenderBody()
+                        </div>
+                    </div>
+                </div>
+                <!--end::Content-->
+                <!--begin::Footer-->
+                <div class="footer bg-white py-4 d-flex flex-lg-column" id="kt_footer">
+                    <!--begin::Container-->
+                    <div class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
+                        <!--begin::Copyright-->
+                        <div class="text-dark order-2 order-md-1">
+                            <span class="text-muted font-weight-bold mr-2">2022 ©</span>
+                            <a href="#" target="_blank" class="text-dark-75 text-hover-primary">مركز البيانات</a>
+                        </div>
+                        <!--end::Copyright-->
+                        <!--begin::Nav-->
+                        <!--end::Nav-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Footer-->
+            </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Page-->
+    </div>
+    <!--end::Main-->
+    <!--begin::Scrolltop-->
+    <div id="kt_scrolltop" class="scrolltop">
+        <span class="svg-icon">
+            <!--begin::Svg Icon | path:~/assets/media/svg/icons/Navigation/Up-2.svg-->
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
+                 viewBox="0 0 24 24" version="1.1">
+                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <polygon points="0 0 24 0 24 24 0 24" />
+                    <rect fill="#000000" opacity="0.3" x="11" y="10" width="2" height="10" rx="1" />
+                    <path d="M6.70710678,12.7071068 C6.31658249,13.0976311 5.68341751,13.0976311 5.29289322,12.7071068 C4.90236893,12.3165825 4.90236893,11.6834175 5.29289322,11.2928932 L11.2928932,5.29289322 C11.6714722,4.91431428 12.2810586,4.90106866 12.6757246,5.26284586 L18.6757246,10.7628459 C19.0828436,11.1360383 19.1103465,11.7686056 18.7371541,12.1757246 C18.3639617,12.5828436 17.7313944,12.6103465 17.3242754,12.2371541 L12.0300757,7.38413782 L6.70710678,12.7071068 Z"
+                          fill="#000000" fill-rule="nonzero" />
+                </g>
+            </svg>
+            <!--end::Svg Icon-->
+        </span>
+    </div>
+    <!--end::Scrolltop-->
+    <!--begin::Sticky Toolbar-->
+    <!--end::Sticky Toolbar-->
+    <!--begin::Demo Panel-->
+    <!--end::Demo Panel-->
+    <script>var HOST_URL = "https://keenthemes.com/metronic/tools/preview";</script>
+    <!--begin::Global Config(global config for global JS scripts)-->
+    <script>var KTAppSettings = { "breakpoints": { "sm": 576, "md": 768, "lg": 992, "xl": 1200, "xxl": 1400 }, "colors": { "theme": { "base": { "white": "#ffffff", "primary": "#3699FF", "secondary": "#E5EAEE", "success": "#1BC5BD", "info": "#8950FC", "warning": "#FFA800", "danger": "#F64E60", "light": "#E4E6EF", "dark": "#181C32" }, "light": { "white": "#ffffff", "primary": "#E1F0FF", "secondary": "#EBEDF3", "success": "#C9F7F5", "info": "#EEE5FF", "warning": "#FFF4DE", "danger": "#FFE2E5", "light": "#F3F6F9", "dark": "#D6D6E0" }, "inverse": { "white": "#ffffff", "primary": "#ffffff", "secondary": "#3F4254", "success": "#ffffff", "info": "#ffffff", "warning": "#ffffff", "danger": "#ffffff", "light": "#464E5F", "dark": "#ffffff" } }, "gray": { "gray-100": "#F3F6F9", "gray-200": "#EBEDF3", "gray-300": "#E4E6EF", "gray-400": "#D1D3E0", "gray-500": "#B5B5C3", "gray-600": "#7E8299", "gray-700": "#5E6278", "gray-800": "#3F4254", "gray-900": "#181C32" } }, "font-family": "Arial" };</script>
+
+    @*JQuery Validation*@
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+    <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    
+
+    <script src="~/assets/plugins/global/plugins.bundle.js?v=7.0.5"></script>
+    <script src="~/assets/plugins/custom/prismjs/prismjs.bundle.js?v=7.0.5"></script>
+    <script src="~/assets/js/scripts.bundle.js?v=7.0.5"></script>
+
+    @*<script src="~/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js?v=7.0.5"></script>
+        <script src="~/assets/js/pages/features/calendar/basic.js?v=7.0.5"></script>*@
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/assets/js/pages/widgets.js?v=7.0.5"></script>
+    <!--<script src="~/assets/js/pages/features/miscellaneous/sweetalert2.js?v=7.0.5"></script>
+    <script src="~/assets/js/pages/features/miscellaneous/toastr.js?v=7.0.5"></script>
+    <script src="~/assets/plugins/custom/jstree/jstree.bundle.js?v=7.0.5"></script>
+    <script src="~/assets/js/pages/features/miscellaneous/treeview.js?v=7.0.5"></script>-->
+    @* <script src="~/assets/js/pages/crud/ktdatatable/base/data-local.js?v=7.0.5"></script> *@
+    <!--<script src="~/assets/js/pages/crud/forms/widgets/bootstrap-switch.js?v=7.0.5"></script>
+    <script src="~/assets/js/pages/crud/forms/widgets/bootstrap-timepicker.js?v=7.0.5"></script>
+    <script src="~/assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js?v=7.0.5"></script>
+    <script src="~/assets/js/pages/crud/forms/widgets/bootstrap-markdown.js"></script>-->
+    @*<script src="~/plugins/tree-select/js/tree-select.js?v2"></script>
+
+        <script src="~/plugins/DropDownComboTree/comboTreePlugin.js"></script>*@
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
+
+    <script src="~/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+    @* <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>*@
+
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+   
+
+    @*   <script src="~/NewFolder/pdfmake.min.js"></script>*@
+    <script src="~/NewFolder/vfs_fonts.js"></script>
+    
+    <script src="https://cdn.datatables.net/buttons/2.1.0/js/buttons.html5.min.js"></script>
+
+
+    @*<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>*@
+    <script>
+      
+        //$("#kt_tree_1").jstree({
+        //    "core": {
+        //        "themes": {
+        //            "responsive": false
+        //        }
+        //    },
+        //    "types": {
+        //        "default": {
+        //            "icon": "fa fa-folder"
+        //        },
+        //        "file": {
+        //            "icon": "fa fa-file"
+        //        }
+        //    },
+        //    "plugins": ["types"]
+        //});
+        pdfMake.fonts = {
+            DroidKufi: {
+                normal: 'DroidKufi-Regular.ttf',
+                bold: 'DroidKufi-Regular.ttf',
+                italics: 'DroidKufi-Regular.ttf',
+                bolditalics: 'DroidKufi-Regular.ttf'
+            }
+
+        }
+        var htmlUtils = (function () {
+            'use strict';
+            function htmlDecode(input) {
+                var e = document.createElement('textarea');
+                e.innerHTML = input;
+                // handle case of empty input
+                return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+            }
+            return {
+                htmlDecode: htmlDecode
+            }
+        })();
+
+        var Site_Module = (function () {
+            function Logout() {
+                Cookies.remove('userSession');
+                location.reload();
+            }
+            return {
+                Logout: Logout
+            };
+        })();
+      
+
+    </script>
+
+    @RenderSection("Scripts", required: false)
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.min.js"></script>
+    <script type="text/javascript">
+
+
+
+
+
+        $(function () {
+
+            $('.chart').easyPieChart({
+                size: 180,
+                barColor: "#17d3e6",
+                scaleLength: 0,
+                lineWidth: 15,
+                trackColor: "#373737",
+                lineCap: "circle",
+                animate: 2000,
+            });
+        });
+    </script>
+    <!--end::Page Scripts-->
+</body>
+<!--end::Body-->
+
+</html>

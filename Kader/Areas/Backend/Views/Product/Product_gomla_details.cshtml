@@ -1,0 +1,305 @@
+﻿@model Kader.DTOs.Product.Product_backendDto
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>المنتجات الرئيسية (جملة (</span>
+    </nav>
+</div>
+ 
+    <div class="page-section">
+        <div class="container">
+            @if (Model.NewItem != null)
+            {
+            <fieldset>
+                <legend> @Model.NewItem.SubCatogryTitle </legend>
+                <table   border="1" width="50%" class="  display table table-separate table-head-custom table-foot-custom">
+                <tr>
+                    <th>الصنف</th>
+                    <td> @Html.DisplayFor(modelItem => Model.NewItem.CatogryName) </td></tr><tr>
+                    <th>المنتج</th>
+                    <td> @Html.DisplayFor(modelItem => Model.NewItem.SubCatogryTitle) </td>
+                    </tr>
+               
+                    <tr>
+                        <th>الكود / عنوان فرعي</th>
+                        <td> @Html.DisplayFor(modelItem => Model.NewItem.barcode) </td>
+                    </tr>
+                    <tr>
+                        <th>الوصف التفصيلي</th>
+                        <td> @Html.DisplayFor(modelItem => Model.NewItem.Description) </td>
+                    </tr>
+                    <tr>
+                        <th>الكمية المتاحة</th>
+                        <td> @Html.DisplayFor(modelItem => Model.NewItem.QuantityAvailable) </td>
+                    </tr>
+                    <tr>
+                        <th> وحدة الكمية</th>
+                        <td> @Html.DisplayFor(modelItem => Model.NewItem.UnitName) </td>
+                    </tr>
+                <tr>
+                        <th>  اقل كمية للشحن مقارنة باجمالي الكمية</th>
+                        <td> @Html.DisplayFor(modelItem => Model.NewItem.MinQuantityToShipJomla)  </td>
+                </tr>
+                 @*    <tr>
+                        <th>اقل كمية لشحن الكمية الجملة</th>
+                        <td>
+
+                            @if (Model.NewItem.MinQuantityToShipJomla != null)
+                            {
+                                var minQuantityToShipJomla = decimal.Parse(@Model.NewItem.MinQuantityToShipJomla.Value.ToString());
+                                var t = @Model.NewItem.QuantityAvailable - (@Model.NewItem.QuantityAvailable - (@Model.NewItem.QuantityAvailable * minQuantityToShipJomla / 100));
+
+                                // Use 't' in a valid statement, for example, assigning it to a view model property
+                                ViewBag.CalculatedStock = t;
+                            }@ViewBag.CalculatedStock
+                        </td>
+                    </tr> *@
+            </table>
+                </fieldset>
+            <fieldset>
+                <legend>الاسعار</legend>
+                <table   border="1" width="50%" class="custome display table table-separate table-head-custom table-foot-custom">
+                    <tr><th colspan="2">السعر والتخفيضات الحالية</th></tr>
+                    <tr>
+                        <th>السعر قبل الخصم</th>
+
+                        <td> @Html.DisplayFor(modelItem => Model.NewItem.BeforeDiscount)  <span>ر.س.</span></td>
+                    </tr>
+                    <tr>
+                        <th>السعر بعد الخصم</th>
+
+                        <td> @Html.DisplayFor(modelItem => Model.NewItem.AfterDiscount)  <span>ر.س.</span>@* <span>%</span> *@</td>
+                    </tr>
+                @*     <tr>
+                        <th>السعر بعد الخصم</th>
+
+                        <td>
+                            @{
+                                double afterDiscount1 = 0;
+                                if (Model.NewItem.AfterDiscount != null)
+                                {
+                                    double price = Model.NewItem.BeforeDiscount.Value;
+                                    double AfterDiscount = (double)Model.NewItem.AfterDiscount.Value;   // No need to parse, it's already a number
+                                    double afterDiscount = price - (price * AfterDiscount / 100);
+                                    afterDiscount1 = Math.Round(afterDiscount, 2);
+                                }
+
+                            }
+                            @if (Model.NewItem.AfterDiscount != null)
+                            {
+                            @Model.NewItem.AfterDiscount    <span>ر.س.</span>
+                            }
+                            
+                        </td>
+                    </tr> *@
+                  @*   <tr>
+                        <th>تاريخ بدء الخصم</th>
+
+                        <td> @Html.DisplayFor(modelItem => Model.NewItem.discountBeginDate) </td>
+                    </tr>
+                    <tr>
+                        <th>تاريخ نهاية الخصم</th>
+
+                        <td> @Html.DisplayFor(modelItem => Model.NewItem.DiscountEndDate) </td>
+                    </tr> *@
+                </table>
+                @if (Model.NewItem.LogPriceDto.Count != 0)
+                {
+                    <br />
+                    <table  border="1" width="50%" class="custome display table table-separate table-head-custom table-foot-custom">
+                        <tr><th colspan="4" style="text-align:center">الاسعار  السابقة</th></tr>
+                        <tr>
+                            <th>تاريخ الاضافة</th>
+                         @*    <th>تاريخ نهاية الخصم</th> *@
+                            <th>السعر قبل الخصم</th>
+                            <th>السعر بعد الخصم</th>
+                        </tr>
+                        @foreach (var item1 in Model.NewItem.LogPriceDto)
+                        {
+
+
+                            <tr>
+                                <td>
+                                    @{
+                                        var formattedDate = item1.discountBeginDate.HasValue ? item1.discountBeginDate.Value.ToString("dd/MM/yyyy") : "";
+                                    }
+                                    @Html.DisplayFor(modelItem => formattedDate)
+
+                                </td>
+
+                               @*  <td>
+                                    @{
+                                        var formattedDate1 = item1.discountEndDat.HasValue ? item1.discountEndDat.Value.ToString("dd/MM/yyyy") : "";
+                                    }
+                                    @Html.DisplayFor(modelItem => formattedDate1)
+                                </td> *@
+                                <td> @Html.DisplayFor(modelItem => item1.BeforeDiscount) <span>ر.س.</span></td>
+                                <td>
+                                    @{
+                                        double afterDiscount2 = 0;
+                                        if (item1.AfterDiscount != null)
+                                        {
+                                            double price = (double)item1.BeforeDiscount;
+                                            double AfterDiscount = (double)item1.AfterDiscount.Value;   // No need to parse, it's already a number
+                                            double afterDiscount = price - (price * AfterDiscount / 100);
+                                            afterDiscount2 = Math.Round(afterDiscount, 2);
+                                        }
+
+                                    }
+
+                                    @item1.AfterDiscount  <span>ر.س.</span>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                }
+                @{
+                    double? previousTotalQuantity = null;
+                    double? totalNewStock = 0; // لحساب إجمالي المخزون الجديد
+                }
+                @if (Model.NewItem.LogQuantityDto.Count != 0)
+                {
+                    <br />
+
+                    <table border="1" width="50%" class="custome display table table-separate table-head-custom table-foot-custom">
+                        <tr><th colspan="5" style="text-align:center">تفاصيل المخزون</th></tr>
+                        <tr>
+                            <th>تاريخ الإضافة</th>
+                            <th>الكمية المباعة مسبقا</th>
+                            <th>المخزون المضاف</th>
+                            
+                            <th>المتبقي من المخزون</th>
+                            <th>الإجمالي </th>
+                        </tr>
+                        @foreach (var item1 in Model.NewItem.LogQuantityDto)
+                        {
+                            double? totalQuantity = item1.NewQuantity + item1.RemainingQuantity;
+                            double? soldQuantity = previousTotalQuantity.HasValue ? (previousTotalQuantity.Value - item1.RemainingQuantity) : 0;
+
+                            // حساب إجمالي المخزون الجديد
+                            totalNewStock += @item1.NewQuantity;
+
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => item1.CreatedDate)</td>
+                                <td>@soldQuantity</td>
+                                <td>@Html.DisplayFor(modelItem => item1.NewQuantity)</td>
+                              
+                                <td>@item1.RemainingQuantity</td>
+                                <td>@totalQuantity</td>
+                            </tr>
+
+                            previousTotalQuantity = totalQuantity; // تخزين الإجمالي للحساب في السطر التالي
+                        }
+
+                        <!-- صف إجمالي المخزون الجديد -->
+                        <tr>
+                            <th colspan="2" style="text-align:right">إجمالي المخزون المضاف:</th>
+                            <th colspan="3" style="text-align:center">@totalNewStock</th>
+                        </tr>
+                    </table>
+                }
+
+            </fieldset>
+
+                <fieldset>
+                    <legend>اسعار الشحن</legend>
+                <table  border="0" width="100%" class="custome display table table-separate table-head-custom table-foot-custom">
+
+                        <tr>
+                            <td>
+                                @if(Model.NewItem.ShippingPrice!=null)
+                            {
+                                 @Html.DisplayFor(modelItem => Model.NewItem.ShippingPrice) 
+                            }
+                            else
+                            {
+                                @if (Model.NewItem?.ShippingPriceDto != null && Model.NewItem.ShippingPriceDto.Any(d => !d.IsDeleted))
+                                {
+
+                                    <table border="1" width="50%" class="custome">
+                                        <tr><th>الكمية</th><th>السعر</th></tr>
+                                        @foreach (var item1 in Model.NewItem.ShippingPriceDto.Where(k => k.IsDeleted == false))
+                                {
+                                   <tr><td>@item1.VarQuantity</td> 
+                                 <td>   @item1.VarPrice</td>
+                                </tr>}
+                           </table> }
+                           }
+                           
+                            </td></tr>
+                            </table>
+                </fieldset>
+
+                <fieldset>
+                    <legend>الصور</legend>
+                <table   border="1" width="50%" class="custome display table table-separate table-head-custom table-foot-custom">
+                        <tr>
+                            <td>
+                                @if (Model.NewItem.ProductImgDto.Count != 0)
+                                {
+                                    foreach (var item2 in Model.NewItem.ProductImgDto)
+                                    {
+                                        <a href="~/Images/@item2.ProductImgName">
+                                            <img width="200px" height="200" src=~/Images/@item2.ProductImgName />
+                                        </a>
+                                    }
+                                }
+                            </td>
+                            @* <td>    @Html.ActionLink("تعديل", "Product_gomla", new { ProductId = Model.NewItem.ProductId }, null) </td>
+                            <td>   @Html.ActionLink("تعديل اسعار الشحن المتغيرة", "EditShippingPrice", new { id = Model.NewItem.ProductId }, null) </td>
+                                <td>   <input type="button" value="حذف المنتج" class="Delete btn2 btn-default" data-val="@Model.NewItem.ProductId" /></td>
+       *@                  </tr>
+                        </table>
+                        </fieldset>
+                        }
+                    
+           
+       
+        </div>
+    </div>
+ 
+
+
+
+<script>
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الحذف")) {
+            var requrl = "/Backend/Product/DeleteProduct";
+
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+                // cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data-val') },
+                success: function (json1) {
+                    console.log(json1);
+                    alert(JSON.stringify(json1));
+                    location.reload();
+                },
+
+                error: function (xhr, status, error) {
+                    console.log("XHR Response: " + xhr.responseText);
+                    console.log("Status: " + status);
+                    console.log("Error: " + error);
+                    alert("حدث خطأ: " + xhr.responseText);
+                }
+
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+   
+</script>

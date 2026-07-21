@@ -1,0 +1,56 @@
+﻿ 
+@model  Kader.DTOs.Pages.PagesDto
+ 
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+    <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>سياسة للاستبدال والارجاع(</span>
+    </nav>
+</div>
+
+<fieldset>
+    <legend>
+        <h2 class="text-dark font-weight-bold mt-2 mb-2 mr-5 din-bold d-inline">
+            @if (string.IsNullOrEmpty(Context.Request.Query["Id"]))
+            {
+                <span>اضافة محتوي سياسة للاستبدال والارجاع</span>
+            }
+           
+        </h2>
+    </legend>
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-info">
+            @ViewBag.Message
+        </div>
+    }
+    <form asp-controller="Pages" asp-action="Exchange_return_policy" method="post">
+
+         <div class="form-group">
+            <label>المحتوي</label>
+            <textarea id="PageContent" name="PageContent" class="form-control">@Model.PageContent</textarea> @Html.ValidationMessageFor(model => model.PageContent)
+        </div>
+       
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit">حفظ </button>
+            </div>
+        </div>
+
+    </form>
+
+
+
+</fieldset>
+ 
+
+ 
+
+

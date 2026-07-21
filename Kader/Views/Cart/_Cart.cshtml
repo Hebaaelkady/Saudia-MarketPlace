@@ -1,0 +1,160 @@
+﻿@model Kader.DTOs.Product.ProductView_front
+
+@if (Model.Productsitem != null)
+{
+    <form asp-action="AddToCart" asp-controller="Cart" id="addToCartForm-@Model.Productsitem.ProductId">
+        <input type="hidden" name="date" id="date" value="@DateTime.UtcNow.AddHours(3)" readonly>
+
+        @if (Model.Productsitem.AfterDiscount != null)
+        {
+             
+            decimal afterDiscount1 = 0;
+            if (Model.Productsitem.AfterDiscount != null)
+            {
+            decimal price = Model.Productsitem.price;
+            decimal AfterDiscount = (decimal)Model.Productsitem.AfterDiscount.Value;   // No need to parse, it's already a number
+            @* decimal afterDiscount = price - (price * AfterDiscount / 100); *@
+                decimal afterDiscount =   AfterDiscount ;
+            afterDiscount1 = Math.Round(afterDiscount, 2);
+            }
+           
+             <input type="hidden" name="Productsitem.Price_enter" value="@afterDiscount1" readonly>
+            <div class="d-flex align-items-center justify-content-center mt-2">
+                <h5 class="font-weight-semi-bold mb-4">@afterDiscount1.ToString("0.00")  <span>ر.س.</span></h5>
+                <h6 class="text-muted ml-2"><del><span>@Model.Productsitem.price </span>    <span>ر.س.</span></del></h6>
+            </div> 
+             
+        }
+        else
+        {
+            <div class="d-flex align-items-center justify-content-center mt-2">
+                <h5 class="font-weight-semi-bold mb-4"><span>@Model.Productsitem.price </span> <span>ر.س.</span></h5>
+            </div>
+            <input type="hidden" name="Productsitem.Price_enter" value="@Model.Productsitem.price " readonly>
+                 }
+        <input type="hidden" name="ApiProdID" value="@Model.Productsitem.p_id" />
+        <input type="hidden" name="MinQuantityToShipJomla" value="@Model.Productsitem.MinQuantityToShipJomla" readonly>
+      
+        <input type="hidden" name="typeGomlaOrQt3" value="1" readonly>
+        <input type="hidden" name="ProductId" value="@Model.Productsitem.ProductId" />
+        <input type="hidden" name="Productsitem.SubCatogryTitle" value="@Model.Productsitem.SubCatogryTitle" />
+
+        <div class="quantity-wrapper"> 
+            <strong for="quantity text-dark mr-3">الكمية:</strong>
+            @Model.Productsitem.typeGomlaOrQt3
+
+            @if (Model.Productsitem.stock < 1 || (Model.Productsitem.MinQuantityToShipJomla == 0) )
+            {
+                <span class="not-available">غير متوافر</span>
+            }
+            
+            else
+            {
+                <div class="input-group quantity mr-3" style="width:70%;display:inline-flex">
+                    <div class="input-group-btn">
+                        <input type="button" class="btn btn-primary btn-minus subtract subtract-@Model.Productsitem.ProductId" value="-">
+
+                    </div> @{
+                        double g = Math.Floor(Model.Productsitem.MinQuantityToShipJomla ?? 0);
+                    } 
+                    <input type="text" name="Quantity" class="form-control bg-secondary border-0 text-center Quantity quantity-@Model.Productsitem.ProductId" value="@g">
+
+                    <div class="input-group-btn">
+                        <input type="button" class="btn btn-primary btn-plus add add-@Model.Productsitem.ProductId" value="+">
+
+                    </div>
+                </div>
+                @Model.Productsitem.Unit_Name
+
+            }
+        </div>
+        @if (Model.Productsitem.stock < 1 || (Model.Productsitem.MinQuantityToShipJomla == 0)  )
+        { }
+
+        else
+        {
+            <div class="d-flex align-items-center justify-content-center mt-2">
+                <button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#addToCartModal" style="width:90%">
+                    <i class="fa fa-shopping-cart mr-1"></i> اضافة لسلة مشترياتي
+                </button>
+            </div>
+        }
+
+    
+    </form>
+
+
+
+<script>
+    $(document).ready(function () {
+
+
+            var minQuantityToShipJomla = Math.floor('@Model.Productsitem.MinQuantityToShipJomla');
+            var stock = Math.floor('@Model.Productsitem.stock');
+            var minQuantity =  minQuantityToShipJomla ;
+            if (!minQuantityToShipJomla || isNaN(minQuantityToShipJomla) || minQuantity == 0) {
+                minQuantity = 1;
+            }
+         
+
+            $(".quantity-@Model.Productsitem.ProductId").val(minQuantity);
+          
+            var maxValue = minQuantity;
+            
+        // Add/Subtract Quantity Logic
+        $('.add-@Model.Productsitem.ProductId').click(function () {
+            var value = parseInt($('.quantity-@Model.Productsitem.ProductId').val(), 10);
+            value = isNaN(value) ? 0 : value;
+             
+                if (value < stock) {
+                $('.quantity-@Model.Productsitem.ProductId').val(value + 1);
+            }
+        });
+
+        $('.subtract-@Model.Productsitem.ProductId').click(function () {
+            var value = parseInt($('.quantity-@Model.Productsitem.ProductId').val(), 10);
+            value = isNaN(value) ? 0 : value;
+                if (value > maxValue) {
+                $('.quantity-@Model.Productsitem.ProductId').val(value - 1);
+            }
+        });
+
+        $('.quantity-@Model.Productsitem.ProductId').on('input', function () {
+           
+            this.value = this.value.replace(/[^1-9]/g, '');
+            var value = parseInt(this.value, 10);
+                if ((value < maxValue) || (value > stock)) {
+                this.value = maxValue;
+            }
+        });
+
+        // Add to cart popup functionality
+        $(`#addToCartForm-@Model.Productsitem.ProductId`).submit(function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var formData = $(this).serialize(); // Get form data
+            var productId = $(this).find('input[name="ProductId"]').val();
+                var ApiProdID = $(this).find('input[name="ApiProdID"]').val();
+            $.ajax({
+                url: $(this).attr('action'), // Form action URL
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+              
+                    updateCheckoutIcon(); 
+                    // Show the popup
+                    $('#addToCartPopup').modal('show');
+                },
+                error: function () {
+                    alert('An error occurred while adding to cart.');
+                }
+            });
+        });
+
+       
+
+  
+  
+    });
+    </script>
+}

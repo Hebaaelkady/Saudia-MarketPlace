@@ -1,0 +1,53 @@
+﻿@model Kader.DTOs.ShippingPrice.ShippingPriceDto
+<form asp-controller="Catogry" asp-action="Index" method="post">
+    
+    <div class="form-horizontal">
+       
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+         
+
+
+        @* @if (Model.ShippingPriceDto.Count != 0)
+        {
+            <table border="1">
+                <tr><th>الكمية</th><th>السعر</th></tr>
+                @foreach (var item1 in Model.ShippingPriceDto)
+                {
+                    <tr>
+                        <input type="text" name="ShippingPriceDto[0].VarQuantity" class="form-control" value="@item1.VarQuantity" />
+                        <input type="text" name="ShippingPriceDto[0].VarPrice" class="form-control" value="@item1.VarPrice" />
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+            </table>
+        } *@
+
+
+        <div class="span-lg6  span-md6 span-sm6 span-s12 span-xs12 pull-right">
+            <div class="gray-graient padding border-radius  padding-l">
+                <label class="span-lg5 span-md5 span-sm5 span-s5 span-xs12" for="cd-name">
+                    التخصص
+                </label><div class="span-lg7 span-md7 span-sm7 span-s7 span-xs12">
+                    <input type="text" asp-for="NewItem.CatogryName" name="NewItem.CatogryName" class="form-control" />
+
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+       
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="حفظ" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+
+
+<div>
+    @Html.ActionLink("رجوع للوظائف", "Index")
+</div>
+
+ 

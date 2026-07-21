@@ -1,0 +1,212 @@
+﻿@model List<Kader.DTOs.Product.ApiEditProductDto>
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>المنتجات الرئيسية </span>
+    </nav>
+</div>
+<fieldset>
+   
+ 
+@* @Html.Partial("_Product_gomla", Model) *@
+</fieldset>
+<fieldset>
+    <legend><h2>المنتجات الرئيسية   </h2></legend>
+    <div class="page-section">
+        <div class="container">
+            @Html.DropDownList("CatId", null, "اختار الفئة", htmlAttributes: new { @class = "form-control" })
+
+
+            <table id="myTable" width="100%" border="1" class="display table table-5 separate table-head-custom table-foot-custom">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>المنتج</th>
+                        <th></th>
+                        <th></th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        int co = 1;
+                        foreach (var item in Model)
+                        {
+                            
+                            <tr> 
+
+                                    <td>@co @{
+                                        co++;
+                                    }</td>
+                                <td>
+                                        
+                                    @Html.DisplayFor(modelItem => item.title)</td>
+                                <td>
+                                    <form class="form-gomla" asp-action="Product" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" value="@item.p_id" data="@item.tax_ID" data3="@item.title" data7="@item.barcode" data4="@item.unites.FirstOrDefault().unitName" data1="@item.unit_Id" name="p_id" />
+                                        <input type="button" value="اضافة للمتجر الجملة"/>
+    </form></td><td>
+                                    <form class="form-qta3" asp-action="Product" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" value="@item.p_id" data="@item.tax_ID" data3="@item.title" data7="@item.barcode" data4="@item.unites.FirstOrDefault().unitName" data1="@item.unit_Id" name="p_id" />
+                                        <input type="button" value="اضافة للمتجر القطاعي" />
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+               </div>
+    </div>
+</fieldset>
+
+<div id="loadingIcon" style="display: none;">
+    <div  style="background-color: #000;position: absolute;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.4;
+"> 
+    </div> 
+    <img src="~/assets/loading-gif.gif" alt="Loading..." style=" position: absolute;
+    
+    top: 0;
+    left: 0;
+    right: 0;
+" />
+</div> 
+<script>
+
+    $(document).ready(function () {
+        function formgomla(form) {
+            var p_id = form.find('input[name="p_id"]').val();
+            var tax_ID = form.find('input[name="p_id"]').attr('data');
+            var barcode = form.find('input[name="p_id"]').attr('data7');
+            var unit_Id = form.find('input[name="p_id"]').attr('data1');  
+            var SubCatogryTitle = form.find('input[name="p_id"]').attr('data3');
+            var Unit_Name = form.find('input[name="p_id"]').attr('data4');
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("addToSite", "Product")',
+                data: { barcode: barcode,p_id: p_id, tax_ID: tax_ID, unit_Id: unit_Id, SubCatogryTitle: SubCatogryTitle, Unit_Name: Unit_Name },
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                processData: true,
+                success: function (response) {
+                    if (response.success) {
+                        form.append('<div class="alert alert-success">' + response.message + '</div>');
+                    } else {
+                        form.append('<div class="alert alert-danger">' + response.message + '</div>');
+                    }
+                },
+                error: function () {
+                    form.append('<div class="alert alert-danger">حدثت مشكلة اثناء الحفظ!</div>');
+                }
+            });
+        }
+
+        function formqta3(form) {
+            var p_id = form.find('input[name="p_id"]').val();
+            var SubCatogryTitle = form.find('input[name="p_id"]').attr('data3');
+            var tax_ID = form.find('input[name="p_id"]').attr('data');
+            var barcode = form.find('input[name="p_id"]').attr('data7');
+            var unit_Id = form.find('input[name="p_id"]').attr('data1');
+            var Unit_Name = form.find('input[name="p_id"]').attr('data4');
+            // Send the AJAX request for retail store
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("addToSiteQta3", "Product")',
+                data: { barcode: barcode, p_id: p_id, tax_ID: tax_ID, unit_Id: unit_Id, SubCatogryTitle: SubCatogryTitle, Unit_Name: Unit_Name },
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                processData: true,
+                success: function (response) {
+                    if (response.success) {
+                        form.append('<div class="alert alert-success">' + response.message + '</div>');
+                    } else {
+                        form.append('<div class="alert alert-danger">' + response.message + '</div>');
+                    }
+                },
+                error: function () {
+                    form.append('<div class="alert alert-danger">حدثت مشكلة اثناء الحفظ!</div>');
+                }
+            });
+        }
+
+        $(document).on('click', '.form-gomla', function (event) {
+            event.preventDefault();
+            var form = $(this);
+            formgomla(form);
+        });
+
+        $(document).on('click', '.form-qta3', function (event) {
+            event.preventDefault();
+            var form = $(this);
+            formqta3(form);
+        });
+
+        $('#CatId').change(function (e) {
+            e.preventDefault();
+            $('#loadingIcon').show();
+            var requrl = '@Url.Action("GetproductByCatApi")';
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                cache: true,
+                url: requrl,
+                data: { Type: $('#CatId').val() },
+                success: function (data) {
+                    if (data.loading) {
+                        $('#loadingIcon').show();
+                    } else if (data.success) {
+                        $('#loadingIcon').hide();
+                        $('#myTable').DataTable().clear().destroy();
+                        $('#myTable tbody').empty();
+                      
+                        $.each(data.data, function (index, item) {
+                          
+                            var row = '<tr>' +
+                                '<td>' + (index + 1) + '</td>' +
+                                '<td>' + item.title + '</td>' +
+                                '<td>' +
+                                '<form class="form-gomla" asp-action="Product" method="post" enctype="multipart/form-data">' +
+                                '<input type="hidden" value="' + item.p_id + '" name="p_id" data4="' + item.unites[0].unitName + '"    data="' + item.tax_ID + '" data7="' + item.barcode + '"  data3="' + item.title + '" data1="' + item.unit_Id + '"/>' +
+                                '<input type="button" value="اضافة للمتجر الجملة" />' +
+                                '</form>' +
+                                '</td>' +
+                                '<td>' +
+                                '<form class="form-qta3" asp-action="Product" method="post" enctype="multipart/form-data">' +
+                                '<input type="hidden" value="' + item.p_id + '" name="p_id" data="' + item.tax_ID + '" data4="' + item.unites[0].unitName + '"   data7="' + item.barcode + '"   data3="' + item.title + '"  data1="' + item.unit_Id + '"/>' +
+                                '<input type="button" value="اضافة للمتجر القطاعي" />' +
+                                '</form>' +
+                                '</td>' +
+                                '</tr>';
+                            $('#myTable tbody').append(row);
+                        });
+
+                        $('#myTable').DataTable();
+                    } else {
+                        alert(data.message);
+                        console.log("XHR Response: " + xhr.responseText);
+                        console.log("Status: " + status);
+                        console.log("Error: " + error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+</script>

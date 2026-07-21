@@ -1,0 +1,23 @@
+﻿@model string
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+<h2>أدخل رمز التحقق</h2>
+
+<form asp-action="VerifyCode" method="post">
+    <label for="otpCode">رمز التحقق:</label>
+    <input type="text" name="otpCode" required class="form-control" />
+
+    <button type="submit" class="btn btn-primary">تحقق</button>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="text-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}

@@ -1,0 +1,127 @@
+﻿@using Kader.DTOs.Stores
+@using Kader.DTOs.Users
+ 
+@model  AllUserViewDto 
+@{
+    var roleLabels = new Dictionary<string, string>
+    {
+        { "Admin", "مدير النظام" },
+        { "مخزن", "مسئول مخزن" },
+        { "خدمات شحن", "خدمات شحن" },
+        { "مندوب نقل داخلي", "مندوب نقل داخلي" },
+        { "ادارة طلبات", "إدارة الطلبات" },
+        { "تقارير", "التقارير" },
+        { "اساسيات", "الأساسيات" },
+        { "صفحات اخري", "صفحات أخرى" },
+        { "منتجات", "المنتجات" },
+        { "فئات", "الفئات" },
+        { "مستخدمين", "المستخدمين" }
+    };
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية</a></span> /
+        <span>تعديل بيانات المستخدم</span>
+    </nav>
+</div>
+
+<fieldset>
+    <legend>
+        <h2 class="text-dark font-weight-bold mt-2 mb-2 mr-5 din-bold d-inline">تعديل مستخدم</h2>
+    </legend>
+
+    <form asp-controller="Accounts" asp-action="EditUser" method="post">
+        @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+        {
+            <div class="alert alert-success">@ViewBag.SuccessMessage</div>
+        }
+
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+        }
+
+        @Html.HiddenFor(m => m.Id)
+
+
+        <h4>التخصصات / الفئة المختصة</h4>
+        <div class="row">
+            @foreach (var role in roleLabels)
+            {
+                <div class="form-group col-md-3">
+                    <input type="checkbox" id="@role.Key" name="Roles" value="@role.Key"
+                    @(Model.Roles != null && Model.Roles.Contains(role.Key) ? "checked" : "") />
+                    <label for="@role.Key">@role.Value</label>
+                </div>
+            }
+
+        </div>
+
+        <div class="form-group" id="store-options" style="display: none;">
+            <label>المخازن المسئول عنها</label>
+            @foreach (var store in ViewBag.Stores as List<StoresDto>)
+            {
+                <div>
+                    <input type="checkbox" class="store-checkbox" name="StoreId" value="@store.StoreId"
+                    @(Model.StoreId.Contains(store.StoreId) ? "checked" : "") />
+                    <label>@store.StoreName</label>
+                </div>
+            }
+        </div>
+
+        <div class="form-group">
+            <label>الاسم الأول</label>
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+
+        </div> 
+        <div class="form-group">
+            <label>الاسم الأخير</label>
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+             
+        </div>
+
+       @*  <div class="form-group">
+            <label>رقم الهاتف</label>
+            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+             
+        </div> *@
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+        </div>
+    </form>
+</fieldset>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var storeOptions = document.getElementById("store-options");
+
+        // Define the roles that should trigger store visibility
+        var relevantRoles = ["مخزن", "خدمات شحن", "مندوب نقل داخلي"];
+
+        function toggleStoreVisibility() {
+            // Check if any of the relevant roles are checked
+            var shouldShow = relevantRoles.some(role => {
+                var checkbox = document.querySelector(`input[name="Roles"][value="${role}"]`);
+                return checkbox && checkbox.checked;
+            });
+
+            if (shouldShow) {
+                storeOptions.style.display = "block";
+            } else {
+                storeOptions.style.display = "none";
+                storeOptions.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+            }
+        }
+
+        // Attach event listeners to all role checkboxes
+        document.querySelectorAll(`input[name="Roles"]`).forEach(checkbox => {
+            checkbox.addEventListener("change", toggleStoreVisibility);
+        });
+
+        // Run the function on page load
+        toggleStoreVisibility();
+    });
+</script>
+

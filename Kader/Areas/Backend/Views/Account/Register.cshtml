@@ -1,0 +1,352 @@
+﻿@using Kader.DTOs.Stores
+@using Kader.DTOs.Users
+@model IList<AllUserViewDto>
+
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>حسابات المستخدمين</span>
+    </nav>
+</div>
+
+
+<fieldset>
+    <legend>
+        <h2 class="text-dark font-weight-bold mt-2 mb-2 mr-5 din-bold d-inline">
+            @if (string.IsNullOrEmpty(Context.Request.Query["Id"]))
+            {
+                <span>انشاء حسابات مستخدمين</span>
+            }
+            else
+            {
+                <span>تعديل فئة جملة جديد</span>
+            }
+        </h2>
+    </legend>
+
+    <form asp-controller="Accounts" asp-action="Register" method="post">
+        @if (ViewBag.SuccessMessage != null)
+        {
+            <div class="alert alert-success">
+                @ViewBag.SuccessMessage
+            </div>
+        }
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-success">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    if (error.ErrorMessage == "يجب أن يكون رقم التليفون صالحًا.")
+                    {
+                        
+                    }else
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                   
+                }
+            </div>
+        }
+
+<!-- Roles Selection -->
+ 
+    <h4> التخصصات / الفئة المختص</h4>
+    <div class="form-group float-left col-sm-12 col-md-2">
+        <!-- Admin Checkbox -->
+        <input type="checkbox" id="IsAdmin" name="Roles" value="Admin" />
+        <label for="IsAdmin"> Admin </label>
+    </div>
+    <!-- Store Manager Checkbox -->
+            <!-- Store Manager & Shipping Services - Both using StoreId -->
+    <div class="form-group float-left col-sm-12 col-md-2">
+            <input type="checkbox" id="IsStore" name="Roles" value="Store" />
+            <label for="IsStore">مسئول مخزن</label>
+    </div>
+    <div class="form-group float-left col-sm-12 col-md-2">
+        <input type="checkbox" id="ShippingRole" name="Roles" value="ShippingRole" />
+        <label for="ShippingRole">خدمات شحن</label>
+    </div>
+        <div class="form-group float-left col-sm-12 col-md-2">
+            <input type="checkbox" id="InsideShippingRole" name="Roles" value="InsideShippingRole" />
+            <label for="InsideShippingRole">مندوب نقل داخلي</label>
+        </div>
+    <div class="form-group float-left col-sm-12 col-md-2">
+    <!-- Order Management -->
+        <input type="checkbox" id="ManagOrderRole" name="Roles" value="ManagOrderRole" />
+        <label for="ManagOrderRole">ادارة طلبات  </label>
+    </div>
+    <div class="form-group float-left col-sm-12 col-md-2">
+        <input type="checkbox" id="ReportRole" name="Roles" value="ReportRole" />
+        <label for="ReportRole">تقارير  </label>
+    </div>
+    <div class="form-group float-left col-sm-12 col-md-2">
+        <input type="checkbox" id="MainRole" name="Roles" value="MainRole" />
+        <label for="MainRole">اساسيات  </label>
+    </div>
+    <div class="form-group float-left col-sm-12 col-md-2">
+        <input type="checkbox" id="OtherPagesRole" name="Roles" value="OtherPagesRole" />
+        <label for="OtherPagesRole">صفحات اخري  </label>
+    </div>
+    <div class="form-group float-left col-sm-12 col-md-2">
+        <input type="checkbox" id="ProductRole" name="Roles" value="ProductRole" />
+        <label for="ProductRole">منتجات  </label>
+    </div>
+    <div class="form-group float-left col-sm-12 col-md-2">
+        <input type="checkbox" id="CatogryRole" name="Roles" value="CatogryRole" />
+        <label for="CatogryRole"> فئات</label>
+    </div>
+        <div class="form-group float-left col-sm-12 col-md-2">
+            <input type="checkbox" id="UsersRole" name="Roles" value="UsersRole" />
+            <label for="UsersRole"> المستخدمين</label>
+        </div>
+        <div class="clearfix"></div>
+        <div class="form-group float-left ">
+        <div id="store-options" style="display: none; margin-top: 10px;">
+                <h4>المخازن المسؤول عنها</h4> @foreach (var Store in ViewBag.Stores)
+            {
+                <input type="checkbox" class="store-checkbox" name="StoreId" value="@Store.StoreId"
+                @(ViewBag.SelectedStoreIds != null && ViewBag.SelectedStoreIds.Contains(Store.StoreId) ? "checked" : "") />
+                <label for="@Store.StoreId">@Store.StoreName</label>
+                <br />
+            }
+        </div>
+    </div>
+        <div class="clearfix"></div> 
+        <div class="form-group">
+            <label> اسم الاول</label>
+            <input type="text" asp-for="FirstName" name="FirstName" class="form-control" id="FirstName" />
+        </div>
+        <div class="form-group">
+            <label> اسم الاخير</label>
+            <input type="text" asp-for="LastName" name="LastName" class="form-control" id="LastName" />
+        </div>
+        <div class="form-group">
+            <label>كود البلد</label>
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <div class="input-group">
+                    <!-- Country Code Dropdown -->
+                    <select id="countryCode" name="CountryCode" class="form-control" style="max-width: 150px;">
+                        <option value="+2">🇪🇬 +2 (مصر)</option>
+                        <option value="+966">🇸🇦 +966 (السعودية)</option>
+                        <option value="+971">🇦🇪 +971 (الإمارات)</option>
+                        <option value="+965">🇰🇼 +965 (الكويت)</option>
+                        <option value="+974">🇶🇦 +974 (قطر)</option>
+                        <option value="+968">🇴🇲 +968 (عمان)</option>
+                        <option value="+973">🇧🇭 +973 (البحرين)</option>
+                        <option value="+962">🇯🇴 +962 (الأردن)</option>
+                        <option value="+961">🇱🇧 +961 (لبنان)</option>
+                        <option value="+963">🇸🇾 +963 (سوريا)</option>
+                        <option value="+964">🇮🇶 +964 (العراق)</option>
+                        <option value="+218">🇱🇾 +218 (ليبيا)</option>
+                        <option value="+212">🇲🇦 +212 (المغرب)</option>
+                        <option value="+216">🇹🇳 +216 (تونس)</option>
+                        <option value="+213">🇩🇿 +213 (الجزائر)</option>
+                        <option value="+249">🇸🇩 +249 (السودان)</option>
+                        <option value="+222">🇲🇷 +222 (موريتانيا)</option>
+                        <option value="+967">🇾🇪 +967 (اليمن)</option>
+                        <option value="+252">🇸🇴 +252 (الصومال)</option>
+                        <option value="+1">🇺🇸 +1 (الولايات المتحدة)</option>
+                        <option value="+44">🇬🇧 +44 (المملكة المتحدة)</option>
+                        <option value="+33">🇫🇷 +33 (فرنسا)</option>
+                        <option value="+49">🇩🇪 +49 (ألمانيا)</option>
+                        <option value="+39">🇮🇹 +39 (إيطاليا)</option>
+                        <option value="+86">🇨🇳 +86 (الصين)</option>
+                        <option value="+91">🇮🇳 +91 (الهند)</option>
+                        <option value="+81">🇯🇵 +81 (اليابان)</option>
+                        <option value="+7">🇷🇺 +7 (روسيا)</option>
+                        <option value="+55">🇧🇷 +55 (البرازيل)</option>
+                        <option value="+27">🇿🇦 +27 (جنوب أفريقيا)</option>
+                        <option value="+61">🇦🇺 +61 (أستراليا)</option>
+                        <option value="+90">🇹🇷 +90 (تركيا)</option>
+                        <option value="+34">🇪🇸 +34 (إسبانيا)</option>
+                        <option value="+31">🇳🇱 +31 (هولندا)</option>
+                        <option value="+46">🇸🇪 +46 (السويد)</option>
+                        <option value="+41">🇨🇭 +41 (سويسرا)</option>
+                        <option value="+32">🇧🇪 +32 (بلجيكا)</option>
+                        <option value="+47">🇳🇴 +47 (النرويج)</option>
+                    </select>
+
+                                  </div>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label> رقم التليفون</label>
+            <input type="text" asp-for="PhoneNumber" name="PhoneNumber" class="form-control" id="PhoneNumber" />
+        </div>
+        <div class="form-group">
+            <label> اسم المستخدم</label>
+            <input type="text" asp-for="Username" name="Username" class="form-control" id="Username" />
+        </div>
+        <div class="form-group">
+            <label>كلمة السر</label>
+            <input type="text" asp-for="Password" name="Password" class="form-control" id="Password" />
+            <span style="color: burlywood; font-size: small;">يجب الايقل عن 6 ارقام او حروف</span>
+        </div>
+        @*   <input type="checkbox" name="RoleDetailDto.CanRead" value="true" />
+        <input type="checkbox" name="RoleDetailDto.CanAdd" value="true" />
+        <input type="checkbox" name="RoleDetailDto.CanUpdate" value="true" />
+        <input type="checkbox" name="RoleDetailDto.CanDelete" value="true" /> *@
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" value="">اضافة</button>
+            </div>
+        </div>
+
+    </form>
+</fieldset>@{
+    var storingStoresList = ViewBag.Stores as List<StoresDto>;
+}
+
+<fieldset>
+    <legend><h2>المستخدمين</h2></legend>
+    <div class="page-section">
+        <div class="container">
+            <table id="myTable" border="1" class="display table table-separate table-head-custom table-foot-custom">
+                <thead>
+                    <tr>
+                        <th>اسم الاول والاخير</th>
+                        <th>رقم التليفون</th>
+                        <th>اسم المستخدم</th>
+                        <th>الصلاحيات</th>
+                        <th>مخازن مسئول </th>
+                        <th></th>
+                        <th>حذف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.FirstName @item.LastName </td>
+                                <td style="direction: ltr;">@item.CountryCode @item.PhoneNumber</td>
+                                <td>@item.Username</td>
+                                <td>
+                                    @foreach (var role in item.Roles)
+                                    {
+                                        <span>@role</span>
+                                        <br />
+                                    }
+                                </td>
+
+                                <!-- 🏪 مخازن مسئول مخزن -->
+                                <td>
+                                    @if (item.UsersStoresDto != null )
+                                    {
+                                        @foreach (var store in item.UsersStoresDto)
+                                        {
+                                            <span>@store.StoreName</span>
+                                            <br />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>-</span> <!-- لا يوجد مخازن لهذا المستخدم -->
+                                    }
+                                </td>
+
+                                <td>
+                                    @Html.ActionLink("تعديل", "EditUser", new { userId = item.Id }, null)
+                                </td>
+
+                                <td>
+                                    <input type="button" value="حذف المستخدم" class="Delete btn2 btn-default" data-val="@item.Id" />
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</fieldset>
+
+
+
+<script>
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الحذف")) {
+            var requrl = "/Backend/Account/DeleteUser";
+
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+                // cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data-val') },
+                success: function (json) {
+                    console.log(json);
+                    alert(JSON.stringify(json));
+                    location.reload();
+                },
+
+                error: function (xhr, status, error) {
+                    console.log("XHR Response: " + xhr.responseText);
+                    console.log("Status: " + status);
+                    console.log("Error: " + error);
+                    alert("حدث خطأ: " + xhr.responseText);
+                }
+
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var InsideShippingRole = document.getElementById("InsideShippingRole");
+        var storeCheckbox = document.getElementById("IsStore");
+        var shippingCheckbox = document.getElementById("ShippingRole");
+        var storeOptions = document.getElementById("store-options");
+
+        function toggleVisibility() {
+            if (storeCheckbox.checked || InsideShippingRole.checked || shippingCheckbox.checked) {
+                storeOptions.style.display = "block";
+            } else {
+                storeOptions.style.display = "none";
+                storeOptions.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+            }
+        }
+        InsideShippingRole.addEventListener("change", toggleVisibility);
+        storeCheckbox.addEventListener("change", toggleVisibility);
+        shippingCheckbox.addEventListener("change", toggleVisibility);
+
+        // Restore selected roles on page load
+        let selectedRoles = @Html.Raw(Json.Serialize(ViewBag.SelectedRoles ?? new List<string>()));
+        selectedRoles.forEach(role => {
+            let checkbox = document.querySelector(`input[name='Roles'][value='${role}']`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+
+        // Ensure store options are visible if needed
+        toggleVisibility();
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let savedCountryCode = localStorage.getItem("selectedCountryCode");
+        if (savedCountryCode) {
+            document.getElementById("countryCode").value = savedCountryCode;
+        }
+
+        document.getElementById("countryCode").addEventListener("change", function () {
+            localStorage.setItem("selectedCountryCode", this.value);
+        });
+    });
+
+</script>

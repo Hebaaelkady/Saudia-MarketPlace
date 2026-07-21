@@ -1,0 +1,139 @@
+﻿@model Kader.DTOs.Product.ProductView_front
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" asp-controller="Home" asp-action="Index">الصفحة الرئيسية</a>
+                <a class="breadcrumb-item text-dark" href="#">المنتجات</a>
+                <span class="breadcrumb-item active">تفاصيل المنتج</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+@if (Model.Productsitem != null  )
+{
+    <!-- Shop Detail Start -->
+    <div class="container-fluid pb-5">
+        <div class="row px-xl-5">
+            <div class="col-lg-5 mb-30">
+                @if (Model.Productsitem.ProductImgDto.Count != 0)
+                {
+                    <div id="product-carousel" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner bg-light">
+                            @{
+                                bool isFirst = true; // Initialize a flag to identify the first iteration
+                            }
+
+                            @foreach (var item2 in Model.Productsitem.ProductImgDto)
+                            {
+                                <div class="carousel-item @(isFirst ? "active" : "")">
+                                    <img src="~/Images/@item2.ProductImgName" alt="@item2.ProductImgName" class="w-100 h-100">
+                                </div>
+                                isFirst = false; // After the first iteration, set the flag to false
+                            }
+
+                        </div><a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
+                            <i class="fa fa-2x fa-angle-left text-dark"></i>
+                        </a>
+                        <a class="carousel-control-next" href="#product-carousel" data-slide="next">
+                            <i class="fa fa-2x fa-angle-right text-dark"></i>
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <img class="w-100 h-100" src=~/assets/media/bg/notfound.jpg alt="Image">
+                }
+            </div>
+            <div class="col-lg-7 h-auto mb-30">
+                <div class="h-100 bg-light p-30">
+
+                    <h3>@Model.Productsitem.SubCatogryTitle</h3>
+                    <div class="text-primary mr-2">
+                        @{
+                            double afterDiscount3 = 0;
+                            if (Model.Productsitem.AfterDiscount != null)
+                            {
+                                double price = (double)Model.Productsitem.price;
+                                double AfterDiscount = (double)Model.Productsitem.AfterDiscount.Value;   // No need to parse, it's already a number
+                                double discountPercentage = ((price - AfterDiscount) / price) * 100;
+                                afterDiscount3 = Math.Round(discountPercentage, 2);
+                          <span>خصم </span>@afterDiscount3 <span>% </span>  }
+                        }
+                        @if (Model.Productsitem.ShippingPrice != null && Model.Productsitem.ShippingPrice == 0)
+                        {
+                            <strong for="quantity text-dark mr-3">شحن مجاني</strong>
+                        }
+                        else if (Model.Productsitem.ShippingPriceDto.Count() > 0)
+                        {
+                            var freeShippingQuantity = Model.Productsitem.ShippingPriceDto
+                            .Where(x => x.VarPrice == 0)
+                            .Select(x => x.VarQuantity)
+                            .DefaultIfEmpty(int.MaxValue)
+                            .Min(); // Get the smallest quantity that allows free shipping
+
+                            var previousQuantity = Model.Productsitem.ShippingPriceDto
+                            .Where(x => x.VarPrice > 0 && x.VarQuantity < freeShippingQuantity) // Get quantities before free shipping
+                            .Select(x => x.VarQuantity)
+                            .DefaultIfEmpty(0)
+                            .Max(); // Get the maximum quantity before free shipping starts
+
+                            if (freeShippingQuantity != int.MaxValue)
+                            {
+                                <strong for="quantity text-dark mr-3">
+                                    أضف كميات أكثر من @previousQuantity @Model.Productsitem.Unit_Name لتحصل على شحن مجاني
+                                </strong>
+                            }
+                        }
+
+                    </div>
+                    <p class="mb-4">@Model.Productsitem.Description</p>
+
+                    @Html.Partial("../Cart/_Cart", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="clear"></div>
+}
+else
+
+{
+    <div>عفوا المنتج غير متوفر</div>
+}
+
+
+<div id="addToCartPopup" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <p>تمت إضافة المنتج إلى سلة التسوق بنجاح.</p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-secondary  close" data-bs-dismiss="modal">اغلاق</a>
+                <a href="@Url.Action("ViewCart", "Cart")" class="btn btn-primary ">عرض السلة</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.close').click(function (e) {
+        e.preventDefault();
+        $('#addToCartPopup').modal('hide');
+
+    });
+    function changeImage(src) {
+        document.getElementById('mainImage').src = src;
+    }
+</script>

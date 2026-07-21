@@ -1,0 +1,763 @@
+﻿@model Kader.DTOs.ReturnOrders.ReturnOrdersDetailsDto
+@using Kader.Infrastructure.Shared;
+@using Kader.Infrastructure.Shared.Implementations;
+@using Kader.Infrastructure.Shared.Interfaces;
+@using System.Text.Json
+ 
+@{
+    IKeys _keys = new Keys();
+}
+ 
+<h3>رقم طلب الارتجاع # @Model.ReturnsOrderId</h3>
+<div class="dir"> تاريخ الطلب: @Model.InsertDate</div>
+
+<h3>رقم طلب الاصلي # @Model.Idorders</h3>
+<br />
+@if (ViewBag.IsAdmin == 1)
+{
+
+
+    @if (Model.StatusId == _keys.AssignToStore() ||  Model.StoreID != 0)
+    {
+        <h2 style="color:darkgoldenrod">تم تخصيص الطلب الي مخزن - @Model.StoreName</h2>
+    }
+    else if (Model.StatusId == _keys.newTiket())
+    {
+        <form id="AssignTostore" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="Idorders" name="Idorders" value="@Model.ReturnsOrderId" required />
+            <div class="form-group">
+                <label for="StoreId">اختر المخزن</label>
+                <select id="StoreId" name="StoreId" class="form-control" required>
+                    <option value="">اختر المخزن</option>
+                    @foreach (var store in ViewBag.Stores)
+                    {
+                        <option value="@store.StoreId">@store.StoreName</option>
+                    }
+                </select>
+                <button type="submit" class="btn btn-primary">تعيين المخزن</button>
+            </div>
+        </form>
+    }   }
+
+    <form id="processShipmentForm">
+@if(Model!=null)
+        {
+         if (@Model.ShippingotoId == null)
+        {
+            <input type="hidden" id="orderId" name="orderId" value="@Model.Idorders" required />
+
+            <input type="hidden" id="ReturnsOrderId" name="ReturnsOrderId" value="@Model.ReturnsOrderId" required />
+            <input type="hidden" id="orderDate" name="orderDate" value="@Model.InsertDate" required />
+            <input type="hidden" id="amount" name="amount" value="@Model.TotalPrice" required />
+            <input type="hidden" id="shippingAmount" name="shippingAmount" value="@Model.TotalTransportShippPrice" required />
+        }
+        <table class="table" border="1" style="width:90%">
+            <tr><th>
+                اسم العميل
+            </th>
+                <td>
+                    <div id="CustomerName">@Model.FirstName @Model.LastName</div>
+                </td>
+            </tr>
+            <tr>
+                <th> رقم التليفون
+                </th>
+                <td>
+                    <div id="mobile">  @Model.UserName</div>
+                </td>
+            </tr>
+        </table>
+        @if (Model.ReturnsOrderItemsDetail.Any())
+        {                
+            <fieldset>
+                <legend>مرتجعات العميل</legend>
+            <div class="box" style="margin-top:10px">
+                    <table border="1" class="table-items" style="width:100%">
+                    <thead>
+                        <tr>
+                                <th width="25%">اسم المنتج </th>
+                                <th width="15%">كود المنتج </th>
+                                <th width="15%">السعر </th>
+                                <th width="15%">سعر الشحن </th>
+                                <th width="15%">الكميّة </th>
+                                <th width="15%">الإجمالي </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            @for (int i = 0; i < Model.ReturnsOrderItemsDetail.Count; i++)
+                        {
+                                var item = Model.ReturnsOrderItemsDetail[i];
+                            <tr id="row-@item.ProductId" data-product-id="@item.ProductId">
+                                <td >
+                                    <div>
+                                        <input type="text" style="border:none" readonly name="Itemslist[@i].SubCatogryTitle" class="no-border-input SubCatogryTitle-@item.ProductId" value="@item.ProductName" />
+                                    </div>
+                                   @*  <div>@item.Colornme</div> *@
+                                </td>
+                                    <td  >
+                                        <input type="text" style="border:none" readonly name="Itemslist[@i].sku" class="no-border-input sku-@item.ProductId" value="@item.sku" />
+                                    </td>
+                                    <td class="price" >
+                                        <input type="text" style="border:none"  readonly name="Itemslist[@i].PriceItem" class="no-border-input price-@item.ProductId" value="@item.PriceItem" />
+                                    </td>
+                                    <td  >
+                                        <input type="text" style="border:none" readonly name="Itemslist[@i].ShippingPrice" class="no-border-input ShippingPrice-@item.ProductId" value="@item.ShippingPrice" />
+                                    </td>
+                                    <td >
+                                        <input type="text" style="border:none;    width: 70%;" name="Itemslist[@i].Quantity" readonly class="no-border-input Quantity quantity-@item.ProductId" value="@item.Quantity">@item.unit
+                                </td>
+                                    <td >
+                                    <span class="item-total" id="item-total-@item.ProductId"></span>
+                                </td>
+                            </tr>
+                            <script>
+                                $(document).ready(function () { 
+                                     function updateItemTotal(productId) {
+                                         var price = parseInt($('#row-' + productId).find('.price-' + productId).val(), 10);
+                                             var ShippingPrice = parseInt($('#row-' + productId).find('.ShippingPrice-' + productId).val(), 10);
+                                            var quantity = parseInt($('#row-' + productId).find('.quantity-' + productId).val(), 10);
+                                            if (!isNaN(price) && !isNaN(quantity)) {
+                                                var itemTotal = (price * quantity) + ShippingPrice;
+                                                $('#item-total-' + productId).text(itemTotal.toFixed(2));
+                                            }
+                                    }
+
+                                    function updateTotalOrderCost() {
+                                        var totalItemsCost = parseFloat($('#cartTotal').text()) || 0;
+                                        var totalTransportCost = parseFloat($('#totalTransportCost').text()) || 0;
+                                        var totalOrderCost = totalItemsCost + totalTransportCost;
+                                        $('#totalOrderCost').text(totalOrderCost.toFixed(2));
+                                    }
+                                    updateItemTotal(@item.ProductId);
+                                    updateTotalOrderCost();
+
+                                });
+                            </script>
+                        }
+                    </tbody>
+                </table>
+               @*  <div>
+                    <div>
+                        اجمالي قيمة المشتريات:  <span id="cartTotal">@Model.TotalPrice</span><span>ر.س</span>
+
+                    </div>
+                    <div>اجمالي قيمة الشحن :  <span id="totalTransportCost">@Model.TotalTransportShippPrice</span><span>ر.س</span></div>
+                        <div>إجمالي الطلب :  <span id="totalOrderCost">0.00</span><span>ر.س</span></div>
+                </div> *@
+            </div>
+            </fieldset>
+        }
+
+    @if (Model.AddressDto != null)
+    {
+        <fieldset><legend>بيانات عنوان العميل</legend>
+        <div class="box">
+            
+            <br />
+            <input type="hidden" name="AddressId" value="@Model.AddressDto.AddressId" />
+             
+                <table border="1" class="table CusomerInfo" style="width:90%">
+                <tr>
+                    <th>  المدينة</th>
+                    <th>  الحي</th>
+                    <th>العنوان</th>
+                    <th>رقم المبني</th>
+                    <th>تليفون اخر</th>
+                    <th>وقت التوصيل المناسب</th>
+                </tr>
+                <tr>
+                    <td>
+                        @Model.AddressDto.CityName
+                    </td>
+                    <td>
+                        @Model.AddressDto.Name
+                    </td>
+                    <td> @Model.AddressDto.AddressStreet</td>
+                    <td> @Model.AddressDto.BuildingNo</td>
+                    <td>
+                        @Model.AddressDto.SecondryPhone
+                    </td>
+                    <td>
+                        @if (Model.AddressDto.ShiftDelivary == _keys.MorningShift())
+                        {
+                            <span>@_keys.MorningShiftText() </span>
+                        }
+                        else if (Model.AddressDto.ShiftDelivary == _keys.NightShift())
+                        {
+                            <span>@_keys.NightShiftText() </span>
+                        }
+                    </td>
+                </tr>
+            </table>
+            <br />
+        </div>
+        </fieldset>
+    }
+    <fieldset>
+        <legend>حالات طلب الارتجاع</legend>
+            
+    @if (Model.OrderStatusw != null)
+    {
+        <div class="box">
+                    <table border="1" class="table table-responsive" style="width:90%">
+                        <tr>
+                            <th> الحالة</th>
+                            <th> التاريخ</th>
+                            <th> مدة التنفيذ</th>
+                        </tr>
+                        <tr>
+                            <td>تم التسجيل</td>
+                            <td>@Model.InsertDate</td>
+                            <td>-</td>
+                        </tr>
+                        @if (Model.OrderStatusw != null && Model.OrderStatusw.Any())
+                        {
+                            DateTime? previousDate = Model.InsertDate; // Store the previous date
+
+                            foreach (var t in Model.OrderStatusw.OrderBy(g => g.CreatedDate))
+                            {
+                                <tr>
+                                    <td>
+                                        @switch (t.StatusId)
+                                        {
+                                            case 1:
+                                                <span>تم التسجيل</span>
+                                                ; break;
+                                            case 2:
+                                                <span>تم الالغاء</span>
+                                                ; break;
+                                            case 3:
+                                                <span>قيد الفحص</span>
+                                                ; break;
+                                            case 4:
+                                                <span>تم الارسال لشركة الشحن</span>
+                                                ; break;
+                                            case 5:
+                                                <span>تسليم نهائي</span>
+                                                ; break;
+                                            case 6:
+                                                <span>ارتجاع</span>
+                                                ; break;
+                                            case 10:
+                                                <span>تم ارتجاع الفلوس للعميل</span>
+                                                ; break;
+                                            case 11:
+                                                <span>تحت الطلب من غير دفع</span>
+                                                ; break;
+                                            case 12:
+                                                <span>تم تحويلها للمخزن - @Model.StoreName</span>
+                                                ; break;
+                                            case 13:
+                                                <span>تم تحويلها لمسؤول الشحن في المخزن</span>
+                                                ; break;
+                                            case 17:
+                                                <span>ارتجاع من خلال العميل</span>
+                                                ; break;
+                                            case 15:
+                                                <span>تم التسليم للعميل من مندوب الشحن الداخلي</span>
+                                                ; break;
+                                                <span>
+                                                    @if (!string.IsNullOrEmpty(t.Comment))
+                                                    {
+                                                        <span>-تعليق</span>    @t.Comment
+                                                    }
+                                            </span>
+                                            case 16:
+                                                <span>عدم التسليم للعميل من مندوب الشحن الداخلي</span>
+                                                <span>
+                                                    @if (!string.IsNullOrEmpty(t.Comment))
+                                                    {
+                                                        <span>-تعليق</span>    @t.Comment
+                                                    }
+                                                </span>
+                                       ; break;
+                                           
+                                        }
+                                    </td>
+                                    <td>@t.CreatedDate</td>
+                                    <td>
+
+                                        @if (previousDate != null)
+                                        {
+                                            var timeDiff = t.CreatedDate - previousDate;
+                                            @timeDiff?.ToString(@"dd\:hh\:mm\:ss")
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+                                    </td>
+                                </tr>
+                                previousDate = t.CreatedDate; // Update previous date
+                            }
+                        }
+                    </table>
+            
+            <br />
+        </div>
+    }
+            
+            @if (@Model.StatusId == 4 || Model.StatusId == 5)
+    {
+           @*  <table class="table" border="1" style="width:90%">
+        <tr><th colspan="2">تفاصيل شركة الشحن</th> </tr>
+        <tr><th>شركة الشحن </th><td>@Model.ApiShippingorderStatus.deliveryCompany</td></tr>
+        <tr><th>حالة الشحن </th><td>@Model.ApiShippingorderStatus.status</td></tr>
+        <tr><th>رقم الشحن </th><td>@Model.ApiShippingorderStatus.shipmentId</td></tr>
+        </table>     *@
+    }
+        </fieldset>
+        
+        <fieldset>
+            <legend>رفض /قبول طلب الارتجاع</legend>
+            @if (@Model.StatusId != 4 && Model.StatusId != 5 && Model.StatusId != 2 && Model.StatusId != 17 && Model.StatusId != 10 && Model.StatusOrderId != 15)
+            {
+                <div class="wrap-input100 validate-input">
+
+                    <span class="label-input100">رفض طلب الارتجاع</span>
+                    <input type="radio" id="reject" name="AcceptReject" value="0" />
+
+                    <span class="label-input100">قبول طلب الارتجاع</span>
+                    <input type="radio" id="accept" name="AcceptReject" value="1" />
+
+                </div>
+                <div class="wrap-input100 validate-input">
+                    <span class="label-input100">اضافة تعليق</span>
+
+                    <textarea id="comment" style="width:100%"></textarea>
+                </div>
+                <div id="shipmentResult1"></div>
+                <div class="btnshow">
+                    <button type="button" onclick="submitDeliveryOption()">حفظ </button>
+                </div>
+            }
+
+            @if (@Model.StatusId != 4 && Model.StatusId != 5 && Model.StatusId != 2 && Model.StatusId != 17 && Model.StatusId != 10 && Model.StatusOrderId == 15)
+            {
+                <div class="wrap-input100 validate-input">
+
+                    <span class="label-input100">رفض طلب الارتجاع</span>
+                    <input type="radio" id="reject1" name="AcceptReject" value="0" />
+
+                    <span class="label-input100">قبول طلب الارتجاع</span>
+                    <input type="radio" id="accept1" name="AcceptReject" value="1" />
+
+                </div>
+                <div class="wrap-input100 validate-input">
+                    <span class="label-input100">اضافة تعليق</span>
+
+                    <textarea id="comment1" style="width:100%"></textarea>
+                </div> 
+                <div >
+                    <button type="button" onclick="submitDeliveryOption1()">حفظ </button>
+                </div>
+            }
+
+        </fieldset>
+    <div class="hideDiv" >
+            @if (@Model.StatusId != 4 && Model.StatusId != 5 && Model.StatusId != 2 && Model.StatusId != 17&& Model.StatusOrderId != 15)
+        {
+            
+            <fieldset><legend>معرفة تكلفة خدمة الشحن</legend>
+
+                <table class="table" border="1" style="width:90%">
+                    <tr>
+                        <th>وزن الشحنة(تقريبي(</th>
+                        <td><input type="number" name="weight" id="weight" /></td></tr>
+                    <tr>
+                        <th>اختار المخزن</th>
+                        <td>
+                            <select id="pickupLocationsDropdown" class="form-control" name="originCity">
+                                <option value="">اختار المخزن</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input type="hidden" name="destinationCity" id="destinationCity" value="@Model.AddressDto.CityName" />
+                            <button type="button" onclick="checkOTODeliveryFee()">فحص تكلفة الشحن</button>
+                        </td>
+                    </tr>
+                </table>
+
+                <div id="otoFeeResult" style="margin-top: 20px;">
+                </div>
+            </fieldset> 
+            <div id="shipmentResult"></div>
+             
+
+        }
+    </div>
+    }
+
+</form>
+
+
+<script>
+    async function checkOTODeliveryFee() {
+        // Get inputs
+        const destinationCity = $("#pickupLocationsDropdown option:selected").attr("data1");
+        const originCityCode = $("#destinationCity").val();
+        const weightInput = $("#weight").val();
+
+        // Validate inputs
+        if (!originCityCode) {
+            alert("من فضلك قم باختيار المخزن.");
+            return; // Stop further execution
+        }
+        if (!destinationCity) {
+            alert("المدينة او العنوان غير صحيح."); // Alert if destinationCity is missing
+            return; // Stop further execution
+        }
+        if (!weightInput || isNaN(weightInput) || parseFloat(weightInput) <= 0) {
+            alert("من فضلك ادخل وزن الشحنة");
+            return; // Stop further execution
+        }
+
+        // Prepare request payload
+        const request = {
+            originCity: originCityCode,
+            destinationCity: destinationCity,
+            weight: parseFloat(weightInput),
+        };
+
+        try {
+            // Make API call
+            const response = await fetch("/Backend/Orders/CheckOTODeliveryFee", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(request),
+            });
+             
+            const data = await response.json();
+
+            if (response.ok && data.success && data.deliveryCompany.length > 0) {
+                let resultHtml = `<h3>الشركات المتاحة:</h3><form id="deliveryOptionsForm"><table class=table border=1 width=100%><tr><th></th><th>اسم الشركة</th><th>السعر</th><th>وقت الاستلام</th><th>اكبر كمية شحن مجانية</th><th>متوسط ​​وقت التسليم</th><th>رسوم الإرجاع</th></tr>`;
+                data.deliveryCompany.forEach((company, index) => {
+                    resultHtml += `
+                            <tr>
+                                <td><input type="radio" name="selectedDelivery" id="deliveryOption-${index}" value="${company.deliveryOptionId}"></td>
+                                <td for="deliveryOption-${index}">
+                                    <strong>${company.deliveryCompanyName}</strong>
+                                </td>
+                                <td>${company.price}</td>
+                                <td>${company.pickupCutOffTime}</td>
+                                <td>${company.maxFreeWeight}kg</td>
+                                    <td style= direction: ltr;>${company.avgDeliveryTime}</td>
+                                <td>${company.returnFee}</td>
+                            </tr>
+                        `;
+                });
+                resultHtml += `</table></form>`;
+                document.getElementById("otoFeeResult").innerHTML = resultHtml;
+                if ($("#processShipmentForm #btn").length === 0) {
+                    $("#processShipmentForm").append(
+                        '<button type="button" id="btn" onclick="submitDeliveryOption()">ارسال الشحنة</button>'
+                    );
+                }
+            } else {
+                document.getElementById("otoFeeResult").innerHTML = `
+                    <p>Error: ${data.errorMessage || "لايوجد شركات شحن متاحة"}</p>
+                `;
+            }
+        } catch (error) {
+            // Handle exceptions
+            console.error("Error checking OTO delivery fee:", error);
+            document.getElementById("otoFeeResult").innerHTML = `
+                <p>حدث خطا</p>
+            `;
+        }
+    }
+    $(".hideDiv").hide();  
+    var selectedValue;var statusId = @Model.StatusOrderId;
+    $("input[name='AcceptReject']").change(function () {
+          selectedValue = $("input[name='AcceptReject']:checked").val();
+         
+        if (selectedValue === "0") {
+            $(".hideDiv").hide();
+            
+            $(".btnshow").show();
+           // console.log("طلب الارتجاع مرفوض");
+        } else if (selectedValue === "1") {
+            $(".hideDiv").show(); if (statusId === 15) {
+                $(".btnshow").show();
+            } else {
+                $(".btnshow").hide();
+            }
+            // console.log("طلب الارتجاع مقبول");
+        }
+    });
+    function submitDeliveryOption() {
+    
+        const $form = $("#processShipmentForm");
+        const formData = new FormData($form[0]);
+        
+       
+        if (!selectedValue) {
+            alert("من فضلك اختار طلب الارتجاع مقبول او مرفوض");
+            return;
+        }
+        let createReturnShipment=null; let UpdateOrderStatus=null;
+        if (selectedValue==1&&statusId!=15) {
+            const deliveryOptionId = $('input[name="selectedDelivery"]:checked').val();
+
+            const pickupLocationCode = $("#pickupLocationsDropdown option:selected").val();
+            if (!deliveryOptionId) {
+                alert("من فضلك اختار شركة الشحن");
+                return;
+            }
+            
+            if (!pickupLocationCode&&statusId!=15) {
+                alert("من فضلك اختار المخزن");
+                return;
+            }
+            var itemsData = [];
+            $(".table-items tr").not(":first").each(function () {
+                var productId = $(this).data("product-id");
+                var sku = parseInt($(this).find(`.sku-${productId}`).val(), 10);
+                var quantity = $(this).find(`.quantity-${productId}`).val();
+                itemsData.push({
+                    quantity: quantity,
+                    sku: sku
+                });
+            });
+            
+              createReturnShipment = {
+                orderId: $("#orderId").val(),
+                pickupLocationCode: pickupLocationCode,
+                deliveryOptionId: deliveryOptionId,
+                items: itemsData
+            };
+
+              UpdateOrderStatus = {
+                orderIds:  [$("#orderId").val()],
+                status: "returned",
+                description: $("#comment").val()
+            };
+        }
+       
+        
+
+
+        var ReturnsOrderId = parseInt($("#ReturnsOrderId").val(), 10);
+
+        var AcceptReject = selectedValue;
+        var comment = $("#comment").val();
+
+        const AcceptReturnsOrdersDto = {
+            ReturnsOrderId: ReturnsOrderId,
+            comment: comment,
+               // status:2
+            };
+        let createOrderDto = null;
+        // Collect Order Data
+        if (selectedValue == 1) {
+             createOrderDto = {
+                createReturnShipment: createReturnShipment,
+                UpdateOrderStatus: UpdateOrderStatus,
+                AcceptReturnsOrdersDto: AcceptReturnsOrdersDto,
+                AcceptReject: true
+            };
+        }
+        else{
+            createOrderDto = {
+                createReturnShipment: null,
+                UpdateOrderStatus: null,
+                AcceptReturnsOrdersDto: AcceptReturnsOrdersDto,
+                AcceptReject: false
+            };
+        }
+        if (createOrderDto != null) {
+            $.ajax({
+                url: "/Backend/ReturnOrders/ProcessShipment",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(createOrderDto),
+                success: function (result) {
+                    if (result.message == "مرفوض") {
+                        $("#shipmentResult1").html(`
+                        <p style="color: orange;">تم الحفظ</p>
+                    `);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                   }
+                    else if (result && result.message) {
+
+                        $("#shipmentResult").html(`
+ 
+                    `); setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        $("#shipmentResult").html(`
+                    <p style="color: orange;">يوجد مشكلة اثناء عملية الشحن</p>
+                `);
+                    }
+                },
+                error: function (xhr, status, error) {
+               
+                    const errorMessage = "حدث خطا";
+                    $("#shipmentResult").html(`
+                <p style="color: red;">  ${errorMessage}</p>
+            `);
+                     
+                },
+            });
+        } else {
+            alert("من فضلك اختار البيانات اولا");
+        }
+    }
+    function submitDeliveryOption1() {
+
+        const $form = $("#processShipmentForm");
+        const formData = new FormData($form[0]);
+
+
+        if (!selectedValue) {
+            alert("من فضلك اختار طلب الارتجاع مقبول او مرفوض");
+            return;
+        }
+        let createReturnShipment=null; let UpdateOrderStatus=null;
+       
+
+
+
+        var ReturnsOrderId = parseInt($("#ReturnsOrderId").val(), 10);
+
+        var AcceptReject = selectedValue;
+        var comment = $("#comment1").val();
+
+        const AcceptReturnsOrdersDto = {
+            ReturnsOrderId: ReturnsOrderId,
+            comment: comment,
+               // status:2
+            };
+        let createOrderDto = null;
+        // Collect Order Data
+        if (selectedValue == 1) {
+             createOrderDto = { 
+                AcceptReturnsOrdersDto: AcceptReturnsOrdersDto,
+                AcceptReject: true
+            };
+        }
+        else{
+            createOrderDto = { 
+                AcceptReturnsOrdersDto: AcceptReturnsOrdersDto,
+                AcceptReject: false
+            };
+        }
+        if (createOrderDto != null) {
+            $.ajax({
+                url: "/Backend/ReturnOrders/ProcessShipment1",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(createOrderDto),
+                success: function (result) {
+                    if (result.message == "تم") {
+                        $("#shipmentResult1").html(`
+                        <p style="color: orange;">تم الحفظ</p>
+                    `);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                   }
+                    else if (result && result.message) {
+
+                        $("#shipmentResult").html(`
+
+                    `); setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        $("#shipmentResult").html(`
+                    <p style="color: orange;">يوجد مشكلة اثناء عملية الشحن</p>
+                `);
+                    }
+                },
+                error: function (xhr, status, error) {
+
+                    const errorMessage = "حدث خطا";
+                    $("#shipmentResult").html(`
+                <p style="color: red;">  ${errorMessage}</p>
+            `);
+
+                },
+            });
+        } else {
+            alert("من فضلك اختار البيانات اولا");
+        }
+    }
+
+
+
+
+    $("#btn").on("click", function () {
+        
+
+        // Send data to the server for processing
+    
+    });
+</script>
+
+
+<script>
+    async function loadPickupLocations() {
+        try {
+            const response = await fetch("/Backend/orders/GetPickupLocations");
+            const data = await response.json();
+
+            if (response.ok) {
+                const dropdown = document.getElementById("pickupLocationsDropdown");
+                dropdown.innerHTML = '<option value="">اختار المخزن</option>';
+
+                const locations = [...data.warehouses, ...data.branches];
+                locations.forEach((location) => {
+                    const option = document.createElement("option");
+                    option.value = location.code;
+                    option.setAttribute("data1", location.city);
+                    option.textContent = `${location.name} - ${location.city}`;
+                    dropdown.appendChild(option);
+                });
+            } else {
+                console.error("Error:", data.error);
+            }
+        } catch (error) {
+            console.error("Error fetching pickup locations:", error);
+        }
+    }
+
+    // Call this function when the page loads
+    loadPickupLocations();
+    $(document).ready(function () {
+        $("#AssignTostore").submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '@Url.Action("AssignToStore", "ReturnOrders")',
+                type: 'POST',
+                processData: false,  // Prevent jQuery from processing data
+                contentType: false,  // Let the browser set the Content-Type
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert("خطأ: " + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                    alert("حدث خطأ غير متوقع: " + error);
+                }
+            });
+        });
+    });
+
+</script>

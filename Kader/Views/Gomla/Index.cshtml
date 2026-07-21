@@ -1,0 +1,429 @@
+﻿@model Kader.DTOs.Product.ProductView_front
+ 
+@if (ViewBag.id!=null)
+{
+    <input type="hidden" id="id" value="@ViewBag.id" name="id" />
+}
+else
+{
+    <input type="hidden" id="id" value="0" name="id" />
+}
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" asp-controller="Home" asp-action="Index">الصفحة الرئيسية</a>
+                <a class="breadcrumb-item text-dark" href="#">تسوق  </a>
+                <span class="breadcrumb-item active">المنتجات الجملة</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+
+<div id="loadingIcon"  >
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+</div>
+ 
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        @if ( Model.ApiCatogryDto.Count != 0)
+    {
+<!-- Shop Sidebar Start -->
+            <div class="col-lg-3 col-md-4">
+                <!-- Price Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">تصفية حسب الصنف</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    <form>
+                           
+                @foreach (var item in Model.ApiCatogryDto)
+                {
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+
+                                <input type="checkbox" value="@item.id" id="@item.id" name="@item.id" class="check custom-control-input" />
+                                <label class="custom-control-label" for="price-1">@item.nameTy </label>
+                                <span class="badge border font-weight-normal">@Model.Products.Where(x => x.catID == item.id).Count()</span>
+                        
+                            </div>
+                    }
+                    </form>
+                </div>
+            </div>
+
+            <!-- Shop Product Start -->
+            <div class="col-lg-9 col-md-8">
+                <div class="row pb-3">
+                    <div class="col-12 pb-1">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div>
+                                <button class="btn btn-sm btn-light"><i class="fa fa-th-large"></i></button>
+                                <button class="btn btn-sm btn-light ml-2"><i class="fa fa-bars"></i></button>
+                            </div>
+                            <div class="ml-2">
+                                <div class="btn-group">
+                                    <div class="btn btn-sm btn-light ml-2">
+                                        <a href="#" class="sort-link" data-sort="price_asc">
+                                            السعر من الأقل للأعلى
+                                        </a>
+                                    </div>
+
+                                    <div class="btn btn-sm btn-light ml-2">
+                                        <a href="#" class="sort-link" data-sort="price_desc">
+                                            السعر من الأعلى للأقل
+                                        </a>
+                                    </div>
+
+                                    <div class="btn btn-sm btn-light ml-2">
+                                        <a href="#" class="sort-link" data-sort="title_asc">ابجديا تصاعدي</a>
+                                    </div>
+
+                                    <div class="btn btn-sm btn-light ml-2">
+                                        <a href="#" class="sort-link" data-sort="title_desc">ابجديا تنازلي</a>
+
+
+                                    </div>
+                                </div>
+                            
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row pb-3 " id="productContainer" style="display:contents">
+                    </div>
+                    <div class="col-12">
+                        <nav class="nav">
+                            <ul class="pagination justify-content-center">
+                                </ul></nav></div>
+            </div>
+            </div>
+            <div class="clear"></div>
+        
+            <div id="addToCartPopup" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <div class="modal-body">
+                            <p>تمت إضافة المنتج إلى سلة التسوق بنجاح.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="btn btn-secondary close" data-bs-dismiss="modal">اغلاق</a> <a href="@Url.Action("ViewCart", "Cart")" class="btn btn-primary ">عرض السلة</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    }
+</div>
+
+</div>
+       
+
+
+<script>
+    $('.close').click(function (e) {
+        e.preventDefault();
+        $('#addToCartPopup').modal('hide');
+         
+    });
+
+    $(document).ready(function () {
+
+        $('.check').on('change', function () {
+            var selectedCategories = [];
+            $('.check:checked').each(function () {
+                selectedCategories.push($(this).val());
+            });
+            var result = selectedCategories.join(',');
+            
+            loadProducts(1, result);
+        });
+
+        loadProducts(1, null);
+        $('.sort-link').click(function (e) {
+            e.preventDefault();
+            var sortOrder = $(this).data('sort');
+
+            var nodeIds = $('#treeview').jstree('get_checked', null, true);
+            if (nodeIds.length > 0) {
+                nodeIds = nodeIds.join(','); // Join into comma-separated string
+            } else {
+                // If no nodes are checked, set nodeIds to null
+                nodeIds = null;
+            }
+
+            // Reload products with the new sort order and selected nodeIds
+            loadProducts(1, nodeIds, sortOrder);
+        });
+
+        function loadProducts(page = 1, nodeIds = null, sortOrder = null) {
+            var currentSortOrder = '@Model.SortOrder';
+            var currentPage = 1;
+            $('#loadingIcon').show();
+            $.ajax({
+                url: '@Url.Action("GetProductsByCategory")', // Adjust the route
+                type: 'GET',
+                data: { categoryId3: nodeIds, sortOrder: sortOrder, page: page, id: $('#id').val() },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.loading) {
+                        $('#loadingIcon').show();
+                    } else
+                        if (response.success) {
+                            $('#loadingIcon').hide();
+                        var productContainer = $('#productContainer');
+                        productContainer.empty();
+                    }
+
+                    var productContainer = $('#productContainer');
+                  @*   var productCard1 = $('<div>').addClass('card1');
+                    productContainer.append(productCard1); *@
+
+                        response.products.forEach(function (productData) {
+                            // Create the product item container
+                            var productItem = $('<div>').addClass('col-lg-4 col-md-6 col-sm-6 pb-1');
+                            var productCard = $('<div>').addClass('product-item product-item-height bg-light mb-4');
+
+                            // Create the product image container
+                            var productImgContainer = $('<div>').addClass('product-img position-relative overflow-hidden');
+
+                            // Add discount label if AfterDiscount is not 0 or null
+                            if (productData.afterDiscount && productData.afterDiscount !== 0) {
+                                let discountPercentage = ((productData.price - productData.afterDiscount) / productData.price) * 100;
+                                discountPercentage = discountPercentage; // Format to 2 decimal places
+
+                                var discountLabel = $('<div>').addClass('labels').html(`
+            <span class="pro-label off">
+                خصم ${discountPercentage}<span>%</span>
+            </span>
+        `);
+
+                               
+                                productImgContainer.append(discountLabel);
+                            }
+
+                            // Create and append the product image
+                            var productImg = $('<img>')
+                                .attr(
+                                    'src',
+                                    productData.image != null
+                                        ? '@Url.Content("~/Images/")' + productData.image
+                                        : '@Url.Content("~/assets/media/bg/notfound.jpg")'
+                                )
+                                .addClass('img-fluid w-100');
+                            productImgContainer.append(productImg);
+
+                            // Add product action buttons under the image
+                            var productAction = $('<div>').addClass('product-action');
+                            productAction.append('<a class="btn btn-outline-dark btn-square" href="../Gomla/Details/' + productData.productId + '"><i class="fa fa-shopping-cart"></i></a>');
+                            productAction.append('<a class="btn btn-outline-dark btn-square" href="../Gomla/Details/' + productData.productId + '"><i class="fa fa-search"></i></a>');
+
+                            // Append product action to the image container
+                            productImgContainer.append(productAction);
+
+                            // Append the image container to the product card
+                            productCard.append(productImgContainer);
+
+                            // Add card body with title and additional details
+                            var productCardBody = $('<div>').addClass('text-center py-4');
+
+                            // Add product title as a link
+                            var productTitle = $('<a>')
+                                .addClass('h6 text-decoration-none text-truncate')
+                                .attr('href', '../Gomla/Details/' + productData.productId)
+                                .text(productData.subCatogryTitle);
+                            productCardBody.append(productTitle);
+                            var productTitle1 = $('<p>')
+                                .addClass('text-decoration-none text-truncate')
+                                .css('width', '260px')
+                                .css('margin', 'auto')
+                                .text(productData.description ? productData.description : ' ');
+
+                            productCardBody.append(productTitle1);
+
+                            // Append card body to the product card
+                            productCard.append(productCardBody);
+
+                            // Append the product card to the product item container
+                            productItem.append(productCard);
+
+                            // Append the product item to the parent container
+                            $('#searchResultsContainer').append(productItem);
+                        
+
+                        $.ajax({
+                            url: '/Cart/LoadCartPartial',
+                            type: 'GET',
+                            data: {
+                                ProductId: productData.productId, p_id: productData.p_id,
+                                price: productData.price,
+                                AfterDiscount: productData.afterDiscount,
+                                stock: productData.stock,
+                                SubCatogryTitle: productData.SubCatogryTitle,
+                                MinQuantityToShipJomla: productData.minQuantityToShipJomla
+                            },
+                            success: function (data) {
+                                var cartPartial = $('<div>').html(data);
+                                productCardBody.append(cartPartial);
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error loading partial view: " + error);
+                            }
+                        });
+
+                        productContainer.append(productItem);
+                    });
+                    $('.nav').empty();
+
+                    // Add pagination controls
+                    var pagination = $('.nav');
+                    var paginationControls = $('<ul>').addClass('pagination justify-content-center');
+
+                    // Determine the range of pages to display
+                    var pagesToShow = 15; // Number of pages to display at a time
+                    var startPage = Math.max(1, response.currentPage - Math.floor(pagesToShow / 2));
+                    var endPage = Math.min(startPage + pagesToShow - 1, response.totalPages);
+
+                    // Adjust startPage if near the end
+                    if (endPage - startPage + 1 < pagesToShow) {
+                        startPage = Math.max(1, endPage - pagesToShow + 1);
+                    }
+
+                    // Add "Previous" button
+                    var previousButton = $('<li>')
+                        .addClass('page-item')
+                        .toggleClass('disabled', response.currentPage === 1) // Disable if on the first page
+                        .append(
+                            $('<a>')
+                                .addClass('page-link')
+                                .attr('href', '#')
+                                .text('السابق')
+                                .on('click', function (e) {
+                                    e.preventDefault();
+                                    if (response.currentPage > 1) {
+                                        loadProducts(response.currentPage - 1, nodeIds, sortOrder); // Load previous page
+                                    }
+                                })
+                        );
+                    paginationControls.append(previousButton);
+
+                    // Add "First" button if not on the first page range
+                    if (startPage > 1) {
+                        var firstPageButton = $('<li>')
+                            .addClass('page-item')
+                            .append(
+                                $('<a>')
+                                    .addClass('page-link')
+                                    .attr('href', '#')
+                                    .text('1')
+                                    .on('click', function (e) {
+                                        e.preventDefault();
+                                        loadProducts(1, nodeIds, sortOrder); // Load first page
+                                    })
+                            );
+                        paginationControls.append(firstPageButton);
+
+                        // Add ellipsis after "First" button
+                        paginationControls.append(
+                            $('<li>').addClass('page-item disabled').append(
+                                $('<span>').addClass('page-link').text('...')
+                            )
+                        );
+                    }
+
+                    // Add page numbers dynamically
+                    for (var i = startPage; i <= endPage; i++) {
+                        var pageItem = $('<li>')
+                            .addClass('page-item')
+                            .toggleClass('active', i === response.currentPage); // Highlight the current page
+
+                        var pageLink = $('<a>')
+                            .addClass('page-link')
+                            .attr('href', '#')
+                            .text(i)
+                            .on('click', function (e) {
+                                e.preventDefault();
+                                loadProducts(parseInt($(this).text(), 10), nodeIds, sortOrder); // Load selected page
+                            });
+
+                        pageItem.append(pageLink);
+                        paginationControls.append(pageItem);
+                    }
+
+                    // Add "Last" button if not on the last page range
+                    if (endPage < response.totalPages) {
+                        // Add ellipsis before "Last" button
+                        paginationControls.append(
+                            $('<li>').addClass('page-item disabled').append(
+                                $('<span>').addClass('page-link').text('...')
+                            )
+                        );
+
+                        var lastPageButton = $('<li>')
+                            .addClass('page-item')
+                            .append(
+                                $('<a>')
+                                    .addClass('page-link')
+                                    .attr('href', '#')
+                                    .text(response.totalPages)
+                                    .on('click', function (e) {
+                                        e.preventDefault();
+                                        loadProducts(response.totalPages, nodeIds, sortOrder); // Load last page
+                                    })
+                            );
+                        paginationControls.append(lastPageButton);
+                    }
+
+                    // Add "Next" button
+                    var nextButton = $('<li>')
+                        .addClass('page-item')
+                        .toggleClass('disabled', response.currentPage === response.totalPages) // Disable if on the last page
+                        .append(
+                            $('<a>')
+                                .addClass('page-link')
+                                .attr('href', '#')
+                                .text('التالي')
+                                .on('click', function (e) {
+                                    e.preventDefault();
+                                    if (response.currentPage < response.totalPages) {
+                                        loadProducts(response.currentPage + 1, nodeIds, sortOrder); // Load next page
+                                    }
+                                })
+                        );
+                    paginationControls.append(nextButton);
+
+                    // Append pagination to the container
+                    pagination.append(paginationControls);
+
+
+
+
+                    // Add order classes to pagination links
+                    paginationControls.find('a').each(function () {
+                        if (sortOrder === 'price_asc') {
+                            $(this).addClass('price-asc-order');
+                        } else if (sortOrder === 'price_desc') {
+                            $(this).addClass('price-desc-order');
+                        } else if (sortOrder === 'title_asc') {
+                            $(this).addClass('title-asc-order');
+                        } else if (sortOrder === 'title_desc') {
+                            $(this).addClass('title-desc-order');
+                        }
+                    });
+
+                    pagination.append("<div class=clear></div>");
+                    pagination.append(paginationControls);
+                },
+                error: function (error) {
+                    console.error('Error fetching products:', error);
+                }
+            });
+        }
+
+    });
+    
+    
+</script>

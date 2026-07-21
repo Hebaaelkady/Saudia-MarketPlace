@@ -1,0 +1,72 @@
+﻿@model Kader.DTOs.Orderss.OrderDetailsDto
+<link href="~/assets/css/print.css" rel="stylesheet" />
+<style>
+    /* ✅ General Styles */
+   
+</style>
+
+<!-- ✅ Invoice Container -->
+<div class="receipt-container">
+    <!-- ✅ Header with Company Info, Logo, and Customer Info -->
+    <div class="header">
+        <div class="company-info">
+            <p><strong>اسم الشركة:</strong> متجر جينا ماركت</p>
+            <p><strong>الرقم الضريبي:</strong> 310562620300003</p>
+        </div>
+
+        <div class="logo">
+            <img src="~/online-shop/logo1.png" alt="Logo" />
+        </div>
+
+        <div class="customer-info">
+            <p><strong>اسم العميل:</strong> @Model.FirstName @Model.LastName</p>
+            <p><strong>تليفون:</strong> @Model.UserName</p>
+            <p><strong>العنوان:</strong> @Model.AddressDto.BuildingNo @Model.AddressDto.AddressStreet - @Model.AddressDto.Name  -  @Model.AddressDto.CityName</p>
+        </div>
+    </div>
+
+    <!-- ✅ Invoice Number & Date -->
+    <div class="receipt-details">
+        <p><strong>رقم الفاتورة:</strong> @Model.Idordersss</p>
+        <p><strong>تاريخ الفاتورة:</strong> @Model.InsertDate</p>
+    </div>
+
+    <!-- ✅ Items Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>المنتج</th>
+                <th>الكمية</th>
+                <th>السعر</th>
+                <th>الإجمالي</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+                foreach (var item in Model.Itemslist)
+                {
+                    <tr>
+                        <td>@index</td>
+                        <td>@item.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.PriceItem</td>
+                        <td>@(item.Quantity * item.PriceItem) <span>ريال سعودي</span></td>
+                    </tr>
+                    index++;
+                }
+            }
+        </tbody>
+    </table>
+
+    <!-- ✅ Total Amount -->
+    @{
+        decimal totalAmount = Model.Itemslist.Sum(item => item.Quantity * (decimal)(item.PriceItem ?? 0));
+    }
+
+    <p class="total"><strong>الإجمالي:</strong> @totalAmount.ToString("N2") ريال</p>
+
+    <!-- ✅ Print Button -->
+    <button class="print-btn" onclick="window.print()">طباعة الفاتورة</button>
+</div>

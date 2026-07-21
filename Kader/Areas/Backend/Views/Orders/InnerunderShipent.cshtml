@@ -1,0 +1,74 @@
+﻿@model List<Kader.DTOs.Orderss.OrderBackendDto>
+@using Kader.Infrastructure.Shared;
+@using Kader.Infrastructure.Shared.Implementations
+@using Kader.Infrastructure.Shared.Interfaces
+
+@{
+    ViewData["Title"] = "View";
+}
+@{
+    IKeys _keys = new Keys();
+}
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>طلبات سيتم شحنها داخليا</span>
+    </nav>
+</div>
+<fieldset>
+    <legend><h2>طلبات سيتم شحنها داخليا  </h2></legend>
+    <div class="page-section">
+        <div class="container">
+            @if (Model != null)
+            {
+                <div class="box">
+                    <br />
+                    <table id="myTable" width="100%" border="1" class="display table table-5 separate table-head-custom table-foot-custom">
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>التاريخ</th>
+                                <th>عدد المنتجات</th>
+                                <th>إجمالي المبلغ</th>
+
+                                @*      <th>الحاله</th> *@
+                                <th>إجراء</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderByDescending(g => g.InsertDate))
+                            {
+                                <tr>
+                                    <td>
+                                        @item.Idorders
+                                    </td>
+                                    <td> @item.InsertDate</td>
+                                    <td>
+                                        @if (@item.Itemslist != null)
+                                        {
+                                            @item.Itemslist.Count()
+                                        }
+                                    </td>
+                                    <td>
+                                        @{
+                                            var f = @item.TotalPrice + @item.TotalTransportShippPrice;
+                                        }
+                                        @f <span>ريال سعودي</span>
+                                    </td>
+                                    @*    <td> @item.status</td> *@
+
+                                    <td>
+                                        @Html.ActionLink("تفاصيل", "OrderDetails", new { id = item.OrderPayment }, null)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="clearfix"></div>
+                </div> <div class="clearfix"></div>
+            } <div class="clearfix"></div>
+        </div> <div class="clearfix"></div>
+        <div class="clearfix"></div>
+    </div>
+</fieldset>

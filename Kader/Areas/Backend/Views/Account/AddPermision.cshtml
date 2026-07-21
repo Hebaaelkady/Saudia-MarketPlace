@@ -1,0 +1,179 @@
+﻿ 
+ 
+
+
+@using Kader.DTOs.Users
+@model IList<AllUserViewDto>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>المستخدمين</span>
+    </nav>
+</div>
+@{
+    var roles = ViewBag.Roles as IEnumerable<SelectListItem>;
+    }
+
+   
+<fieldset>
+    <legend>
+        <h2 class="text-dark font-weight-bold mt-2 mb-2 mr-5 din-bold d-inline">
+            @if (string.IsNullOrEmpty(Context.Request.Query["Id"]))
+            {
+                <span>اضافة مستخدم  جديد</span>
+            }
+            else
+            {
+                <span>تعديل فئة جملة جديد</span>
+            }
+        </h2>
+    </legend>
+
+        <form asp-controller="Accounts" asp-action="Register" method="post">
+       
+
+        @if (ViewBag.SuccessMessage != null)
+        {
+            <div class="alert alert-success">
+                @ViewBag.SuccessMessage
+            </div>
+        }
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-success">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+        <div class="form-group">
+            <label>  التخصصات / الفئة المختص</label>
+            @* @Html.DropDownList("Roles", null, htmlAttributes: new { @class = "form-control" }) *@
+            @foreach (var role in ViewBag.Roles)
+            {
+                <input type="checkbox" id="@role.Id" name="Roles" value="@role.Id" />
+                <label for="@role.Id">@role.Name  
+                    @if(role.CatTypeId==1)
+                    {<span>جملة</span>}
+                    else if (role.CatTypeId == 2)
+                    {
+                        <span>قطاعي</span>
+                    }
+                </label>
+
+                <br />
+            }
+        </div>
+        <div class="form-group">
+            <label> اسم المستخدم</label>
+            <input type="text" asp-for="Username" name="Username" class="form-control" id="AimsDD" />
+
+
+        </div>
+        <div class="form-group">
+            <label>كلمة السر</label>
+            <input type="text" asp-for="Password" name="Password" class="form-control" id="AimsDD1" />
+
+        </div>
+          @*   <input type="checkbox" name="RoleDetailDto.CanRead" value="true" />
+            <input type="checkbox" name="RoleDetailDto.CanAdd" value="true" />
+            <input type="checkbox" name="RoleDetailDto.CanUpdate" value="true" />
+            <input type="checkbox" name="RoleDetailDto.CanDelete" value="true" /> *@
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                <button type="submit" value="">اضافة</button>
+                    </div>
+                </div>
+
+     </form>
+    
+    </fieldset>
+
+<fieldset>
+    <legend><h2>المستخدمين (</h2></legend>
+    <div class="page-section">
+        <div class="container">
+
+            <table id="myTable" border="1" class="display table table-separate table-head-custom table-foot-custom">
+                <thead>
+                    <tr>
+                        <th>اسم المستخدم</th>
+                        <th>الصلاحيات </th>
+                        <th>حذف </th>
+
+                       
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        if(Model!=null)
+                        {
+                            
+                        
+                        foreach (var item in Model)
+                        {
+
+                            string word = item.Username; // Replace with your actual model property
+                             
+
+                            <tr>
+                                <td>
+                                    @word
+                                </td>
+                                <td>
+                                    @foreach (var item1 in item.Roles)
+                                    {
+                                        @item1
+                                    }
+                                </td>
+                                    <td>   <input type="button" value="حذف المستخدم" class="Delete btn2 btn-default" data-val="@item.Id" /></td>
+                              
+                            </tr>
+                        }
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</fieldset>
+<script>
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الحذف")) {
+            var requrl = "/Backend/Account/DeleteUser";
+             
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+                // cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data-val') },
+                success: function (json) {
+                    console.log(json);
+                    alert(JSON.stringify(json));
+                    location.reload();
+                },
+
+                error: function (xhr, status, error) {
+                    console.log("XHR Response: " + xhr.responseText);
+                    console.log("Status: " + status);
+                    console.log("Error: " + error);
+                    alert("حدث خطأ: " + xhr.responseText);
+                }
+
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+
+</script>

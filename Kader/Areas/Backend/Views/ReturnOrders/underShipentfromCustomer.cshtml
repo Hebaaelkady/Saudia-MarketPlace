@@ -1,0 +1,86 @@
+﻿@model List<Kader.DTOs.ReturnOrders.AllReturnsOrdersDto>
+@using Kader.Infrastructure.Shared;
+@using Kader.Infrastructure.Shared.Implementations
+@using Kader.Infrastructure.Shared.Interfaces
+
+@{
+    ViewData["Title"] = "View";
+}
+@{
+    IKeys _keys = new Keys();
+}
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>طلبات سيتم ارجاعها  من خلال العميل</span>
+    </nav>
+</div>
+<fieldset>
+    <legend><h2>طلبات سيتم ارجاعها من خلال العميل   </h2></legend>
+    <div class="page-section">
+        <div class="container">
+            @if (Model != null)
+            {
+                <div class="box">
+
+                    <br />
+                    <table id="myTable" width="100%" border="1" class="display table table-5 separate table-head-custom table-foot-custom">
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>التاريخ</th>
+                                <th>عدد المنتجات</th>
+                                <th>إجمالي المبلغ</th>
+
+                                <th> </th>
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderByDescending(g => g.InsertDate))
+                            {
+                                <tr>
+                                    <td>
+                                        @item.ReturnsOrderId
+                                    </td>
+                                    <td> @item.InsertDate</td>
+                                    <td>
+                                        @if (@item.ReturnsOrderItemslistDto != null)
+                                        {
+                                            @item.ReturnsOrderItemslistDto.Count()
+                                        }
+                                    </td>
+                                    <td>
+                                        @{
+                                            int r = 0;
+                                        }
+                                        @foreach (var t in item.ReturnsOrderItemslistDto)
+                                        {
+                                            var total = (t.PriceItem ?? 0)*t.Quantity + (t.ShippingPrice ?? 0);
+                                            r += (int)total;
+                                        }
+                                        <p>@r</p>
+
+
+
+                                    </td>
+                                    @*  <td> @item.status</td> *@
+
+                                    <td>
+                                        @Html.ActionLink("تفاصيل", "ReturnOrdersDetails", new { id = item.ReturnsOrderId }, null)
+                                    </td>
+                                    <td>
+                                        @Html.ActionLink("ارجاع الفلوس للعميل", "RefundMoney", new { id = item.ReturnsOrderId }, null)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+</fieldset>
+

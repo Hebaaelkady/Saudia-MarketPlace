@@ -1,0 +1,98 @@
+﻿@model Kader.DTOs.Users.LoginDto
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<h4>LoginDto</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="View">
+           @*  <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="KaderuserId" class="control-label"></label>
+                <input asp-for="KaderuserId" class="form-control" />
+                <span asp-validation-for="KaderuserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="KaderName" class="control-label"></label>
+                <input asp-for="KaderName" class="form-control" />
+                <span asp-validation-for="KaderName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Username" class="control-label"></label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Userpass" class="control-label"></label>
+                <input asp-for="Userpass" class="form-control" />
+                <span asp-validation-for="Userpass" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mail" class="control-label"></label>
+                <input asp-for="Mail" class="form-control" />
+                <span asp-validation-for="Mail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InstId" class="control-label"></label>
+                <input asp-for="InstId" class="form-control" />
+                <span asp-validation-for="InstId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedBy" class="control-label"></label>
+                <input asp-for="CreatedBy" class="form-control" />
+                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreationDate" class="control-label"></label>
+                <input asp-for="CreationDate" class="form-control" />
+                <span asp-validation-for="CreationDate" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsSigned" /> @Html.DisplayNameFor(model => model.IsSigned)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="GovCode" class="control-label"></label>
+                <input asp-for="GovCode" class="form-control" />
+                <span asp-validation-for="GovCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DepCode" class="control-label"></label>
+                <input asp-for="DepCode" class="form-control" />
+                <span asp-validation-for="DepCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Acctype" class="control-label"></label>
+                <input asp-for="Acctype" class="form-control" />
+                <span asp-validation-for="Acctype" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="majorname" class="control-label"></label>
+                <input asp-for="majorname" class="form-control" />
+                <span asp-validation-for="majorname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div> *@
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

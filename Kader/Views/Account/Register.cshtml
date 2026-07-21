@@ -1,0 +1,130 @@
+﻿ 
+@using Kader.DTOs.Users
+@model AllUserViewDto
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>اضافة مستخدم  جديد </span>
+    </nav>
+</div>
+@{
+    var roles = ViewBag.Roles as IEnumerable<SelectListItem>;
+    }
+
+   
+ 
+    <div class="container col-md-5">
+        <div class="box ">
+        <form asp-controller="Account" asp-action="Register" method="post">
+
+            <h3>اضافة مستخدم  جديد</h3>
+        @if (ViewBag.SuccessMessage != null)
+        {
+            <div class="alert alert-success">
+                @Html.Raw(ViewBag.SuccessMessage)
+            </div>
+        }
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+
+        <div class="form-group">
+            <label> اسم الاول</label>
+            <input type="text" asp-for="FirstName" name="FirstName" class="form-control" id="AimsDD" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+
+        </div>
+        <div class="form-group">
+            <label> اسم الاخير</label>
+            <input type="text" asp-for="LastName" name="LastName" class="form-control" id="AimsDD" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+
+        </div>
+        <div class="form-group">
+            <label> البريد الالكتروني</label>
+            <input type="text" asp-for="Email" name="Email" class="form-control" id="AimsDD" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+
+        </div>
+            <div class="form-group">
+                <label>كود البلد</label>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <div class="input-group">
+                        <!-- Country Code Dropdown -->
+                        <select id="countryCode" name="CountryCode" class="form-control" style="max-width: 150px;">
+                            <option value="+2">🇪🇬 +2 (مصر)</option>
+                            <option value="+966">🇸🇦 +966 (السعودية)</option>
+                            <option value="+971">🇦🇪 +971 (الإمارات)</option>
+                            <option value="+965">🇰🇼 +965 (الكويت)</option>
+                            <option value="+974">🇶🇦 +974 (قطر)</option>
+                            <option value="+968">🇴🇲 +968 (عمان)</option>
+                            <option value="+973">🇧🇭 +973 (البحرين)</option>
+                            <option value="+962">🇯🇴 +962 (الأردن)</option>
+                            <option value="+961">🇱🇧 +961 (لبنان)</option>
+                            <option value="+963">🇸🇾 +963 (سوريا)</option>
+                            <option value="+964">🇮🇶 +964 (العراق)</option>
+                            <option value="+218">🇱🇾 +218 (ليبيا)</option>
+                            <option value="+212">🇲🇦 +212 (المغرب)</option>
+                            <option value="+216">🇹🇳 +216 (تونس)</option>
+                            <option value="+213">🇩🇿 +213 (الجزائر)</option>
+                            <option value="+249">🇸🇩 +249 (السودان)</option>
+                            <option value="+222">🇲🇷 +222 (موريتانيا)</option>
+                            <option value="+967">🇾🇪 +967 (اليمن)</option>
+                            <option value="+252">🇸🇴 +252 (الصومال)</option>
+                            <option value="+1">🇺🇸 +1 (الولايات المتحدة)</option>
+                            <option value="+44">🇬🇧 +44 (المملكة المتحدة)</option>
+                            <option value="+33">🇫🇷 +33 (فرنسا)</option>
+                            <option value="+49">🇩🇪 +49 (ألمانيا)</option>
+                            <option value="+39">🇮🇹 +39 (إيطاليا)</option>
+                            <option value="+86">🇨🇳 +86 (الصين)</option>
+                            <option value="+91">🇮🇳 +91 (الهند)</option>
+                            <option value="+81">🇯🇵 +81 (اليابان)</option>
+                            <option value="+7">🇷🇺 +7 (روسيا)</option>
+                            <option value="+55">🇧🇷 +55 (البرازيل)</option>
+                            <option value="+27">🇿🇦 +27 (جنوب أفريقيا)</option>
+                            <option value="+61">🇦🇺 +61 (أستراليا)</option>
+                            <option value="+90">🇹🇷 +90 (تركيا)</option>
+                            <option value="+34">🇪🇸 +34 (إسبانيا)</option>
+                            <option value="+31">🇳🇱 +31 (هولندا)</option>
+                            <option value="+46">🇸🇪 +46 (السويد)</option>
+                            <option value="+41">🇨🇭 +41 (سويسرا)</option>
+                            <option value="+32">🇧🇪 +32 (بلجيكا)</option>
+                            <option value="+47">🇳🇴 +47 (النرويج)</option>
+                        </select>
+
+                    </div>
+                </div>
+
+            </div>
+        <div class="form-group">
+            <label> رقم التليفون</label>
+            <input type="text" asp-for="Username" name="Username" class="form-control" id="AimsDD" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+
+        </div>
+        <div class="form-group">
+            <label>كلمة السر</label>
+            <input type="password" asp-for="Password" name="Password" class="form-control" id="AimsDD1" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+         
+                <div class="form-group">
+                    <div  >
+                    <button class="btn btn-block btn-primary font-weight-bold py-3" type="submit" value="">تسجيل</button>
+                    </div>
+                </div>
+
+     </form>
+    </div></div>
+ 
+   

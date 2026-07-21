@@ -1,0 +1,86 @@
+﻿ 
+@model Kader.DTOs.OtoApi.CheckOTODeliveryFeeRequestDto
+<h2>Check OTO Delivery Fee</h2>
+<form id="checkOTODeliveryFeeForm">
+
+    
+    <p><strong>Weight:</strong> @Model.weight</p>
+    <p><strong>City Name:</strong> @Model.destinationCity</p>
+    <p><strong>Order ID:</strong> @Model.Idordersss</p>
+    <div>
+        <label for="sourceLocation">Source Location:</label>
+        <input type="text" id="originCity" name="originCity" required>
+    </div>
+    <div>
+        <label for="destinationLocation">Destination Location:</label>
+        <input type="text" id="destinationCity" name="destinationCity" required>
+    </div>
+    <div>
+        <label for="packageWeight">Package Weight (kg):</label>
+        <input type="number" id="weight" name="weight" step="0.1" required>
+    </div>
+    <div>
+        <label for="packageType">Package Type:</label>
+        <select id="serviceType" name="serviceType">
+            <option value="express">express</option>
+            <option value="sameDay">sameDay</option>
+        </select>
+    </div>
+    <button type="button" onclick="checkOTODeliveryFee()">Check Fee</button>
+</form>
+
+<div id="otoFeeResult" style="margin-top: 20px;">
+    <!-- Delivery fee result will be shown here -->
+</div>
+<script>
+    async function checkOTODeliveryFee() {
+        const form = document.getElementById("checkOTODeliveryFeeForm");
+        const formData = new FormData(form);
+
+        const request = {
+            originCity: formData.get("originCity"),
+            destinationCity: formData.get("destinationCity"),
+            weight: parseFloat(formData.get("weight")),
+            serviceType: formData.get("serviceType"),
+        };
+
+        try {
+            const response = await fetch("/check-delivery-fee", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(request),
+            });
+
+            const data = await response.json();
+          
+
+            if (response.ok && data.success && data.deliveryCompany.length > 0) {
+                let resultHtml = `<h3>Available Delivery Options:</h3><ul>`;
+                data.deliveryCompany.forEach((company) => {
+                    resultHtml += `
+                        <li>
+                                <strong>${company.deliveryCompanyName}</strong><br>
+                            Price: ${company.price}<br>
+                            Pickup Cut-Off Time: ${company.pickupCutOffTime}<br>
+                            Max Free Weight: ${company.maxFreeWeight}kg<br>
+                                Delivery Time: ${company.pickupCutOffTime}
+                        </li>
+                    `;
+                });
+                resultHtml += `</ul>`;
+                document.getElementById("otoFeeResult").innerHTML = resultHtml;
+            } else {
+                document.getElementById("otoFeeResult").innerHTML = `
+    <p>Error: ${data.errorMessage || "No delivery options available."}</p>
+                `;
+            }
+        } catch (error) {
+            console.error("Error checking OTO delivery fee:", error);
+            document.getElementById("otoFeeResult").innerHTML = `
+    <p>An error occurred while checking the delivery fee.</p>
+            `;
+        }
+    }
+</script>

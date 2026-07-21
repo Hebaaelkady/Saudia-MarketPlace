@@ -1,0 +1,98 @@
+﻿@model List<Kader.DTOs.OrderItems.OrderItemsDto>
+ 
+@{
+    ViewData["Title"] = "View";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>المنتجات الاكثر شراء</span>
+    </nav>
+</div>
+<fieldset>
+    <legend><h2>المنتجات جملة الاكثر شراء </h2></legend>
+ 
+                
+
+                <table id="myTable1" width="100%" border="1" class="display table table-5.separate table-head-custom table-foot-custom">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th> المنتج</th>
+                            <th>عدد مرات الشراء</th>
+                            <th>الكميات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            int co = 1;
+                            @foreach (var group in Model.Where(k => k.TypeGomlaOrQt3 == 1).GroupBy(k => k.ProductId).OrderByDescending(g => g.Sum(i => i.Quantity)))
+                            {
+                                var firstItem = group.First(); // للحصول على اسم المنتج من أي عنصر داخل المجموعة
+                                <tr>
+                                    <td>@co</td>
+                                    <td>@firstItem.ProductName</td>
+                                    <td>@group.Count()</td>
+                                    <td>@group.Sum(i => i.Quantity)</td> <!-- جمع الكميات داخل المجموعة -->
+                                </tr>
+                                co++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3">لا توجد منتجات متاحة</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+ 
+
+
+</fieldset>
+<fieldset>
+    <legend><h2>المنتجات قطاعي الاكثر شراء </h2></legend>
+    
+                 
+
+                <table id="myTable2" width="100%" border="1" class="display table table-5.separate table-head-custom table-foot-custom">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th> المنتج</th>
+                            <th>عدد مرات الشراء</th>
+                            <th>الكميات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            int co = 1;
+                            @foreach (var group in Model.Where(k => k.TypeGomlaOrQt3 == 2).GroupBy(k => k.ProductId).OrderByDescending(g => g.Sum(i => i.Quantity)))
+                            {
+                                var firstItem = group.First(); // للحصول على اسم المنتج من أي عنصر داخل المجموعة
+                                <tr>
+                                    <td>@co</td>
+                                    <td>@firstItem.ProductName</td>
+                                    <td>@group.Count()</td>
+                                    <td>@group.Sum(i => i.Quantity)</td> <!-- جمع الكميات داخل المجموعة -->
+                                </tr>
+                                co++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3">لا توجد منتجات متاحة</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            
+
+
+</fieldset>

@@ -1,0 +1,69 @@
+﻿ 
+ 
+
+
+@using Kader.DTOs.Users
+@model VerifyOtpAndResetPasswordDto
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>نسيت كلمة المرور</span>
+    </nav>
+</div>
+<div class="container col-md-5">
+    <div class="box ">
+        <h3>نسيت كلمة المرور </h3>
+       
+        <form asp-controller="Account" asp-action="VerifyOtp" method="post">
+            <input type="text" asp-for="Mobile" class="form-control" id="Mobile" />
+            <input type="text" asp-for="MobileNumber" class="form-control" id="MobileNumber" />
+            <div>
+                <label class="label" for="Otp"><span>Otp</span></label>
+                <input type="text" asp-for="Otp" class="form-control" id="AimsDD" />
+                <span asp-validation-for="Otp" class="text-danger"></span>
+            </div>
+                <div class="form-group">
+                <label class="label" for="NewPassword"><span>كلمة المرور الجديدة</span></label>
+
+                    <div >
+                    <input type="password" asp-for="NewPassword" class="form-control" id="AimsDD" />
+                    <span asp-validation-for="NewPassword" class="text-danger"></span>
+                    </div>
+                </div>
+            <div class="form-group">
+                <label class="label" for="ConfirmNewPassword"><span>تاكيد كلمة المرور الجديدة</span></label>
+
+                <div>
+                    <input type="password" asp-for="ConfirmNewPassword" class="form-control" id="AimsDD" />
+                    <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+                </div>
+            </div>
+                @*<div class="form-group">
+
+                        @Html.CheckBoxFor(m => m.RememberMe)
+                        @Html.LabelFor(m => m.RememberMe)
+
+                    </div>*@
+                <div class="form-group">
+                    <div >
+                    <button type="submit" class="btn btn-block btn-primary font-weight-bold py-3">تعيين كلمة مرور جديدة</button>
+                    </div>
+                </div>
+
+     </form>
+    </div>
+    <div class="clear"></div>
+</div>
+   
+ 
+
+
+
+ 

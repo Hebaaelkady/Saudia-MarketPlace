@@ -1,0 +1,99 @@
+﻿@model List<Kader.DTOs.Product.ProductViewDto>
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>المنتجات الرئيسية (جملة (</span>
+    </nav>
+</div>
+ 
+<fieldset>
+    <legend><h2>الاصناف الرئيسية (جملة (</h2></legend>
+    <div class="page-section">
+        <div class="container">
+
+           
+            <table id="myTable" width="100%" border="1" class="display table table-5.separate table-head-custom table-foot-custom">
+                <thead>
+                    <tr>
+                        <th></th>
+
+                        <th> المنتج</th>
+                        <th>تفاصيل</th>
+                        <th>استعادة</th>
+                         
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        int co = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @co
+                                    @{
+                                        co++;
+                                    }
+                                </td>
+
+                                <td> @Html.DisplayFor(modelItem => item.SubCatogryTitle) </td>
+
+
+                                <td>    @Html.ActionLink("تفاصيل", "Product_gomla_details", new { id = item.ProductId }, null) </td>
+
+                                <td>   <input type="button" value="استعادة المنتج" class="Delete btn2 btn-default" data-val="@item.ProductId" /></td>
+
+                                     </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</fieldset>
+
+
+
+<script>
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الاستعادة")) {
+            var requrl = "/Backend/Archive/RestoreDeleteProducts";
+
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+                // cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data-val') },
+                success: function (json1) {
+                    console.log(json1);
+                    alert(JSON.stringify(json1));
+                    location.reload();
+                },
+
+                error: function (xhr, status, error) {
+                    console.log("XHR Response: " + xhr.responseText);
+                    console.log("Status: " + status);
+                    console.log("Error: " + error);
+                    alert("حدث خطأ: " + xhr.responseText);
+                }
+
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+   
+</script>

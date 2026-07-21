@@ -1,0 +1,170 @@
+﻿@model List<Kader.DTOs.Product.ApiEditProductDto>
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>المنتجات الرئيسية (قطاعي (</span>
+    </nav>
+</div>
+<fieldset>
+
+
+    @* @Html.Partial("_Product_gomla", Model) *@
+</fieldset>
+<fieldset>
+    <legend><h2>الاصناف الرئيسية (قطاعي (</h2></legend>
+    <div class="page-section">
+        <div class="container">
+            @Html.DropDownList("CatId", null, "اختار الفئة", htmlAttributes: new { @class = "form-control" })
+
+
+            <table id="myTable" width="100%" border="1" class="display table table-5 separate table-head-custom table-foot-custom">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>المنتج</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        int co = 1;
+                        foreach (var item in Model)
+                        {
+
+                            <tr>
+
+                                <td>
+                                    @co @{
+                                        co++;
+                                    }
+                                </td>
+                                <td> @Html.DisplayFor(modelItem => item.title)</td>
+                                <td>@Html.ActionLink("تفاصيل", "Product_qta3a_details1", new { ProductId = item.ProductId, p_id = item.p_id }, null)</td>
+
+                                <td>@Html.ActionLink("تعديل", "Edit_Product_qta3a", new { ProductId = item.ProductId, p_id = item.p_id }, null)</td>
+
+                                <td>@Html.ActionLink("تعديل اسعار الشحن المتغيرة", "EditShippingPrice", new { id = item.ProductId }, null)</td>
+                                <td><input type="button" value="حذف المنتج" class="Delete btn2 btn-default" data-val="@item.ProductId" /></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</fieldset>
+
+<div id="loadingIcon" style="display: none;">
+    <div style="background-color: #000;position: absolute;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.4;
+">
+    </div>
+    <img src="~/assets/loading-gif.gif" alt="Loading..." style=" position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+" />
+</div>
+
+<script>
+    $('#CatId').change(function (e) {
+        e.preventDefault();
+        $('#loadingIcon').show();
+        var requrl = '@Url.Action("GetproductByCat_qta3a")';
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            cache: true,
+            url: requrl,
+            data: { Type: $('#CatId').val() },
+            success: function (data) {
+              
+                if (data.loading) {
+                    // Show the loading icon on the page
+                    $('#loadingIcon').show(); // Assuming you have an element with id 'loadingIcon'
+                }
+                else if (data.success) {
+                    $('#loadingIcon').hide();
+                    $('#myTable').DataTable().clear().destroy();
+
+                    // Empty the table body
+                    $('#myTable tbody').empty();
+                    $.each(data.data, function (index, item) {
+                        
+                        var row = '<tr>' +
+                            '<td>' + (index + 1) + '</td>' +
+                            '<td>' + item.title + '</td>' +
+                            '<td><a href="@Url.Action("Product_gomla_details", "Product")?ProductId=' + item.productId + '&p_id=' + item.p_id + '">تفاصيل</a></td>' +
+                            '<td><a href="@Url.Action("Edit_Product_qta3a", "Product")?p_id=' + item.p_id + '&ProductId=' + item.productId + '">تعديل</a></td>' +
+                            '<td><a href="@Url.Action("EditShippingPrice", "Product")?id=' + item.p_id + '">تعديل اسعار الشحن المتغيرة</a></td>' +
+                            '<td><input type="button" value="حذف المنتج" class="Delete btn2 btn-default" data-val="' + item.p_id + '" /></td>' +
+                            '</tr>';
+
+                        $('#myTable tbody').append(row);
+                    });
+                    $('#myTable').DataTable();
+                } else {
+                    alert(data.message);
+                    console.log("XHR Response: " + xhr.responseText);
+                    console.log("Status: " + status);
+                    console.log("Error: " + error);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الحذف")) {
+            var requrl = "/Backend/Product/DeleteProduct";
+
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+                // cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data-val') },
+                success: function (json1) {
+                    console.log(json1);
+                    alert(JSON.stringify(json1));
+                    location.reload();
+                },
+
+                error: function (xhr, status, error) {
+                    console.log("XHR Response: " + xhr.responseText);
+                    console.log("Status: " + status);
+                    console.log("Error: " + error);
+                    alert("حدث خطأ: " + xhr.responseText);
+                }
+
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+
+</script>

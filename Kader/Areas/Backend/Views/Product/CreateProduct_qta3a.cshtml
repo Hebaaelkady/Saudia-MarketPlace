@@ -1,0 +1,542 @@
+﻿@model Kader.DTOs.Product.Product_backendDto
+<style>
+    .jstree-node > .jstree-anchor > .jstree-checkbox {
+        display: none;
+    }
+
+    /* Show checkbox for leaf nodes */
+    .jstree-leaf > .jstree-anchor > .jstree-checkbox {
+        display: inline-block;
+    }
+</style>
+@{
+    string id = Context.Request.Query["ProductId"];
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.SuccessMessage
+    </div>
+}
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.ErrorMessage
+    </div>
+}
+<fieldset>
+    <legend>
+        <h2 class="text-dark font-weight-bold mt-2 mb-2 mr-5 din-bold d-inline">
+            @if (string.IsNullOrEmpty(Context.Request.Query["Id"]))
+            {
+                <span>اضافة منتج قطاعي جديد</span>
+            }
+            else
+            {
+                <span>تعديل منتج قطاعي جديد</span>
+            }
+        </h2>
+    </legend>
+
+
+</fieldset>
+<form asp-controller="Product" id="yourForm" asp-action="Product_gomlaAsync" method="post" enctype="multipart/form-data">
+    <fieldset>
+        <legend>بيانات اساسية</legend>
+        <div class="float-left col-sm-12 col-md-4">
+
+            <div class="form-group">
+                <label>اختار الصنف</label>
+                @Html.DropDownList("CatogryId", null, "اختار الفئة", htmlAttributes: new { @class = "form-control" })
+
+                @if (@Model == null)
+                {
+                    <input type="hidden" id="CatogryId" name="CatogryId" value="" />
+                }
+                @* @Html.ValidationMessageFor(model => model.NewItem.CatogryId) *@
+                <span class="validtion"> @ViewBag.CatogryIdMSG</span>
+            </div>
+        </div>
+
+        <div class="float-left col-sm-12 col-md-8">
+
+            @if (@Model != null)
+            {
+                if (@Model.NewItem != null)
+                {
+                    <input type="hidden" id="CatogryId" name="CatogryId" value="@Model.NewItem.CatogryId
+                            " />
+                }
+
+                <div class="form-group">
+                    <label> اسم المنتج</label>
+                    @{
+                        var subCategoryTitle = Model?.NewItem?.SubCatogryTitle ?? string.Empty;
+                    }
+                    <input type="text" value="@subCategoryTitle" name="SubCatogryTitle" class="form-control" />
+                    <span class="validtion">  @ViewBag.SubCatogryTitle</span>
+
+                </div>
+                <div class="form-group">
+                    <label>كود المنتج</label>
+                    @{
+                        var barcode = Model?.NewItem?.barcode ?? string.Empty;
+                    }
+                    <input type="text" value="@barcode" name="barcode" class="form-control" />
+                    <span class="validtion">  @ViewBag.barcode</span>
+
+
+                </div>
+                <div class="form-group">
+                    <label> الوصف</label>
+                    @{
+                        var Description = Model?.NewItem?.Description ?? string.Empty;
+                    }
+                    <textarea value="@Description" name="Description" cols="8" rows="5" class="form-control">@Description</textarea>
+                    @Html.ValidationMessageFor(model => model.NewItem.Description)
+
+                </div>
+
+
+                @if (@id != null)
+                {
+                    <div class="form-group">
+                        <label> الكمية الجديد</label>
+
+                        <input type="number" step="any" value="0" oninput="updateNewQuantity()" name="QuantityAdded" id="QuantityAdded" class="form-control" />
+
+
+                    </div>
+                }
+                <div class="form-group">
+                    <label> الكمية المتاحة الحالية</label>
+
+                    @{
+                        var QuantityAvailable = Model?.NewItem?.QuantityAvailable ?? 100;
+                        var isReadonly = @id != null ? "readonly" : ""; // Set readonly if @id is not null
+                    }
+                    <input type="number" value="@QuantityAvailable" step="any" name="QuantityAvailable" id="QuantityAvailable" class="form-control" @isReadonly />
+                    @* @Html.ValidationMessageFor(model => model.NewItem.QuantityAvailable) *@
+                    <span class="validtion">  @ViewBag.QuantityAvailable</span>
+                </div>  @if (@id != null)
+                {
+                    <div class="form-group">
+                        <label> الكمية المتاحة بعد اضافة الكمية الجديدة</label>
+                        <input type="number" readonly name="NewQuantity" id="NewQuantity" class="form-control" />
+
+
+                    </div>
+                }
+                <div class="form-group">
+                    <label> وحدة الكمية</label>
+                    @Html.DropDownList("Unit", null, htmlAttributes: new { @class = "form-control" })
+                    @* @Html.ValidationMessageFor(model => model.NewItem.Unit) *@
+                    <span class="validtion"> @ViewBag.Units</span>
+                </div>
+
+                <div class="form-group">
+                    <label> اقل كمية للشحن مقارنة باجمالي الكمية</label>
+                    @{
+                        var MinQuantityToShipJomla = Model?.NewItem?.MinQuantityToShipJomla;
+                    }
+                    <input type="number"
+                           value="@(MinQuantityToShipJomla > 0 ? MinQuantityToShipJomla.ToString() : "1")"
+                           name="MinQuantityToShipJomla"
+                           id="MinQuantityToShipJomla"
+                           class="form-control" step="any" />
+
+                      @Html.ValidationMessageFor(model => model.NewItem.MinQuantityToShipJomla)
+                    <span class="validtion">  @ViewBag.MinQuantityToShipJomla</span>
+                </div>
+
+                <div class="form-group">
+                    <label> اللون(ان وجد)</label>
+                    @Html.DropDownList("ColorId", null, "اختار اللون", htmlAttributes: new { @class = "form-control" })
+
+
+                </div>
+                @*   <div class="form-group" style="">
+            <label> طريقة النقل</label>
+            @Html.DropDownList("TransportMethodId", null, htmlAttributes: new { @class = "form-control" })
+
+            <span class="validtion">  @ViewBag.TransportMethod</span>
+            </div> *@
+                <div class="form-group  float-left col-sm-12 col-md-4">
+                    <label> يظهر في الصفحة الرئيسية</label>
+                    @if (Model?.NewItem == null)
+                    {
+                        @Html.CheckBox("ApearInHomePage")
+                    }
+                    else if (Model.NewItem.ApearInHomePage == true)
+                    {
+
+                        @Html.CheckBox("ApearInHomePage", Model.NewItem.ApearInHomePage ?? false)
+                    }
+                    else
+                    {
+                        @Html.CheckBox("ApearInHomePage", Model.NewItem.ApearInHomePage ?? false)
+
+                    }
+                </div>
+               @*  <div class="form-group  float-left col-sm-12 col-md-4">
+                    <label> عروض خاصة</label>
+                    @if (Model?.NewItem == null)
+                    {
+                        @Html.CheckBox("ApearInHomePage")
+                    }
+                    else
+                    {
+                        @Html.CheckBox("ApearInHomePage", Model.NewItem.SpecialOrder ?? false)
+                    }
+                </div> *@
+                <div class="clearfix"></div>
+            }
+        </div>
+    </fieldset>
+    @if (@Model != null)
+    {
+           <fieldset>
+            <legend>السعر</legend>
+            <div class="form-group">
+                <label> السعر قبل الخصم للوحدة</label>
+                @{
+                    var BeforeDiscount = Model?.NewItem?.BeforeDiscount;
+                }
+                <input type="number"
+                       value="@(BeforeDiscount > 0 ? BeforeDiscount.ToString() : "")"
+                       name="BeforeDiscount"
+                       id="BeforeDiscount"
+                       class="form-control" step="any" />
+
+                <span class="validtion">  @ViewBag.Price</span>
+            </div>
+            <div class="form-group">
+                <label>(ان وجد) السعر بعد الخصم  للوحدة</label>
+                @{
+                    var AfterDiscount = Model?.NewItem?.AfterDiscount;
+                }
+                <input type="number"
+                       value="@(AfterDiscount > 0 ? AfterDiscount.ToString() : "")"
+                       name="AfterDiscount"
+                       id="AfterDiscount"
+                       class="form-control" step="any" />
+                <span class="validtion">
+                    @ViewBag.AfterDiscount</span>
+
+                @* <input type="text" title="الرجاء إدخال أرقام فقط." value="@AfterDiscount" name="AfterDiscountpercent" class="form-control" /> *@
+                @* <span>%</span> *@
+            </div>
+           @*  <div class="form-group">
+                <label>(ان وجد) السعر بعد الخصم للوحدة</label>
+                <input type="text" id="resultDiv" title="الرجاء إدخال أرقام فقط." name="AfterDiscount" class="form-control" readonly />
+
+
+
+            </div> *@
+
+            @*    <div class="form-group">
+        <label> تاريخ بداية الخصم</label>
+        @{
+        string formattedDate1 = "";
+        if (Model.NewItem==null)
+        {
+        <input type="date"  name="discountBeginDate" id="discountBeginDate" class="form-control" />
+
+        }
+        else if (Model.NewItem.discountBeginDate.HasValue)
+        {
+        formattedDate1 = Model.NewItem.discountBeginDate.Value.ToString("yyyy-MM-dd");
+        }<input type="date" value="@formattedDate1" name="discountBeginDate" id="discountBeginDate" class="form-control" />
+
+        }
+
+        </div>
+
+        <div class="form-group">
+        <label> تاريخ نهاية الخصم</label>
+
+        @{
+        string formattedDate = "";
+        if (Model.NewItem == null)
+        {
+        <input type="date" name="DiscountEndDate" id="DiscountEndDate" class="form-control" />
+
+        }
+        else if (Model.NewItem.DiscountEndDate.HasValue)
+        {
+        formattedDate = Model.NewItem.DiscountEndDate.Value.ToString("yyyy-MM-dd");
+        }
+        }
+        <input type="date" value="@formattedDate" name="DiscountEndDate" id="DiscountEndDate" class="form-control" />
+
+        </div> *@
+        </fieldset>
+        <fieldset>
+            <legend>تكلفة النقل</legend>
+            @{
+                var ShippingPrice = Model?.NewItem?.ShippingPrice ;
+            }@if (@id != null)
+            {
+                if (Model.NewItem.ShippingPriceDto.Count != 0)
+                {
+                    <span class="validtion">ملحوظة يوجد سعر نقل متغير تم تخصيصة يرجي مسحه اولا اذا كنت تريد وضع سعر ثابت والا سيتم ظهور سعر النقل الثابت فقط</span>
+                }
+                <label> سعر النقل الثابت</label>
+
+
+
+                <input type="text" value="@ShippingPrice" name="ShippingPrice" id="ShippingPrice" class="form-control" />
+                @Html.ValidationMessageFor(model => model.NewItem.ShippingPrice)
+
+            }
+            @if (@id == null)
+            {
+
+                <div class="form-group">
+                    <label> سعر النقل :</label>
+                    <div>
+                        <input type="radio" name="toggle" value="static"> السعر ثابت لاي كمية
+                        &nbsp;&nbsp;
+                        <input type="radio" name="toggle" value="variable"> السعر متغير حسب كمية
+                    </div>
+                    <div id="static_content">
+                        @{
+                            var ShippingPrice1 = Model?.NewItem?.ShippingPrice ;
+                        }
+                        <input type="text" value="@ShippingPrice1" name="ShippingPrice" id="ShippingPrice" class="form-control" />
+                        @Html.ValidationMessageFor(model => model.NewItem.ShippingPrice)
+                    </div>
+                    <div id="variable_content1">
+                        <div id="variable_content">
+                            <div class="input-group">
+                                <div class="form-group" style="">
+                                    <label> الكمية</label>
+                                    <input type="text" name="ShippingPriceDto[0].VarQuantity" class="form-control" />
+                                </div>
+                                <div class="form-group" style="">
+                                    <label>السعر</label>
+                                    <input type="text" name="ShippingPriceDto[0].VarPrice" class="form-control" />
+                                </div>
+
+
+                            </div>
+                        </div>  <button type="button" id="add_more">اضافة المزيد</button>
+                    </div>
+
+
+
+                </div>
+            }
+            <span class="validtion">  @ViewBag.ShippingPrice</span>
+            <div class="clearfix"></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>صور المنتج</legend>
+            @if (Model.NewItem != null)
+            {
+
+
+                @if (Model.NewItem.ProductImgDto.Count != 0)
+                {
+                    foreach (var item2 in Model.NewItem.ProductImgDto)
+                    {
+                        <a href="~/Images/@item2.ProductImgName">
+                            <img width="20px" height="20" src=~/Images/@item2.ProductImgName />
+                        </a>
+                        <input type="button" value="حذف" class="btn2 btn-default" data="@item2.ProductImgId" />
+                    }
+                }
+            }
+            <div class="form-group">
+                <input type="file" accept="image/*" name="ProductImg" multiple>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                @if (@id == null)
+                {
+                    <button type="submit">حفظ المنتج</button>
+
+                }
+                else
+                {
+
+                    <button type="submit">تعديل المنتج</button>
+                }
+
+            </div>
+        </div>
+
+    }
+</form>
+<script>
+
+    $(document).ready(function () {
+
+        $('input[name="AfterDiscountpercent"]').on('keyup change', function () {
+            var beforeDiscount = $('input[name="BeforeDiscount"]').val();
+            if (beforeDiscount && $.isNumeric(beforeDiscount)) {
+                var discountPercent = parseFloat($(this).val()) / 100;
+                if ($.isNumeric(discountPercent)) {
+                    var afterDiscount = parseFloat(beforeDiscount) - (parseFloat(beforeDiscount) * discountPercent);
+                    // تحديث القيمة في div آخر
+                    $('#resultDiv').val(afterDiscount.toFixed(2));
+                } else {
+                    alert('الرجاء إدخال نسبة خصم صحيحة.');
+                }
+            } else {
+                alert('الرجاء إدخال السعر قبل الخصم.');
+            }
+        });
+    });
+
+    function updateNewQuantity() {
+        let quantityAvailable = parseFloat(document.getElementById("QuantityAvailable").value) || 0;
+        let quantityAdded = parseFloat(document.getElementById("QuantityAdded").value) || 0;
+        let newQuantity = quantityAvailable + quantityAdded;
+
+        document.getElementById("NewQuantity").value = newQuantity;
+    }
+
+    // Run the calculation on page load
+    window.onload = function () {
+        updateNewQuantity();
+    };
+    $('#Type').change(function (e) {
+        e.preventDefault();
+        var requrl = '@Url.Action("GetCatogryByType")';
+        $.ajax({
+            type: "post",
+            dataType: 'json',
+            cashe: true,
+            url: requrl,
+            data: { Type: $('#Type').val() },
+            success: function (data) {
+                $('#CatId').empty();
+
+                $('#CatId').append("<option value='" + "0" + "'>" + "--اختار الدرس--" + "</option>");
+                $.each(data, function (key, value) {
+                     
+                    $('#CatId').append("<option value='" + value.value + "'>" + value.text + "</option>");
+                })
+            },
+            error: function (failure) {
+                alert(failure.responseText);
+            }
+        });
+    });
+</script>
+<script>
+    $(".btn2").on("click", function () {
+
+        var requrl = '@Url.Action("DeleteImg")';
+
+        $.ajax({
+            type: "post",
+            dataType: 'json',
+            cashe: true,
+            url: requrl,
+            data: { id: $(this).attr('data') },
+            success: function (data) {
+
+                alert(data);
+                location.reload();
+
+                if (data == "") {
+                }
+                else {
+
+                }
+
+            },
+            error: function (failure) {
+
+                alert(failure.responseText);
+            }
+        });
+
+    });
+
+    $(document).ready(function () {
+        $('#static_content').hide();
+        $('#variable_content1').hide();
+        $('input[type=radio][name=toggle]').change(function () {
+            if (this.value == 'static') {
+                $("#ShippingPriceDto.VarQuantity").val("");
+                $("#ShippingPriceDto.VarPrice").val("");
+                $('#static_content').show();
+                $('#variable_content1').hide();
+            }
+            else if (this.value == 'variable') {
+                $("#ShippingPrice").val("");
+                $('#static_content').hide();
+                $('#variable_content1').show();
+            }
+        });
+    });
+
+
+
+    $(document).ready(function () {
+        var i = 1;
+        $('#add_more').click(function () {
+            $('#variable_content').append('<div class="input-group"><div class="form-group"><label> الكمية</label><input type="text" name="ShippingPriceDto[' + i + '].VarQuantity" class="form-control" /> </div><div class="form-group"> <label>السعر</label><input type="text" name="ShippingPriceDto[' + i + '].VarPrice" class="form-control" /></div></div>');
+            i++;
+        });
+    });
+
+
+    $(document).ready(function () {
+        $('#discountBeginDate').change(function () {
+            var beginDate = $(this).val();
+            $('#DiscountEndDate').attr('min', beginDate);
+        });
+    });
+
+    $(document).ready(function () {
+        $('input[name="AfterDiscount"]').on('input', function () {
+            var beforeDiscount = parseFloat($('input[name="BeforeDiscount"]').val());
+            var afterDiscount = parseFloat($(this).val());
+
+            if (afterDiscount > beforeDiscount) {
+                alert('السعر بعد الخصم يجب أن يكون أقل من السعر قبل الخصم');
+                $(this).val('');
+            }
+        });
+    });
+    // $(document).ready(function () {
+    //     $('input[name="BeforeDiscount"]').on('input', function () {
+    //         var afterDiscount = parseFloat($('input[name="AfterDiscount"]').val());
+    //         var beforeDiscount = parseFloat($(this).val());
+
+    //         if (afterDiscount > beforeDiscount) {
+    //             alert('السعر قبل الخصم يجب أن يكون اكبر من السعر قبل الخصم');
+    //             $(this).val('');
+    //         }
+    //     });
+    // });
+</script>
+<script>
+    $(document).ready(function () {
+        // Function to calculate the percentage dynamically
+        function calculatePercentage() {
+            const quantityAvailable = parseFloat($("#QuantityAvailable").val());
+            const MaxQuantityToShipQta3a = parseFloat($("#MinQuantityToShipJomla").val());
+
+            if (!isNaN(quantityAvailable) && !isNaN(MaxQuantityToShipQta3a)) {
+                // Calculate the percentage
+                const calculatedStock = quantityAvailable * (MaxQuantityToShipQta3a / 100);
+
+                // Update the calculated stock dynamically
+                $("#CalculatedStock").text(calculatedStock.toFixed(2));
+            } else {
+                // Clear the result if the inputs are invalid
+                $("#CalculatedStock").text('');
+            }
+        }
+
+        // Attach event handlers to inputs
+        $("#QuantityAvailable, #MinQuantityToShipJomla").on("input", calculatePercentage);
+    });
+</script>

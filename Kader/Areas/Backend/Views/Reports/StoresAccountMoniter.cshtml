@@ -1,0 +1,202 @@
+﻿@* @model List<Kader.DTOs.StoreShippingUsersReport.StoreShippingUsersReportDto>
+
+@{
+    ViewData["Title"] = "Stores Account Monitor";
+}
+
+<h2>📊 مراقبة حسابات المخازن</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else if (Model != null && Model.Any())
+{
+    var groupedByStore = Model.GroupBy(s => s.StoreName); // ✅ Group by Store
+
+    <div class="container">
+        @foreach (var storeGroup in groupedByStore)
+        {
+            <h3 class="store-header">🏪 المخزن: @storeGroup.Key</h3>  <!-- Store Name -->
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>رقم الهاتف</th>
+                        <th>الدور</th>
+                        <th>عدد الطلبات</th>
+                        <th>طلبات جديدة المحولة للمخزن</th>
+                        <th>معلقة قيد الفحص</th>
+                        <th>محولة لمسؤول المخزن</th>
+                        <th>محولة لمندوب الشحن الداخلي</th>
+                        <th>محولة لشركة الشحن</th>
+                    </tr>
+                </thead> *@
+@*                 <tbody>
+                    @foreach (var user in storeGroup.OrderBy(f=>f.RoleName))
+                    {
+                        <tr>
+                            <td>@user.FirstName @user.LastName</td>
+                            <td>@user.PhoneNumber</td>
+                            <td>@user.RoleName</td>
+                            <td>@user.TotalOrders</td>
+
+                            <!-- ✅ Hide values for "مخزن" -->
+                            <td>@(user.RoleName == "مخزن" ? null : user.CountStatus12)</td>
+                            <td>@(user.RoleName == "مخزن" ? null : user.CountStatus3)</td>
+
+                            <td>@user.Expr13</td>
+
+                            <!-- ✅ Hide values for "خدمات شحن" -->
+                            <td>@(user.RoleName == "خدمات شحن" ? null : user.Expr14)</td>
+                            <td>@(user.RoleName == "خدمات شحن" ? null : user.Expr4)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        } *@
+ 
+
+
+@model List<Kader.DTOs.Store_shippingUsersReportByDateRange.Store_shippingUsersReportByDateRangeDto>
+
+@{
+    ViewData["Title"] = "Stores Account Monitor";
+}
+
+<h2>📊 مراقبة حسابات المخازن</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+
+<input type="date" id="fromDate">
+<input type="date" id="toDate">
+<button id="filterBtn">بحث</button>
+ 
+    
+    
+            <table id="dataTable" border="1" class="display table">
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>رقم الهاتف</th>
+                        <th>الدور</th>
+                        <th>عدد الطلبات</th>
+                        <th>طلبات جديدة المحولة للمخزن</th>
+                        <th>معلقة قيد الفحص</th>
+                        <th>محولة لمسؤول المخزن</th>
+                        <th>محولة لمندوب الشحن الداخلي</th>
+                        <th>محولة لشركة الشحن</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="5">يرجى اختيار تاريخ والضغط على زر البحث.</td></tr>
+                </tbody>
+            </table>
+        
+    
+ 
+
+<style>
+    .store-header {
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#filterBtn").click(function () {
+            var fromDate = $("#fromDate").val();
+            var toDate = $("#toDate").val();
+
+            if (!fromDate || !toDate) {
+                alert("يرجى اختيار كلا التاريخين!");
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("StoresAccountMoniterData", "Reports")',
+                type: 'GET',
+                data: { fromDate: fromDate, toDate: toDate },
+                success: function (response) {
+                    console.log("✅ Success Response:", response);
+
+                    $("#tableBody").empty(); // Clear previous data
+
+                    if (!response.success || !response.data || response.data.length === 0) {
+                        $("#tableBody").append('<tr><td colspan="9">لا توجد بيانات.</td></tr>');
+                        return;
+                    }
+
+                    let groupedData = {};
+
+                    // ✅ Group by storeName
+                    response.data.forEach(function (item) {
+                        if (!groupedData[item.storeName]) {
+                            groupedData[item.storeName] = [];
+                        }
+                        groupedData[item.storeName].push(item);
+                    });
+
+                    // ✅ Iterate through each store
+                    Object.keys(groupedData).forEach(function (storeName) {
+                        let storeUsers = groupedData[storeName];
+
+                        // ✅ Store Header Row
+                        $("#tableBody").append(`
+                                <tr class="bg-secondary text-white">
+                                    <td colspan="9"><strong>🏪 ${storeName}</strong></td>
+                                </tr>
+                            `);
+
+                        // ✅ Store User Data
+                        storeUsers.forEach(function (user) {
+                            let row = `<tr>
+                                    <td>${user.firstName || ""} ${user.lastName || ""}</td>
+                                    <td>${user.phoneNumber || ""}</td>
+                                    <td>${user.roleName || ""}</td>
+                                    <td>${user.totalOrders || 0}</td>
+
+                                    <!-- ✅ Hide values for "مخزن" -->
+                                    <td>${user.roleName === "مخزن" ? "-" : (user.countStatus12 || 0)}</td>
+                                    <td>${user.roleName === "مخزن" ? "-" : (user.countStatus3 || 0)}</td>
+
+                                    <td>${user.expr13 || 0}</td>
+
+                                    <!-- ✅ Hide values for "خدمات شحن" -->
+                                    <td>${user.roleName === "خدمات شحن" ? "-" : (user.expr14 || 0)}</td>
+                                    <td>${user.roleName === "خدمات شحن" ? "-" : (user.expr4 || 0)}</td>
+                                </tr>`;
+                            $("#tableBody").append(row);
+                        });
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("❌ خطأ أثناء جلب البيانات:", xhr.responseText);
+                    alert("حدث خطأ أثناء جلب البيانات. تحقق من وحدة التحكم (Console) للمزيد من التفاصيل.");
+                }
+            });
+        });
+    });
+</script>
+

@@ -1,0 +1,94 @@
+﻿@model Kader.DTOs.Product.Product_backendDto
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>المنتجات الرئيسية (قطاعي (</span>
+    </nav>
+</div>
+<fieldset>
+    <legend><h2>الاصناف الرئيسية (قطاعي (</h2></legend>
+    <div class="page-section">
+        <div class="container">
+          
+        <table id="myTable" width="100%" border="1" class="display table table-separate table-head-custom table-foot-custom">
+            <thead>
+                    <tr>
+                        <th></th>
+                        <th> الصنف</th>
+                    <th> المنتج</th>
+                     
+                    <th></th>
+                    <th></th>
+                    <th></th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                    @if (Model.ExistingItems != null)
+                    {
+                        int co = 1;
+                        foreach (var item in Model.ExistingItems)
+                        {
+                            <tr><td>@co
+                            @{co++;}</td>
+                                <td> @Html.DisplayFor(modelItem => item.CatogryName) </td>
+                            <td> @Html.DisplayFor(modelItem => item.SubCatogryTitle) </td>
+
+
+                                <td>    @Html.ActionLink("تفاصيل", "Product_qta3a_details", new { id = item.ProductId }, null) </td>
+
+                                <td>    @Html.ActionLink("تعديل", "CreateProduct_qta3a", new { ProductId = item.ProductId }, null) </td>
+                            <td>   @Html.ActionLink("تعديل اسعار الشحن المتغيرة", "EditShippingPrice", new { id = item.ProductId }, null) </td>
+                                <td>   <input type="button" value="حذف المنتج" class="Delete btn2 btn-default" data-val="@item.ProductId" /></td>
+                        </tr>
+                        }
+                    }
+           </tbody>
+        </table>
+        </div>
+    </div>
+</fieldset>
+
+
+
+<script>
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الحذف")) {
+            var requrl = "/Backend/Product/DeleteProduct";
+
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+                // cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data-val') },
+                success: function (json1) {
+                    console.log(json1);
+                    alert(JSON.stringify(json1));
+                    location.reload();
+                },
+
+                error: function (xhr, status, error) {
+                    console.log("XHR Response: " + xhr.responseText);
+                    console.log("Status: " + status);
+                    console.log("Error: " + error);
+                    alert("حدث خطأ: " + xhr.responseText);
+                }
+
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+   
+</script>

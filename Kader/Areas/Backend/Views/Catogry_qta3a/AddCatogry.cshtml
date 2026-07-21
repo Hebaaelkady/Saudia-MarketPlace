@@ -1,0 +1,73 @@
+﻿@model  Kader.DTOs.Catogry.CatogryDto 
+@using System.Globalization
+<h2 class="text-dark font-weight-bold mt-2 mb-2 mr-5 din-bold d-inline">
+
+    @if (string.IsNullOrEmpty(Context.Request.Query["Id"]))
+    {
+       <span>اضافة صنف جديد</span>
+
+    }
+    else
+    {
+
+        <span>تعديل صنف جديد</span>
+    }
+
+</h2>
+<div class="container">
+    <div class="page-banner">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-md-6">
+                <nav aria-label="Breadcrumb">
+                    <ul class="breadcrumb justify-content-center py-0 bg-transparent">
+                        <a asp-controller="home" asp-action="index">الصفحة الرئيسية  </a>
+                        <li class="breadcrumb-item active">الاصناف</li>
+                    </ul>
+                </nav>
+               
+            </div>
+        </div>
+    </div>
+</div>
+<link href="~/Content/login.css" rel="stylesheet" /> 
+
+<div class="wrapper">
+    <div class="container">
+        <div>
+            <img src="~/Images/logo3.png" />
+
+
+        </div> 
+        <form asp-controller="Catogry_gomla" asp-action="AddCatogry" method="post">
+         
+          
+
+            <div class="form-group"><label>اسم الصنف</label>
+                <input type="text" asp-for="CatogryName" name="CatogryName" class="form-control" />
+
+               
+            </div>
+            
+                
+                @*<div class="form-group">
+
+                        @Html.CheckBoxFor(m => m.RememberMe)
+                        @Html.LabelFor(m => m.RememberMe)
+
+                    </div>*@
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                    <button type="submit">حفظ الصنف</button>
+                    </div>
+                </div>
+
+     </form>
+    </div>
+    
+</div>
+
+
+
+ 
+ 
+<script src="~/Scripts/Jquery.js"></script> 

@@ -1,0 +1,256 @@
+<!--begin::Aside Menu-->
+
+@using Newtonsoft.Json
+<!--begin::Aside Menu-->
+@{
+    var stringPaths = Context.User.FindFirst("Paths")?.Value ?? "[]";
+    List<string> pathsList = (JsonConvert.DeserializeObject<string[]>(stringPaths)).ToList();
+}
+ 
+
+
+<div class="aside-menu-wrapper flex-column-fluid" id="kt_aside_menu_wrapper">
+    <!--begin::Menu Container-->
+    <div id="kt_aside_menu" class="aside-menu my-4"  style="height:60px !important;padding:3px ">
+        <!--begin::Menu Nav-->
+        <ul class="menu-nav">
+            @if (pathsList.Any(rd => rd.Contains("KaderTeacher/All")))
+            {
+            <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">
+                    <a href="/Catogry/All" class="menu-link menu-toggle">
+
+                    <span class="menu-text din-bold">جميع المرشحين للترقي</span>
+
+                </a>
+
+
+            </li>
+            }
+            @if (pathsList.Any(rd => rd.Contains("AssignSheigh/Add")))
+            {
+            <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">
+                <a href="javascript:;" class="menu-link menu-toggle">
+
+                    <span class="menu-text din-bold">تخصيص مشايخ وموجهين للمعهد</span>
+
+                </a>
+                <div class="menu-submenu">
+
+                    <ul class="menu-subnav">
+
+                        <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                            <a href="/AssignSheigh/add" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot">
+                                    <span></span>
+                                </i>
+                                <span class="menu-text din-bold">اضافة شيخ وموجه لمعهد</span>
+                            </a>
+
+
+
+                        </li>
+                        <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                            <a href="/AssignSheigh/Index" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot">
+                                    <span></span>
+                                </i>
+                                <span class="menu-text din-bold">عرض المعاهد المخصصة لشيوخ</span>
+                            </a>
+                        </li>
+                        <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                            <a href="/AssignSheigh/NotAssign" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot">
+                                    <span></span>
+                                </i>
+                                <span class="menu-text din-bold">عرض المعاهد الغير مخصصة لشيوخ</span>
+                            </a>
+                        </li>
+                        <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                            <a href="/AssignSheigh/IndexMwgh" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot">
+                                    <span></span>
+                                </i>
+                                <span class="menu-text din-bold">عرض المعاهد المخصصة لموجهين</span>
+                            </a>
+                        </li>
+                        <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                            <a href="/AssignSheigh/NotAssignMwgh" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot">
+                                    <span></span>
+                                </i>
+                                <span class="menu-text din-bold">عرض المعاهد الغير مخصصة لموجهين</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            }
+            @*<li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">
+            <a href="javascript:;" class="menu-link menu-toggle">
+                <span class="svg-icon menu-icon">
+                    <i class="flaticon-calendar-2"></i>
+                </span>
+                <span class="menu-text din-bold">تخصيص موجه لمدرسين</span>
+
+            </a>
+            <div class="menu-submenu">
+
+                <ul class="menu-subnav">
+
+                    <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                        <a href="/AssignMwgh/add" class="menu-link">
+                            <i class="menu-bullet menu-bullet-dot">
+                                <span></span>
+                            </i>
+                            <span class="menu-text din-bold">اضافة تخصيص موجه لمدرس</span>
+                        </a>
+
+
+
+                    </li>
+                    <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                        <a href="/AssignMwgh/Index" class="menu-link">
+                            <i class="menu-bullet menu-bullet-dot">
+                                <span></span>
+                            </i>
+                            <span class="menu-text din-bold">عرض الموجهين المخصصين</span>
+                        </a>
+                    </li>
+                    <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                        <a href="/AssignMwgh/NotAssign" class="menu-link">
+                            <i class="menu-bullet menu-bullet-dot">
+                                <span></span>
+                            </i>
+                            <span class="menu-text din-bold">عرض المدرسين الغير المخصصين</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>*@
+            @if (pathsList.Any(rd => rd.Contains("FiveYear/Add")))
+            {
+            <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">
+                <a href="/FiveYear/Add" class="menu-link menu-toggle">
+
+                    <span class="menu-text din-bold">المدة البينية</span>
+
+                </a>
+                
+        </li>
+            }
+            @if ( pathsList.Any(rd => rd.Contains("Ev_AnswerTeacher/Add")))
+            {
+            <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">
+                <a href="/Ev_AnswerTeacher/Add" class="menu-link menu-toggle">
+
+                    <span class="menu-text din-bold">تقييم اللجنة الثلاثية </span>
+
+                </a>
+               
+        </li>
+            }
+            @if (pathsList.Any(rd => rd.Contains("Ev_AnswerSheikh/Add")))
+            {
+            <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">
+                <a href="/Ev_AnswerSheikh/Add" class="menu-link menu-toggle">
+
+                    <span class="menu-text din-bold">تقييمات شيوخ</span>
+
+                </a>
+
+            </li>
+            }
+
+            @if (pathsList.Any(rd => rd.Contains("Ev_AnswerMwgh/Add")))
+            {
+            <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">
+                <a href="/Ev_AnswerMwgh/Add" class="menu-link menu-toggle">
+
+                    <span class="menu-text din-bold"> تقييمات الموجهين</span>
+
+                </a>
+
+            </li>
+            }
+            @if (pathsList.Any(rd => rd.Contains("Ev_AnswerTeacher/AnswerTeacher")))
+            {
+            <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">
+                <a href="/Ev_AnswerTeacher/AnswerTeacher" class="menu-link menu-toggle">
+
+                    <span class="menu-text din-bold">ملف الانجاز</span>
+
+                </a>
+                @*<div class="menu-submenu">
+
+                <ul class="menu-subnav">
+
+                    @if (pathsList.Any(rd => rd.Contains("Ev_AnswerTeacher/AnswerTeacher")))
+                    {
+                        <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                            <a href="/Ev_AnswerTeacher/AnswerTeacher" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot">
+                                    <span></span>
+                                </i>
+                                <span class="menu-text din-bold">اضافة اجابات </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>*@
+            </li>
+            }
+            @if (pathsList.Any(rd => rd.Contains("Report/AllResult")) || pathsList.Any(rd => rd.Contains("Report/Profile")) || pathsList.Any(rd => rd.Contains("Report/AllInfoByArea")))
+            {
+            <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">
+                <a href="javascript:;" class="menu-link menu-toggle">
+
+                    <span class="menu-text din-bold">تقارير</span>
+
+                </a>
+                <div class="menu-submenu">
+
+                    <ul class="menu-subnav">
+                        @if (pathsList.Any(rd => rd.Contains("Report/AllInfoByArea")))
+                            {
+                        <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                            <a href="/Report/AllInfoByArea" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot">
+                                    <span></span>
+                                </i>
+                                <span class="menu-text din-bold">تقرير مجمع للمناطق</span>
+                            </a>
+                        </li>
+                            }
+                        @if (pathsList.Any(rd => rd.Contains("Report/AllResult")))
+                            {
+                        <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                            <a href="/Report/AllResult" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot">
+                                    <span></span>
+                                </i>
+                                <span class="menu-text din-bold">تقرير مجمع للنتيجة</span>
+                            </a>
+                        </li>
+                            } @if (pathsList.Any(rd => rd.Contains("Report/Profile")))
+                            {
+                        <li class="menu-item menu-item-submenu" aria-haspopup="true">
+                            <a href="/Report/Profile" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot">
+                                    <span></span>
+                                </i>
+                                <span class="menu-text din-bold"> الملف الشخصي للمدرس</span>
+                            </a>
+                        </li>
+                            }
+                        </ul>
+                    </div>
+                </li>
+            }
+
+
+        </ul>
+        <!--end::Menu Nav-->
+    </div>
+    <!--end::Menu Container-->
+</div>
+<!--end::Aside Menu-->

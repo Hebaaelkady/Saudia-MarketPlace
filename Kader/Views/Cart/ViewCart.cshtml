@@ -1,0 +1,554 @@
+﻿@using System.Text.Json
+@model List<Kader.DTOs.Product.ApiEditProductDto>
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" asp-controller="Home" asp-action="Index">الصفحة الرئيسية</a>
+                <a class="breadcrumb-item text-dark" href="#">تسوق</a>
+                <span class="breadcrumb-item active">عربة التسوق</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+ 
+ 
+        <div class="container-fluid">
+    @if (Model != null)
+    {
+        <div class="row px-xl-5">
+            <div class="col-lg-8 table-responsive mb-5">
+                <table class="table table-light table-borderless table-hover text-center mb-0">
+                    <thead class="thead-dark">
+                <tr>
+                        <th>النوع </th>
+                   
+                    <th> الصنف</th>
+                    <th>السعر </th>
+                    <th>الكميّة </th>
+                    <th>الإجمالي </th>
+                    <th>  </th>
+                </tr>
+                    </thead>
+                    <tbody class="align-middle">
+            @foreach (var item in Model)
+            {
+            <form asp-action="AddToCart" asp-controller="Cart" id="addToCartForm-@item.ProductId">
+                <input type="hidden" name="ProductId"  value="@item.ProductId">
+                <tr id="row-@item.ProductId"   data="@item.ProductId">
+                    <td class="align-middle">
+                        <input type="hidden" value="@item.CatTypeId" name="CatTypeId" />
+                        @if (item.typeGomlaOrQt3 == 1)
+                        {
+                            <span>جملة</span>
+                        }
+                        @if (item.typeGomlaOrQt3 == 2)
+                        {
+                        <span>قطاعي</span>
+                        }
+                    </td>
+                    <td class="align-middle">
+                                 
+                        @if (item.ProductImgDto.Count != 0)
+                        {
+                            <img style="width: 50px;" src="~/Images/@item.ProductImgDto.FirstOrDefault().ProductImgName" />
+                        }
+                        else
+                        {
+                            <img style="width: 50px;" src="~/assets/media/bg/notfound.jpg" />
+                        }
+                        @item.SubCatogryTitle
+
+                    </td>
+                                 
+                    <td class="align-middle">
+
+                        @{
+                            decimal afterDiscount1 = 0;
+                            if (item.AfterDiscount != null)
+                            {
+                                decimal price = item.price;
+                                decimal AfterDiscount = (decimal)item.AfterDiscount.Value;   // No need to parse, it's already a number
+                                decimal afterDiscount = /* price - (price * */ AfterDiscount /* / 100) */;
+                                afterDiscount1 = Math.Round(afterDiscount, 2);
+                                    <span class="price"> @String.Format("{0:0.00}", @afterDiscount1) </span>
+
+                                    <span>ر.س</span>
+
+                            }
+                            else
+                            {
+                                <span class="price"> @String.Format("{0:0.00}", @item.price) </span>
+
+                                <span>ر.س</span>
+
+                            }
+                        }
+                         
+
+                    </td>
+                    <td class="align-middle">
+                    @if (item.stock < 1 || (  item.MinQuantityToShipJomla == 0)   )
+                    {
+                        <span>غير متوافر</span>
+                    }
+                    else
+                    {
+                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                            <div class="input-group-btn">
+                                <input type="button" class="btn btn-sm btn-primary btn-minus subtract subtract-@item.ProductId" value="-">
+                            </div>
+                                                 
+                        @if (item.Quantity_user > item.stock)
+                        {
+                            <input type="text" name=" Quantity " class="form-control form-control-sm bg-secondary border-0 text-center Quantity_user quantity-@item.ProductId" value="@item.stock.ToString("0")">
+                        }
+                        else
+                        {
+                            <input type="text" name=" Quantity " class="form-control form-control-sm bg-secondary border-0 text-center Quantity_user quantity-@item.ProductId" value="@item.Quantity_user.ToString("0")">
+                        }
+                            <div class="input-group-btn">
+                            <input type="button" class="btn btn-sm btn-primary btn-plus add add-@item.ProductId" value="+">
+                           </div>
+                    </div>
+                                        } @item.Unit_Name
+                </td>
+                <td class="align-middle" >
+                    <span class="item-total" id="item-total-@item.ProductId">0.00</span><span>ر.س</span>
+                  
+                        <div> 
+                        <span style="background:red;padding:10px;display:none"  >@item.ShippingPriceDto.Count()</span>
+                                            
+                        @if (item.ShippingPrice != null)
+                        {
+                            <span class="shipping-price" style="display:none"  id="shipping-price-@item.ProductId">@item.ShippingPrice</span>
+                            if(@item.ShippingPrice==0)
+                            {
+                                <span>شحن مجاني</span>
+                            }
+                        }
+                        else
+                        {
+                                            <span style="background:red;padding:10px;display:none" class="transportprice" id="transportprice-@item.ProductId"></span>
+                                            <span id="transportprice1-@item.ProductId"></span>
+                        }
+                    </div>
+                </td>
+                <td class="align-middle">
+                     <a class="fas fa-trash text-primary redColor delete-@item.ProductId" data="@item.ProductId">&nbsp;</a>
+                </td>
+                </tr>
+            </form> 
+            <script>
+                             
+            $(document).ready(function () {
+             var item = {
+        stock: @item.stock,
+        typeGomlaOrQt3: @item.typeGomlaOrQt3,
+        MinQuantityToShipJomla: "@item.MinQuantityToShipJomla", // التعامل كنص
+        // MaxQuantityToShipQta3a: "@item.MaxQuantityToShipQta3a"  // التعامل كنص
+    }; 
+                                if (
+                                     item.stock < 1 ||
+                                     (
+                                         
+                                         item.MinQuantityToShipJomla !== "" &&
+                                         parseInt(item.MinQuantityToShipJomla, 10) === 0)
+                                     //  ||
+                                     // (
+                                     //     item.typeGomlaOrQt3 === 2 &&
+                                     //     item.MaxQuantityToShipQta3a !== "" &&
+                                     //     parseInt(item.MaxQuantityToShipQta3a, 10) === 0
+                                     // )
+                                       
+                                 ){
+                                 Reset();
+                                }
+                                    var stock = Math.floor('@item.stock');
+                    var QuantityToShip;
+                                    if (@item.typeGomlaOrQt3 == 1 || @item.typeGomlaOrQt3 == 2) {
+                                        var minQuantityToShipJomla = Math.floor('@item.MinQuantityToShipJomla');
+                                        QuantityToShip = minQuantityToShipJomla;
+                    }
+                    // if (@item.typeGomlaOrQt3 == 2) {
+                    //                     var MaxQuantityToShipQta3a = Math.floor('@item.MaxQuantityToShipQta3a');
+                    //                 QuantityToShip =   MaxQuantityToShipQta3a  ;
+                    // }
+                    var maxValue = QuantityToShip;
+                    var shippingPriceNavigation = @Html.Raw(JsonSerializer.Serialize(item.ShippingPriceDto));
+             
+                    $('.add-@item.ProductId').click(function () {
+                        var value = parseInt($('.quantity-@item.ProductId').val(), 10);
+                        value = isNaN(value) ? 0 : value;
+                        if (@item.typeGomlaOrQt3 == 1 || @item.typeGomlaOrQt3 == 2) {
+                            if (value < stock) {
+                                value = parseInt($('.quantity-@item.ProductId').val(), 10) + 1;
+                            }
+
+                        }
+                        // else
+                        // {
+                        //     if (value < maxValue) {
+                        //         value = parseInt($('.quantity-@item.ProductId').val(), 10) + 1;
+                        //     }
+                        // }
+                        updateItemTotal(@item.ProductId);
+                        updateCartTotal();
+                        updateCheckoutIcon(); updateTransportPrice(@item.ProductId);
+                        updateTotalTransportCost(); updateTotalOrderCost();
+                        $.ajax({
+                            url: '/Cart/AddToCart', // Form action URL
+                            type: 'POST',
+                                data: {
+                                    ProductId: @item.ProductId,
+                                    Action: 'add',
+                                    Quantity: value // Get updated quantity
+                                },
+                            success: function (response) {
+                                    $('.quantity-@item.ProductId').val(value);
+                                updateItemTotal(@item.ProductId);
+                                updateCartTotal();
+                                updateCheckoutIcon(); updateTransportPrice(@item.ProductId);
+                                updateTotalTransportCost(); updateTotalOrderCost();
+                                $('#addToCartPopup').modal('show');
+                                            
+                                },
+                            error: function () {
+                                alert('An error occurred while adding to cart.');
+                            }
+                        });
+                    });
+                    $('.subtract-@item.ProductId').click(function () {
+                        var value = parseInt($('.quantity-@item.ProductId').val(), 10);
+                        value = isNaN(value) ? 0 : value;
+                        if (@item.typeGomlaOrQt3 == 1 || @item.typeGomlaOrQt3 == 2) {
+                            if (value > maxValue) {
+                                value = parseInt($('.quantity-@item.ProductId').val(), 10) - 1;
+                                if (value == 0) { value = 1; }
+                            }
+                        }
+                        // else
+                        // {
+                        //     if (value > 1) {
+                        //         value = parseInt($('.quantity-@item.ProductId').val(), 10) - 1;
+                        //     }
+                        //     else if(value==0)
+                        //     {
+                        //         value = 1;
+                        //     }
+                        // }
+                        $.ajax({
+                            url: '/Cart/AddToCart', // Form action URL
+                            type: 'POST',
+                                data: {
+                                    ProductId: @item.ProductId,
+                                    Action: 'subtract',
+                                    Quantity: value // Get updated quantity
+                                },
+                            success: function (response) {
+                                    $('.quantity-@item.ProductId').val(value);
+                                updateItemTotal(@item.ProductId);
+                                updateCartTotal();
+                                updateCheckoutIcon(); updateTransportPrice(@item.ProductId);
+                                updateTotalTransportCost(); updateTotalOrderCost();
+                                $('#addToCartPopup').modal('show');
+                            },
+                            error: function () {
+                                alert('An error occurred while adding to cart.');
+                            }
+                            });
+                    });
+
+                    $('.quantity-@item.ProductId').on('input', function () {
+                        this.value = this.value.replace(/[^1-9]/g, '');
+                        
+                        var value = parseInt(this.value, 10);
+                         if (@item.typeGomlaOrQt3 == 1 || @item.typeGomlaOrQt3 == 2) {
+                            if ((value < maxValue) || (value > stock)) {
+                                            value = maxValue; this.value = maxValue;
+                            }
+                        }
+                        // else{
+                        //     if (value > maxValue) {
+                        //         value = maxValue;
+                        //                     this.value = maxValue;
+                        //     }
+                        // }
+                        updateTransportPrice(@item.ProductId);
+                        updateItemTotal(@item.ProductId);
+                        updateCartTotal(); updateTotalTransportCost(); updateTotalOrderCost();
+                        var formData = $(`#addToCartForm-@item.ProductId`).serialize(); // Get form data
+                        var productId = @item.ProductId;
+
+                        const action = 'same';
+                        formData += `&Action=${action}`;
+                        $.ajax({
+                            url: '/Cart/AddToCart', // Form action URL
+                            type: 'POST',
+                                        data: {
+                                            ProductId: @item.ProductId,
+                                            Action: 'same',
+                                            Quantity: value // Get updated quantity
+                                        },
+                            success: function (response) {
+                              
+                                            if (response.success) {
+                                                return;
+                                            }
+                                updateItemTotal(@item.ProductId);
+                                updateCartTotal();
+                                updateCheckoutIcon(); updateTransportPrice(@item.ProductId);
+                                updateTotalTransportCost(); updateTotalOrderCost();
+                                // Show the popup
+                                $('#addToCartPopup').modal('show');
+                            },
+                            error: function () {
+                                            return;
+                                alert('An error occurred while adding to cart.');
+                            }
+                        });
+                    });
+
+                    // Add to cart popup functionality
+                    $(`#addToCartForm-@item.ProductId`).submit(function (event) {
+                        //   event.preventDefault(); // Prevent default form submission
+
+                        var formData = $(this).serialize(); // Get form data
+                        var productId = $(this).find('input[name="ProductId"]').val();
+                        $.ajax({
+                            url: $(this).attr('action'), // Form action URL
+                            type: 'POST',
+                            data: formData,
+                            success: function (response) {
+                                    updateItemTotal(@item.ProductId);
+                                    updateCartTotal();
+                                    updateCheckoutIcon(); updateTransportPrice(@item.ProductId);
+                                    updateTotalTransportCost(); updateTotalOrderCost();
+                                $('#addToCartPopup').modal('show');
+                            },
+                            error: function () {
+                                alert('An error occurred while adding to cart.');
+                            }
+                        });
+                    });
+                        $('.delete-@item.ProductId').click(function (e) {
+                            e.preventDefault(); // Prevent default link behavior
+
+                            const productId = $(this).attr('data'); // Get ProductId from data attribute
+                             
+                            const action = 'delete';
+                            const row = $(this).closest('tr'); // Get the closest 'tr' row
+
+                            // Send an AJAX request to AddToCart action with Action=delete
+                            $.ajax({
+                                url: '/Cart/AddToCart',
+                                type: 'POST',
+                                data: { ProductId: productId, Action: action },
+                                dataType: 'json',
+                                success: function (response) { 
+                                    if (response.success) { 
+                                        $("#addToCartForm-@item.ProductId").remove();
+                                        row.remove();
+                                        updateItemTotal(@item.ProductId);
+                                        updateCartTotal();
+                                        updateCheckoutIcon(); updateTransportPrice(@item.ProductId);
+                                        updateTotalTransportCost(); updateTotalOrderCost();
+                                        alert('تم حذف المنتج من السلة!');
+                                    } else { 
+                                        alert('حدث خطأ أثناء حذف المنتج!');
+                                    }
+                                },
+                                error: function () {
+                                    // Handle AJAX error (optional)
+                                    alert('حدث خطأ في الاتصال!');
+                                }
+                            });
+                        }); 
+                            
+                        $('tr').each(function () {
+                            var productId = $(this).attr('data');
+                            updateItemTotal(productId);
+                        });
+                        updateTransportPrice(@item.ProductId);
+                                    function updateTransportPrice(productId) {
+                                        var quantity = parseInt($('#row-' + productId).find('.quantity-' + productId).val(), 10);
+                                        var transportPrice = 0;
+
+                                        if (shippingPriceNavigation && shippingPriceNavigation.length > 0) {
+                                            if (shippingPriceNavigation[0].IsODD_Even == false) {
+                                                // Sort by VarQuantity in ascending order
+                                                shippingPriceNavigation.sort((a, b) => a.VarQuantity - b.VarQuantity);
+
+                                                // Find the correct price based on quantity
+                                                for (var i = 0; i < shippingPriceNavigation.length; i++) {
+                                                    if (quantity <= shippingPriceNavigation[i].VarQuantity) {
+                                                        transportPrice = shippingPriceNavigation[i].VarPrice;
+                                                        break;
+                                                    }
+                                                }
+
+                                                // If quantity is greater than the max available VarQuantity, use the max price
+                                                if (quantity > shippingPriceNavigation[shippingPriceNavigation.length - 1].VarQuantity) {
+                                                    transportPrice = shippingPriceNavigation[shippingPriceNavigation.length - 1].VarPrice;
+                                                }
+                                            }
+                                            else { // Case when IsODD_Even == true
+                                                // Sort the list by quantity
+                                                shippingPriceNavigation.sort((a, b) => a.VarQuantity - b.VarQuantity);
+
+                                                // Get the first available quantity and price
+                                                var baseQuantity = shippingPriceNavigation[0].VarQuantity;
+                                                var basePrice = shippingPriceNavigation[0].VarPrice;
+
+                                                if (baseQuantity > 0) {
+                                                    // Divide user's quantity by baseQuantity and round up
+                                                    var multiplier = Math.ceil(quantity / baseQuantity);
+
+                                                    // Calculate transport price
+                                                    transportPrice = multiplier * basePrice;
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            $('#transportprice-' + productId).text("N/A"); // Display "N/A" if no data available
+                                            return;
+                                        }
+
+                                        // Update the UI with the calculated price
+                                        $('#transportprice-' + productId).text(transportPrice.toFixed(2));
+
+                                        if (transportPrice == 0) {
+                                            $("#transportprice1-" + productId).text("شحن مجاني");
+                                        } else {
+                                            $("#transportprice1-" + productId).text("");
+                                        }
+                                    }
+
+                        function updateItemTotal(productId) {
+                                     
+                            var priceText = $('#row-' + productId).find('.price').text().replace('$', '').replace(/,/g, '');
+                            var price = parseFloat(priceText);
+                            var quantity = parseInt($('#row-' + productId).find('.quantity-' + productId).val(), 10);
+                              
+                            if (!isNaN(price) && !isNaN(quantity)) {
+                                var itemTotal = price * quantity;
+                                $('#item-total-' + productId).text(itemTotal.toFixed(2));
+                            }
+                        }
+
+                        function updateCartTotal() {
+                            var total = 0;
+                                $('tr').not(':first-child').each(function () {
+                                    var price = parseFloat($(this).find('.item-total').text().replace('$', '').replace(/,/g, ''));
+                                if (!isNaN(price) ) {
+                                        total += price;
+                                }
+                            });
+                            $('#cartTotal').text(total.toFixed(2));
+                        }
+                        function updateTotalOrderCost() {
+                            var totalItemsCost = parseFloat($('#cartTotal').text()) || 0;
+                            var totalTransportCost = parseFloat($('#totalTransportCost').text()) || 0;
+                            var totalOrderCost = totalItemsCost + totalTransportCost;
+                            $('#totalOrderCost').text(totalOrderCost.toFixed(2));
+                        }
+                        function updateTotalTransportCost() {
+                            var totalTransportCost = 0;
+                            $('tr').each(function () {
+                                var productId = $(this).attr('data');
+                                var shippingPrice = parseFloat($('#shipping-price-' + productId).text()) || 0;
+                                var transportPrice = parseFloat($('#transportprice-' + productId).text()) || 0;
+                                totalTransportCost += shippingPrice + transportPrice;
+                            });
+                            $('#totalTransportCost').text(totalTransportCost.toFixed(2));
+                                    } function Reset() {
+                                        var value = parseInt($('.quantity-@item.ProductId').val(), 10);
+                                        value = isNaN(value) ? 0 : value;
+                                        $.ajax({
+                                            url: '/Cart/AddToCart', // Form action URL
+                                            type: 'POST',
+                                            data: {
+                                                ProductId: @item.ProductId,
+                                                Action: 'delete',
+                                                Quantity: value // Get updated quantity
+                                            },
+                                            success: function (response) {
+                                                $('.quantity-@item.ProductId').val(value);
+                                                updateItemTotal(@item.ProductId);
+                                                updateCartTotal();
+                                                updateCheckoutIcon(); updateTransportPrice(@item.ProductId);
+                                                updateTotalTransportCost(); updateTotalOrderCost();
+                                                $('#addToCartPopup').modal('show');
+
+                                            },
+                                            error: function () {
+                                                alert('An error occurred while adding to cart.');
+                                            }
+                                        });
+                }  
+                    updateTotalTransportCost();
+                        updateCartTotal();
+                        updateTotalOrderCost()
+                                 
+                                    var totalOrderCost = parseFloat($('#totalOrderCost').text()) || 0;
+                                    
+                                    // Hide the checkout button if the total order cost is 0
+                                    if (totalOrderCost <= 0) {
+                                        $('#checkoutButton').hide();
+                                    }
+                                });
+            </script>
+        }
+        </tbody>
+                </table>
+            </div>
+            <div class="col-lg-4">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">ملخص الطلب</span></h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="border-bottom pb-2">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6>المجموع الفرعي</h6>
+                            <h6><span id="cartTotal">0.00</span><span>ر.س</span></h6>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">الشحن</h6>
+                            <h6 class="font-weight-medium"> <span id="totalTransportCost">0.00</span><span>ر.س</span></h6>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <div class="d-flex justify-content-between mt-2">
+                            <h5>إجمالي الطلب </h5>
+                            <h5> <span id="totalOrderCost">0.00</span><span>ر.س</span></h5>
+                        </div>
+
+                        @if (Model.Count() > 0  )
+                        {
+                            <button class="btn btn-block btn-primary font-weight-bold my-3 py-3"
+                                    onclick="location.href='@Url.Action("checkout", "Cart")'">
+                                استكمال الطلب
+                            </button>
+
+                            
+                        }
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    else
+    {
+        <div  style="text-align:center">
+            <p>
+
+                لا يوجد منتجات في قائمة مشترياتك!
+                جينا ماركت مكانك الاول لكل احتياجاتك . تسوق الأن أكبر تشكيلة منتجات و عروض و تسهيلات فالدفع.
+            </p>
+        </div>
+    }
+    </div>
+    <!-- Cart End -->
+

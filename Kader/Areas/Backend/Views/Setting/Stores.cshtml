@@ -1,0 +1,89 @@
+﻿ 
+@model  Kader.DTOs.Stores.Stores_backendDto
+ 
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+    <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>المخازن (</span>
+    </nav>
+</div>
+@Html.Partial("_Stores", Model)
+<fieldset>
+    <legend><h2>المخازن  (</h2></legend>
+<div class="page-section">
+    <div class="container">
+        
+        <table id="myTable" border="1" class="display table table-separate table-head-custom table-foot-custom">
+            <thead>
+                <tr>
+                        <th>المخازن الرئيسية</th>
+                        <th>العنوان</th>
+                      
+                       
+                        <th>حذف نهائي </th>
+                        
+                </tr>
+            </thead>
+            <tbody>
+                    @if (Model != null)
+            {
+                        foreach (var item in Model.ExistingStores)
+                {
+                    <tr>
+                        <td>
+                         @item.StoreName
+                                </td>
+                                <td>
+                                    @item.Address
+                                </td>
+                        <td>   <input type="button" value="حذف المخزن" class="Delete btn2 btn-default" data-val="@item.StoreId"/></td>
+                                
+                    </tr>
+                }
+            }
+           </tbody>
+        </table>
+
+    </div>
+</div>
+</fieldset>
+
+<script>
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الحذف")) {
+            var requrl = "/Backend/Setting/DeleteStores";
+
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+               // cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data-val') },
+                success: function (json) {
+                    console.log(json);
+                    alert(JSON.stringify(json));
+                    location.reload();
+                },
+              
+                    error: function (xhr, status, error) {
+                         
+                        alert("حدث خطأ: " + xhr.responseText);
+                    }
+                
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+
+</script>
+
+

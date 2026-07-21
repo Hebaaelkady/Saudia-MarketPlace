@@ -1,0 +1,29 @@
+﻿@model Kader.DTOs.Colors.Colors_backendDto
+<form asp-controller="Setting" asp-action="Colors" method="post">
+
+    <input type="hidden" asp-for="NewItem.ColorId" name="NewItem.ColorId" class="form-control" value="@Model.NewItem.ColorId" />
+    <div class="form-group"> 
+            <label>اللون</label>
+        
+        
+        <input type="text" asp-for="NewItem.ColorName" name="NewItem.ColorName" class="form-control" value="@Model.NewItem.ColorName" />
+        @Html.ValidationMessageFor(model => model.NewItem.ColorName)
+       </div>
+        <div class="form-group"> 
+            <label>درجة اللون</label>
+        <input type="color" asp-for="NewItem.ColorDegree" name="NewItem.ColorDegree" class="form-control" value="@Model.NewItem.ColorDegree">
+        </div>
+    
+             
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                    <button type="submit">حفظ اللون</button>
+                    </div>
+                </div>
+
+     </form>
+ 
+  
+
+    
+  

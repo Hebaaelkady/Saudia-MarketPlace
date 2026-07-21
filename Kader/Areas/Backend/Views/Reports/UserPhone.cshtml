@@ -1,0 +1,59 @@
+﻿@model List<Kader.DTOs.Users.UserPhoneDto>
+ 
+@{
+    ViewData["Title"] = "View";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>تليفونات العملاء</span>
+    </nav>
+</div>
+<fieldset>
+    <legend><h2>تليفونات العملاء  </h2></legend>
+    <div class="page-section">
+        <div class="container">
+            @if (Model != null)
+            {
+                <div class="box">
+                    <br />
+                    <table id="myTable" width="100%" border="1" class="display table table-5 separate table-head-custom table-foot-custom">
+                        <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>الاسم</th>
+                            <th>رقم التليفون</th> 
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                           int i= 1;
+                        }
+                        @foreach (var item in Model.OrderByDescending(g => g.FirstName).OrderByDescending(g => g.LastName))
+                        {
+                            <tr>
+                                <td>
+                                    @i
+                                    @{
+                                         i++;
+                                    }
+                                </td>
+                                <td>
+                                    @item.FirstName @item.LastName
+                                </td>
+                                <td> @item.Username</td>
+                                 
+                                 
+                               
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+</fieldset>

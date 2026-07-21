@@ -1,0 +1,208 @@
+﻿@model Kader.DTOs.Cart.Checkout_frontDto
+@using Kader.Infrastructure.Shared;
+@using System.Text.Json
+@{
+    ViewData["Title"] = "View";
+}
+@{
+    Infrastructure.Shared.Interfaces.IKeys _keys = new Infrastructure.Shared.Implementations.Keys();
+}
+ 
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" asp-controller="Home" asp-action="Index">الصفحة الرئيسية</a>
+                <a class="breadcrumb-item text-dark" href="#">حسابي  </a>
+                <span class="breadcrumb-item active">طلباتي</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-lg-3 col-md-4">
+ 
+
+
+    <br />
+@Html.Partial("_sidebar", Model)
+        </div>
+        <div class="col-lg-8">
+
+            @if (Model != null)
+            {
+ 
+        @if (Model.Itemslist.Any())
+                {
+                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3"><span> # @Model.Idordersss : </span><span>رقم الطلب</span> </span></h5>
+                    <div class="bg-light p-30 mb-5">
+            
+                    <div class="dir"> تاريخ الطلب: @Model.InsertDate</div>
+                        <h4><span style="color:blue"> @Model.OrdersNo</span>  : كود الاستلام  </h4>
+                    <span style="color:coral">يرجي الاحتفاظ برقم الطلب لتسليمه لمندوب الشحن</span>
+                     <hr />
+                        <h6 class="mb-3">طلباتي</h6>
+
+                        <table class="table table-light table-borderless table-hover text-center mb-0">
+                            <thead class="thead-dark" style="font-size:12px">
+                        <tr>
+                            <th>اسم المنتج </th>
+                            <th>السعر </th>
+                            <th>الكميّة </th>
+                            <th>الإجمالي </th>
+                        </tr>
+                            </thead>
+                            <tbody class="align-middle">
+
+                        @for (int i = 0; i < Model.Itemslist.Count; i++)
+                        {
+
+                            var item = Model.Itemslist[i];
+                                    <tr id="row-@item.ProductId" data="@item.ProductId" class="align-middle">
+
+                                        <td class="align-middle">
+                                    <div>@item.ProductName</div>
+                                    <div>@item.Colornme</div>
+                                </td>
+                                        <td class="price align-middle">
+
+                                    <input type="text" style="width:20% !important" readonly name="Itemslist[@i].PriceItem" class="no-border-input price-@item.ProductId" value="@item.PriceItem" />
+                                    
+                                </td>
+                                        <td class="align-middle">
+                                            <input type="text" style="width:20% !important" name="Itemslist[@i].Quantity" readonly class="no-border-input Quantity quantity-@item.ProductId" value="@item.Quantity">
+                                   
+                                </td>
+
+                                        <td class="align-middle">
+                                        <span class="item-total" id="item-total-@item.ProductId">@{
+                                                var t = item.PriceItem* item.Quantity;
+                                            }
+                                               @t </span>
+
+                                </td>
+
+                            </tr>
+
+                            
+                        }
+
+                    </tbody>
+                </table>
+
+
+                        <div class="border-bottom pt-3 pb-2">
+                            <span class=" font-weight">الاجمالي:</span>   <span id="cartTotal">@Model.TotalPrice</span><span>ر.س</span>
+
+                    </div>
+                        <div class="border-bottom pt-3 pb-2"> <span class=" font-weight">الشحن :  </span><span id="totalTransportCost">@Model.TotalTransportShippPrice</span><span>ر.س</span></div>
+
+                        <div class="border-bottom pt-3 pb-2">
+                            <span class=" font-weight">
+                                إجمالي الطلب : </span><span id="totalOrderCost">
+                                @{
+                                    var g = Model.TotalPrice + Model.TotalTransportShippPrice; 
+                                }@g</span><span>ر.س</span></div>
+
+                </div>
+
+
+           
+        }
+    @if (Model.AddressDto != null)
+    {
+                    <div class="bg-light p-30 mb-5">
+                        <h6 class="mb-3">عنوان التوصيل</h6>
+                
+                <br />
+                <input type="hidden" name="AddressId" value="@Model.AddressDto.AddressId" />
+
+                        <table class="table table-light table-borderless table-hover text-center mb-0">
+                            <thead class="thead-dark" style="font-size:12px">
+                    <tr>
+                        <th>  المدينة</th>
+                        <th>  الحي</th>
+                        <th>العنوان</th>
+                        <th>رقم المبني</th>
+                        <th> الرقم الاضافي</th>
+
+                        <th>تليفون اخر</th>
+                        <th>وقت التوصيل المناسب</th>
+                        <th></th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="align-middle">
+                    <tr>
+                                    <td class="align-middle">
+                            @Model.AddressDto.City
+                        </td>
+                                    <td class="align-middle">
+                            @Model.AddressDto.Name
+                        </td>
+                                    <td class="align-middle"> @Model.AddressDto.AddressStreet</td>
+                                    <td class="align-middle"> @Model.AddressDto.BuildingNo</td>
+                                    <td class="align-middle">
+                            @Model.AddressDto.BuildingNo1
+                        </td>
+
+                                    <td class="align-middle">
+                            @Model.AddressDto.SecondryPhone
+                        </td>
+                                    <td class="align-middle">
+                            @if (Model.AddressDto.ShiftDelivary == _keys.MorningShift())
+                            {
+                                <span>@_keys.MorningShiftText() </span>
+                            }
+                            else if (Model.AddressDto.ShiftDelivary == _keys.NightShift())
+                            {
+                                <span>@_keys.NightShiftText() </span>
+                            }
+                        </td>
+                         
+                    </tr>
+                    </tbody>
+                </table>
+                <br />
+               @*  <h4 class="text-gray">  طريقة التوصيل </h4> *@
+        </div>
+        
+        }
+    }
+    else
+
+    {
+                <div class="bg-light p-30 mb-5">
+                    <h6 class="mb-3">طلباتي</h6>
+             
+            <br /><br />
+            <div class="no-product">
+            <img src="~/assets/media/no_product_found.png" />
+            </div></div>
+    }
+</div>
+    </div>
+</div>
+<div class="clear"></div>
+ 
+
+
+
+
+<script>
+    function deleteCookie(name) {
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    }
+
+
+
+    $(document).ready(function () {
+      
+        deleteCookie('cartData')
+        Cookies.remove('cartData');
+
+    });
+    </script>

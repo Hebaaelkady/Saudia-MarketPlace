@@ -1,0 +1,26 @@
+﻿@model Kader.DTOs.Pages.PagesDto
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" asp-controller="Home" asp-action="Index">الصفحة الرئيسية</a>
+ 
+                <span class="breadcrumb-item active">سياسة للاستبدال والارجاع</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<div class="container-fluid pb-5">
+    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3"> سياسة للاستبدال والارجاع</span></h2>
+
+    <div class="row px-xl-5 p-4">
+        <p>@Html.Raw(Model.PageContent)</p>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+﻿@model List<Kader.DTOs.OtoApi.DeliveryOptionDto>
+
+<h2>Select a Delivery Option</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <form asp-action="SelectDeliveryOption" method="post">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Fee</th>
+                    <th>Description</th>
+                    <th>Select</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var option in Model)
+                {
+                    <tr>
+                        <td>@option.CompanyName</td>
+                        <td>@option.Fee.ToString("C")</td>
+                        <td>@option.Description</td>
+                        <td>
+                            <input type="radio" name="deliveryOptionId" value="@option.DeliveryOptionId" required />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Continue</button>
+    </form>
+}
+else
+{
+    <p>No delivery options available.</p>
+}

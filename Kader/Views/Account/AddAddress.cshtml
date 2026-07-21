@@ -1,0 +1,383 @@
+﻿@model Kader.DTOs.Address.AddressDto
+@using Kader.Infrastructure.Shared;
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+@{
+    Infrastructure.Shared.Interfaces.IKeys _keys = new Infrastructure.Shared.Implementations.Keys();
+}
+
+@{
+    string id = Context.Request.Query["AddressId"];
+}
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" asp-controller="Home" asp-action="Index">الصفحة الرئيسية</a>
+                <a class="breadcrumb-item text-dark" href="#">حسابي  </a>
+                <span class="breadcrumb-item active">اضافة عنوان</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-lg-3 col-md-4">
+@Html.Partial("_sidebar", Model)
+        </div>
+        <div class="col-lg-8">
+
+       
+            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">اضافة العنوان </span></h5>
+            <div class="bg-light p-30 mb-5">
+                @if(ViewBag.ErrorMessage != null)
+                    {
+                    <div class="alert alert-danger">
+                    @ViewBag.ErrorMessage
+                    </div>
+                }
+                else
+                {
+                    
+                
+                <form asp-controller="Account" id="yourForm" asp-action="AddAddress" method="post" enctype="multipart/form-data">
+                    <h6 class="mb-3">بيانات اساسية</h6>
+                    @if (ViewBag.SuccessMessage != null)
+                    {
+                        <div class="alert alert-success">
+                            @ViewBag.SuccessMessage
+                        </div>
+                    }
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-success">
+                            @ViewBag.ErrorMessage
+                        </div>
+                    }
+                    <div class="row">
+
+            <input type="hidden" id="AddressId" name="AddressId" value="@(Model.AddressId != 0 ? Model.AddressId.ToString() : string.Empty)" />
+                        <div class="col-md-6 form-group">
+                            <label>منطقة/محافظة</label>
+                            @if (ViewBag.GovernoratesID != null)
+                            {
+                                @Html.DropDownList("GovernoratesId", (SelectList)ViewBag.GovernoratesId, "اختار المحافظة", new { @class = "form-control" })
+                            }
+                        </div>
+
+
+                        <div class="col-md-6 form-group">
+                <label>المدينة</label>
+                <select id="city" name="City" class="form-control">
+                    <option value="">اختر المدينة</option>
+                    @if (@Model.City != null)
+                    {
+                        <option value="@Model.City" selected>@Model.CityName</option>
+                    }
+                </select>
+            </div>
+
+                        <div class="col-md-6 form-group">
+                <label>الحي</label>
+                <select id="NeighborhoodId" name="NeighborhoodId" class="form-control">
+                    <option value="">اختر الحي</option>
+                    @if (@Model.NeighborhoodId != null || @Model.NeighborhoodId != 0)
+                    {
+                        <option value="@Model.NeighborhoodId" selected>@Model.Name</option>
+                    }
+                </select>
+                        <span asp-validation-for="NeighborhoodId" class="text-danger"></span>
+            </div>
+
+                        <div class="col-md-6 form-group">
+                <label>عنوان الشارع</label>
+                <input type="text" value="@Model.AddressStreet" name="AddressStreet" class="form-control" />
+                        <span asp-validation-for="AddressStreet" class="text-danger"></span>
+            </div>
+
+                        <div class="col-md-6 form-group">
+                <label>رقم المبني</label>
+                <input type="text" value="@Model.BuildingNo" name="BuildingNo" class="form-control" />
+                        <span asp-validation-for="BuildingNo" class="text-danger"></span>
+            </div>
+
+                        <div class="col-md-6 form-group">
+                <label>الرقم الاضافي</label>
+                <input type="text" value="@Model.BuildingNo1" name="BuildingNo1" class="form-control" />
+            </div>
+
+                        <div class="col-md-6 form-group">
+                <label>علامة مميزة</label>
+                <input type="text" value="@Model.SpecialSign" name="SpecialSign" class="form-control" />
+            </div>
+
+                        <div class="col-md-6 form-group">
+                <label>رقم التليفون الثاني</label>
+                <input type="number" value="@Model.SecondryPhone" name="SecondryPhone" class="form-control" />
+                <span class="validation">@ViewBag.SecondryPhone</span>
+            </div>
+
+                        <div class="col-md-6 form-group">
+                        <h4> وقت التوصيل</h4>
+                        <label for="shiftDelivary0">@_keys.MorningShiftText() </label> 
+
+                        <input type="radio" id="shiftDelivary0" name="ShiftDelivary" checked value="@_keys.MorningShift() ">
+                       <br /> <label for="shiftDelivary1">@_keys.NightShiftText() </label>
+                        
+                        <input type="radio" id="shiftDelivary1" name="ShiftDelivary" value="@_keys.NightShift()">
+                        
+                    </div>
+
+
+                        <div class="col-md-6 form-group">
+                <label>استخدم كعنوان الشحن الافتراضي</label>
+                        @if (Model.IsMain != null)
+                        {
+                            @if (Model.IsMain == true)
+                            {
+                                @Html.CheckBox("IsMain", Model.IsMain ?? false)
+                            }
+                            else
+                            {
+                                @Html.CheckBox("IsMain", Model.IsMain ?? false)
+                            }
+                        }
+                        else
+                            @Html.CheckBox("IsMain")
+
+                            </div>    <button type="button"  id="getLocationBtn" onclick="getLocation()"> اضغط هنا للسماح بالحصول علي الموقع</button>
+
+                            <input type="hidden" id="Latitude" name="Latitude" value="@Model.Latitude" readonly>
+                            <br><br>
+                            <div id="map" style="height: 300px; width: 100%"></div>
+
+                            <input type="hidden" id="Longitude" name="Longitude" value="@Model.Longitude" readonly>
+               
+                        @if (@id == null)
+                        {
+                            <button type="submit" class="btn btn-block btn-primary font-weight-bold py-3">حفظ العنوان</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-block btn-primary font-weight-bold py-3">تعديل العنوان</button>
+                        }
+                     <div class="clear"></div>
+                 
+    </div>
+
+    
+</form>
+                }
+            </div>
+        </div>
+    </div><!-- Add a div for the map -->
+   
+
+    <!-- Include Leaflet CSS & JS -->
+   
+
+ 
+
+    <div class="clear"></div>
+    </div>
+        <script>
+    $(document).ready(function () {
+        // Assuming you have the value stored in a variable called shiftValue
+        var shiftValue = @_keys.MorningShift(); // Example value, you can change this to "0" or "1"
+
+        // Check if shiftValue is not null
+        if (shiftValue !== null) {
+            // Set the radio button based on the value
+            $('#shiftDelivary' + shiftValue).prop('checked', true);
+        }
+    });
+    $(document).ready(function () {
+      
+
+        $("#GovernoratesId").change(function () {
+ 
+            var governorateID = $(this).val();
+            loadCities(governorateID, null);
+        });
+
+        function loadCities(governorateID, selectedCityID) {
+            $.ajax({
+                url: `/Account/GetCities?governorateID=${governorateID}`,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var $citySelect = $("#city");
+                    $citySelect.empty();
+                    $citySelect.append($("<option></option>")
+                        .attr("value", "")
+                        .text("اختار المدينة"));
+                    $.each(data, function (index, city) {
+                        var option = $("<option></option>")
+                            .attr("value", city.value)
+                            .text(city.text);
+                        if (city.value == selectedCityID) {
+                            option.attr("selected", "selected");
+                        }
+                        $citySelect.append(option);
+                    });
+                }
+            });
+        }
+
+
+
+
+
+
+        $("#city").change(function () {
+            var city = $(this).val();
+            loadNeighborhood(city, null);
+        });
+
+        function loadNeighborhood(CityID, NeighborhoodId) {
+            $.ajax({
+                url: `/Account/GetNeighborhood?CityID=${CityID}`,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var $citySelect = $("#NeighborhoodId");
+                    $citySelect.empty();
+                    $citySelect.append($("<option></option>")
+                        .attr("value", "")
+                        .text("اختار الحي"));
+                    $.each(data, function (index, city) {
+                        var option = $("<option></option>")
+                            .attr("value", city.value)
+                            .text(city.text);
+                        if (city.value == NeighborhoodId) {
+                            option.attr("selected", "selected");
+                        }
+                        $citySelect.append(option);
+                    });
+                }
+            });
+        }
+    });
+    </script>
+<script>
+    var map;
+
+    window.onload = function () {
+        var addressId = @Model.AddressId; // Fetch AddressId from the model
+        var latitude = parseFloat(document.getElementById("Latitude").value);
+        var longitude = parseFloat(document.getElementById("Longitude").value);
+
+        if (addressId == 0 || !latitude || !longitude) {
+            getLocation(); // Fetch location only if AddressId is 0 or lat/lng are invalid
+        } else {
+            initMap(latitude, longitude); // Initialize map with saved coordinates
+        }
+    };
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    if (lat && lng) {
+                        document.getElementById("Latitude").value = lat;
+                        document.getElementById("Longitude").value = lng;
+                        @* console.log("Accurate Location Retrieved:", lat, lng); *@
+                        initMap(lat, lng);
+                    } else {
+                        @* console.log("Invalid Location Retrieved. Retrying..."); *@
+                        setTimeout(getLocation, 2000); // Retry fetching location
+                    }
+                },
+                function (error) {
+                    showError(error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function initMap(lat, lng) {
+        if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+            console.log("Invalid coordinates, skipping map initialization.");
+            return;
+        }
+
+        if (map !== undefined) {
+            map.remove();
+        }
+
+        @* console.log("Initializing Map at:", lat, lng); *@
+        map = L.map('map').setView([lat, lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+        marker.on("dragend", function (event) {
+            var position = marker.getLatLng();
+            document.getElementById("Latitude").value = position.lat;
+            document.getElementById("Longitude").value = position.lng;
+            @* console.log("Marker Moved to:", position.lat, position.lng); *@
+        });
+
+        // Load geocoder plugin
+        var geocoderScript = document.createElement('script');
+        geocoderScript.src = "https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js";
+        geocoderScript.onload = function () {
+            var searchControl = L.Control.Geocoder.nominatim();
+            var geocoder = L.Control.geocoder({
+                defaultMarkGeocode: false,
+                geocoder: searchControl
+            }).on('markgeocode', function (e) {
+                var latlng = e.geocode.center;
+                map.setView(latlng, 15);
+                marker.setLatLng(latlng);
+                document.getElementById("Latitude").value = latlng.lat;
+                document.getElementById("Longitude").value = latlng.lng;
+                @* console.log("Search Result:", latlng.lat, latlng.lng); *@
+            }).addTo(map);
+        };
+        document.head.appendChild(geocoderScript);
+
+        // Allow user to select location by clicking on the map
+        map.on("click", function (e) {
+            var latlng = e.latlng;
+            marker.setLatLng(latlng);
+            document.getElementById("Latitude").value = latlng.lat;
+            document.getElementById("Longitude").value = latlng.lng;
+            @* console.log("Map Clicked at:", latlng.lat, latlng.lng); *@
+        });
+    }
+
+    function showError(error) {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                alert("يجب السماح بالحصول على الموقع قبل حفظ العنوان");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("الموقع غير متاح حاليًا.");
+                break;
+            case error.TIMEOUT:
+                alert("انتهت مهلة الطلب. الرجاء المحاولة مرة أخرى.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("حدث خطأ غير معروف.");
+                break;
+        }
+    }
+</script>
+
+

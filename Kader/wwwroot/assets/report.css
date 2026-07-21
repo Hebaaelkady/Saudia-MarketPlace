@@ -1,0 +1,75 @@
+ 
+.document{
+	/* A4 */
+width: 738px;
+margin: 2px auto 0px auto;
+display: block;
+background:url('logo4.png') no-repeat white center center ;
+padding-top: 1px;
+height:1050px;
+-webkit-transition: all 0.5s;
+-moz-transition: all 0.5s;
+-o-transition: all 0.5s;
+-ms-transition: all 0.5s;
+transition: all 0.5s;
+ 
+	}
+.document-ver{
+	/* A4 */
+height: 738px;
+margin: 2px auto 0px auto;
+display: block;
+background:url('logo4.png') no-repeat white center center ;
+padding-top: 1px;
+width:1050px;
+-webkit-transition: all 0.5s;
+-moz-transition: all 0.5s;
+-o-transition: all 0.5s;
+-ms-transition: all 0.5s;
+transition: all 0.5s;
+ 
+	}
+@font-face {
+    font-family: "Droid Arabic Kufi";
+    src: url("DroidKufi-Regular.eot?#iefix") format("embedded-opentype"), url("DroidKufi-Bold.ttf") ;
+    font-weight: 400;
+}
+@font-face {
+    font-family: "Droid Arabic Kufi";
+    src: url("DroidKufi-Regular.eot?#iefix") format("embedded-opentype"), url("DroidKufi-Bold.ttf") format("truetype");
+    font-weight: 700;
+}
+.display{
+    display:none
+}
+ @media print {
+.document {
+    visibility: visible;background:url('logo4.png') repeat ;
+    -webkit-print-color-adjust:exact;
+}
+    
+    .button{
+        display:none
+    }
+}
+ input{
+
+ }
+
+.page {
+width: 738px;
+height:1050px;
+margin: 2px auto 0px auto;
+display: block;
+background:white;
+padding-top: 1px;
+padding-bottom: 10px;
+-webkit-transition: all 0.5s;
+-moz-transition: all 0.5s;
+-o-transition: all 0.5s;
+-ms-transition: all 0.5s;
+transition: all 0.5s;
+}
+	
+ 
+     

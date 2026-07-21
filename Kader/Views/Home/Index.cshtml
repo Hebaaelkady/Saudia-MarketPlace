@@ -1,0 +1,470 @@
+﻿@model   Kader.DTOs.Product.HomeDto 
+@{
+    ViewBag.Title = "Index";
+   
+}
+@{
+    Infrastructure.Shared.Interfaces.IKeys _keys = new Infrastructure.Shared.Implementations.Keys();
+}
+<!-- Carousel Start -->
+<div class="container-fluid mb-3">
+    <div class="row px-xl-5">
+        <div class="col-lg-8">
+            <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0" data-ride="carousel" data-interval="2000">
+                @{
+                    int i = 0;
+                }
+               
+                <ol class="carousel-indicators">
+                    @foreach (var item1 in Model.BannerImgsDto)
+                    {
+                        <li data-target="#header-carousel" data-slide-to="@i"
+                            class="@(item1 == Model.BannerImgsDto.First() ? "active" : "")"></li>
+                        i++;
+                    }
+                </ol>
+
+                <div class="carousel-inner">
+                    @foreach (var item in Model.BannerImgsDto)
+                    {
+                        <div class="carousel-item position-relative @(item == Model.BannerImgsDto.First() ? "active" : "")" style="height: 430px;">
+                            <img class="position-absolute w-100 h-100" src="../Images/@Url.Content(item.BannerImgName)" alt="@item.BannerImgName" style="object-fit: cover;">
+                        </div>
+                    }
+                </div>
+
+                <!-- Optional navigation controls -->
+                <a class="carousel-control-prev" href="#header-carousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#header-carousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="product-offer mb-30" style="height: 200px;">
+                @if (!string.IsNullOrEmpty(Model.AdsDto.AdName1))
+                {
+                    <img class="img-fluid" src="@Url.Content($"~/Images/{Model.AdsDto.AdName1}")" alt="Latest Ad 1">
+                }
+
+@* 
+                <img  class="img-fluid" src="~/online-shop/2018_11_6_21_33_39_808.jpg" /> *@
+ 
+                <div class="offer-text">
+                 @*    <h6 class="text-white text-uppercase">وفر 20%  </h6> *@
+                    <h3 class="text-white mb-3">عرض خاص</h3>
+                    <a href="" class="btn btn-primary">تسوق الان</a>
+                </div>
+            </div>
+            <div class="product-offer mb-30" style="height: 200px;">
+               @*  <img class="img-fluid" src="~/online-shop/بوستر-اعلان-قهوة-1-768x768.jpg" /> *@
+                @if (!string.IsNullOrEmpty(Model.AdsDto.AdName2))
+                {
+                    <img class="img-fluid" src="@Url.Content($"~/Images/{Model.AdsDto.AdName2}")" alt="Latest Ad 1">
+                }
+                <div class="offer-text">
+                  @*   <h6 class="text-white text-uppercase">وفر 20%</h6> *@
+                    <h3 class="text-white mb-3">عرض خاص</h3>
+                    <a href="" class="btn btn-primary">تسوق الان</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Carousel End -->
+<!-- Featured Start -->
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5 pb-3">
+        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+                <h1 class="fa fa-check text-primary m-0 mr-3"></h1>
+                <h5 class="font-weight-semi-bold m-0">منتج عالي الجودة</h5>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+                <h1 class="fa fa-shipping-fast text-primary m-0 mr-2"></h1>
+                <h5 class="font-weight-semi-bold m-0">توصيل في اسرع وقت</h5>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+                <h1 class="fas fa-exchange-alt text-primary m-0 mr-3"></h1>
+                <h5 class="font-weight-semi-bold m-0">إرجاع خلال 14 يومًا</h5>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+                <h1 class="fa fa-phone-volume text-primary m-0 mr-3"></h1>
+                <h5 class="font-weight-semi-bold m-0">24/7 دعم</h5>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Featured End -->
+<!-- Products Start -->
+<div class="container-fluid pt-5 pb-3">
+    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">عروض مميزة للمنتجات الجملة</span></h2>
+    <div class="row px-xl-5">
+        @if (Model != null)
+        {
+
+       
+            @foreach (var item in Model.specialProductGomla)
+            {
+                if (item.BeforeDiscount != null  )
+                {
+
+            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                <div class="product-item bg-light mb-4">
+                <div class="product-img position-relative overflow-hidden">
+                               
+                                    @{double afterDiscount2 = 0;}
+                                    @if (item.AfterDiscount != null)
+                                    {
+                                    double price = item.BeforeDiscount.Value;
+                                    double AfterDiscount = (double)item.AfterDiscount.Value;   // No need to parse, it's already a number
+                                    double discountPercentage = ((price - AfterDiscount) / price) * 100;
+                                    afterDiscount2 = Math.Round(discountPercentage, 2);
+                                        <div class="labels"> <span class="pro-label off">
+                                            خصم
+                                            @afterDiscount2 <span>%</span>
+                                        </span> </div>
+                                    }
+                                    
+                                    
+                               
+
+                        
+                        @if (item.Image != null)
+                        {
+                            <img src="../Images/@item.Image" class="img-fluid w-100" />
+                        }
+                        else
+                        {
+                            <img src="../assets/media/bg/notfound.jpg"  class="img-fluid w-100" />
+                        }
+                     
+                    <div class="product-action">
+                           
+                            <a asp-action="Details" asp-controller="Gomla" asp-route-id="@item.ProductId" class="btn btn-outline-dark btn-square"  ><i class="fa fa-shopping-cart"></i></a>
+                            <a asp-action="Details" asp-controller="Gomla" asp-route-id="@item.ProductId" class="btn btn-outline-dark btn-square"  ><i class="fa fa-search"></i></a>
+                    </div>
+                </div>
+                <div class="text-center py-4">
+                        <a class="h6 text-decoration-none text-truncate" asp-action="Details" asp-controller="Gomla" asp-route-id="@item.ProductId">@Html.DisplayFor(modelItem => item.SubCatogryTitle)</a>
+                                <p class="text-truncate" style="width:260px">@Html.DisplayFor(modelItem => item.Description)</p>
+
+                        <div class="d-flex align-items-center justify-content-center mt-2">
+                            @if (item.AfterDiscount != null)
+                            {
+                                double afterDiscount1 = 0;
+                                if (item.AfterDiscount != null)
+                                {
+                                    double price = item.BeforeDiscount.Value;
+                                        double AfterDiscount = (double)item.AfterDiscount.Value;   // No need to parse, it's already a number
+                                    double afterDiscount = price - (price * AfterDiscount / 100);
+                                    afterDiscount1 = Math.Round(afterDiscount, 2);
+                                }
+
+
+                                        <h5>@item.AfterDiscount<span>ر.س.</span>&nbsp;&nbsp;</h5>
+                                <h6 class="text-muted ml-2"><del> @item.BeforeDiscount.Value <span>ر.س.</span></del></h6>
+                            }
+                            else
+                            {
+                                <input type="hidden" value="@item.BeforeDiscount.Value" readonly>
+                                    <h5> @item.BeforeDiscount.Value<span>ر.س.</span></h5>
+                            }
+
+                       
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center mb-1">
+                        <small class="fa fa-star text-primary mr-1"></small>
+                        <small class="fa fa-star text-primary mr-1"></small>
+                        <small class="fa fa-star text-primary mr-1"></small>
+                        <small class="fa fa-star text-primary mr-1"></small>
+                        <small class="fa fa-star text-primary mr-1"></small>
+                        <small>(99)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }}
+        }
+    </div>
+</div>
+<!-- Products End --> 
+<div class="container-fluid pt-5 pb-3">
+    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3"> خصومات مميزة للمنتجات الجملة</span></h2>
+    <div class="row px-xl-5">
+<section class="regular slider"> @if (Model != null)
+        {
+                @foreach (var item in Model.GoodPriceGomla)
+                {
+                    if (item.BeforeDiscount != null  )
+                    {
+
+        <div class="product-item">
+            <div class="card">
+                <a href="@Url.Action("Details", "Gomla", new { id = item.ProductId })" class="product-link">
+                            @if (item.AfterDiscount != 0 && item.AfterDiscount != null)
+                                    {
+                                        double afterDiscount2 = 0;
+                                        if (item.AfterDiscount != null)
+                                        {
+                                            double price = item.BeforeDiscount.Value;
+                                            double AfterDiscount = (double)item.AfterDiscount.Value;   // No need to parse, it's already a number
+
+                                            double discountPercentage = ((price - AfterDiscount) / price) * 100;
+                                            afterDiscount2 = Math.Round(discountPercentage, 2);
+                                        }
+                                <div class="labels">
+                                    <span class="pro-label off">
+                                        خصم
+                                                @afterDiscount2 <span>%</span>
+                                    </span>
+                                </div>
+
+                            }
+                        
+                    @if (item.Image != null)
+                    {
+                        <img src="../Images/@item.Image" />
+                    }
+                    else
+                    {
+                        <img src="../assets/media/bg/notfound.jpg" />
+                    }
+                    <div class="card-body">
+                        <div class="card-title">@Html.DisplayFor(modelItem => item.SubCatogryTitle)</div>
+                                        <p class="text-truncate" style="width:160px;  direction: rtl;">@Html.DisplayFor(modelItem => item.Description)</p>
+                                        
+                        @if (item.AfterDiscount != null)
+                        {
+                                        double afterDiscount1 = 0;
+                            if (item.AfterDiscount != null)
+                            {
+                                            double price = item.BeforeDiscount.Value;
+                                            double AfterDiscount = (double)item.AfterDiscount.Value;   // No need to parse, it's already a number
+                                            double afterDiscount = price - (price * AfterDiscount / 100);
+                                afterDiscount1 = Math.Round(afterDiscount, 2);
+                            }
+
+
+                                            <h4 style="    direction: rtl;">@item.AfterDiscount <span>ر.س.</span>&nbsp;&nbsp;</h4>
+                                            <div class="a-price" style="    direction: rtl;"><del>@item.BeforeDiscount.Value <span>ر.س.</span> </del></div>
+                        }
+                        else
+                        {
+                                        <input type="hidden" value="@item.BeforeDiscount.Value" readonly>
+                                            <h4 style="    direction: rtl;"> @item.BeforeDiscount.Value <span>ر.س.</span></h4>
+                        }
+                        <p class="card-text">
+                            <a asp-action="Details" asp-controller="Gomla"  asp-route-id="@item.ProductId">...المزيد</a>
+
+                        </p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    }}
+    }
+</section>
+</div></div>
+<!-- Products Start -->
+<div class="container-fluid pt-5 pb-3">
+    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">عروض مميزة للمنتجات القطاعي</span></h2>
+    <div class="row px-xl-5"> @if (Model != null)
+        {
+            @foreach (var item in Model.specialProductQt3)
+            {
+                if (item.BeforeDiscount != null  )
+                {
+
+               
+            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                <div class="product-item bg-light mb-4">
+                    <div class="product-img position-relative overflow-hidden">
+                                @{
+                                    double afterDiscount2 = 0;
+                                }
+                                @if (item.AfterDiscount != 0 && item.AfterDiscount != null)
+                                {
+                                    double price = item.BeforeDiscount.Value;
+                                    double AfterDiscount = (double)item.AfterDiscount.Value;   // No need to parse, it's already a number
+                                    double discountPercentage = ((price - AfterDiscount) / price) * 100;
+                                    afterDiscount2 = Math.Round(discountPercentage, 2);
+                                    <div class="labels">
+                                        <span class="pro-label off">
+                                            خصم
+                                            @afterDiscount2 <span>%</span>
+                                        </span>
+                                    </div>
+                                }
+
+                              
+                        @if (item.Image != null)
+                        {
+                            <img src="../Images/@item.Image" class="img-fluid w-100" />
+                        }
+                        else
+                        {
+                            <img src="../assets/media/bg/notfound.jpg" class="img-fluid w-100" />
+                        }
+
+                        <div class="product-action">
+                            <a asp-action="Details" asp-controller="Qt3" asp-route-id="@item.ProductId" class="btn btn-outline-dark btn-square"  ><i class="fa fa-shopping-cart"></i></a>
+                            <a asp-action="Details" asp-controller="Qt3" asp-route-id="@item.ProductId" class="btn btn-outline-dark btn-square" ><i class="fa fa-search"></i></a>
+                        </div>
+                    </div>
+                    <div class="text-center py-4">
+                        <a class="h6 text-decoration-none text-truncate" asp-action="Details" asp-controller="Qt3" asp-route-id="@item.ProductId">@Html.DisplayFor(modelItem => item.SubCatogryTitle)</a>
+                                <p class="text-truncate" style="width:260px">@Html.DisplayFor(modelItem => item.Description)</p>
+
+                        <div class="d-flex align-items-center justify-content-center mt-2">
+                            @if (item.AfterDiscount != null)
+                            {
+                                    double afterDiscount1 = 0;
+                                if (item.AfterDiscount != null)
+                                {
+                                        double price = item.BeforeDiscount.Value;
+                                        double AfterDiscount = (double)item.AfterDiscount.Value;   // No need to parse, it's already a number
+                                    double afterDiscount = price - (price * AfterDiscount / 100);
+                                    afterDiscount1 = Math.Round(afterDiscount, 2);
+                                }
+
+
+                                        <h5>@item.AfterDiscount<span>ر.س.</span>&nbsp;&nbsp;</h5>
+                                    <h6 class="text-muted ml-2"><del>@item.BeforeDiscount.Value <span>ر.س.</span> </del></h6>
+                                }
+                                else
+                                {
+                                    
+                                    <input type="hidden" value="@item.BeforeDiscount.Value" readonly>
+                                    <h5>@item.BeforeDiscount.Value  <span>ر.س.</span></h5>
+                            }
+
+
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center mb-1">
+                            <small class="fa fa-star text-primary mr-1"></small>
+                            <small class="fa fa-star text-primary mr-1"></small>
+                            <small class="fa fa-star text-primary mr-1"></small>
+                            <small class="fa fa-star text-primary mr-1"></small>
+                            <small class="fa fa-star text-primary mr-1"></small>
+                            <small>(99)</small>
+                        </div>
+                    </div>
+                </div>
+                    </div>
+                }
+        }
+   } </div>
+</div>
+<!-- Products End -->
+ 
+ 
+
+<div class="container-fluid pt-5 pb-3">
+    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3"> خصومات مميزة للمنتجات القطاعي</span></h2>
+    <div class="row px-xl-5">
+<section class="regular slider"> @if (Model != null)
+        {
+                @foreach (var item in Model.GoodPriceQt3)
+                {
+                    if (item.BeforeDiscount != null )
+                    {
+
+        <div class="product-item">
+            <div class="card">
+                <a href="@Url.Action("Details", "Qt3", new { id = item.ProductId })" class="product-link">
+                            @if (item.AfterDiscount != 0 && item.AfterDiscount != null)
+                            {
+                                <div class="labels">
+                                            @{double afterDiscount3 = 0;
+                                            if (item.AfterDiscount != null)
+                                            {
+                                                    double price = item.BeforeDiscount.Value;
+                                                    double AfterDiscount = (double)item.AfterDiscount.Value;   // No need to parse, it's already a number
+                                                    double discountPercentage = ((price - AfterDiscount) / price) * 100;
+                                                    afterDiscount3 = Math.Round(discountPercentage, 2);
+                                            }}
+                                    <span class="pro-label off">
+                                        خصم
+                                                @afterDiscount3 <span>%</span>
+                                    </span>
+                                </div>
+
+                            }
+                @if (item.Image != null)
+                {
+                    <img src="../Images/@item.Image" />
+                }
+                else
+                {
+                    <img src="../assets/media/bg/notfound.jpg" />
+                }
+                <div class="card-body">
+                    <div class="card-title">@Html.DisplayFor(modelItem => item.SubCatogryTitle)</div>
+                                        <p class="text-truncate" style="width:260px">@Html.DisplayFor(modelItem => item.Description)</p>
+
+                                        @if (item.AfterDiscount != null)
+                    {
+                        double afterDiscount1 = 0;
+                        if (item.AfterDiscount != null)
+                        {
+                            double price = item.BeforeDiscount.Value;
+                                            double AfterDiscount = (double)item.AfterDiscount.Value;   // No need to parse, it's already a number
+                                            double afterDiscount = price - (price * AfterDiscount / 100);
+                            afterDiscount1 = Math.Round(afterDiscount, 2);
+                        }
+                                            <h4 style="    direction: rtl;">@item.AfterDiscount<span>ر.س.</span> &nbsp;&nbsp;</h4>
+                                            <div class="a-price" style=" width:160px;  direction: rtl;"><del> @item.BeforeDiscount.Value <span>ر.س.</span></del></div>
+                        }
+                    else
+                    {
+                                        <input type="hidden" value="@item.BeforeDiscount.Value" readonly>
+                                            <h4 style="    direction: rtl;">@item.BeforeDiscount.Value  <span>ر.س.</span></h4>
+                    }
+                    <p class="card-text">
+                            <a asp-action="Details" asp-controller="Gomla" asp-route-id="@item.ProductId">...المزيد</a>
+
+                    </p>
+                </div></a>
+            </div>
+        </div>}
+    }}
+</section>
+</div></div>
+                    <script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '../Gomla/GetRoot_gomla',
+            method: 'GET',
+            success: function (data) {
+                var menuHtml = generateMenu(data);
+                $('#menu').html(menuHtml);
+            }
+        });
+
+        function generateMenu(nodes) {
+            var html = '<ul>';
+            nodes.forEach(function (node) {
+                html += '<li class="menu-item" data-id="' + node.Id + '"><a href="/category/' + node.Id + '">' + node.Text + '</a>';
+                if (node.Children) {
+                    html += '<ul class="submenu" id="submenu-' + node.Id + '"></ul>';
+                }
+                html += '</li>';
+            });
+            html += '</ul>';
+            return html;
+        }
+
+    });
+
+                    </script>

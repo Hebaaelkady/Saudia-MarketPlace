@@ -1,0 +1,47 @@
+<!--begin::Aside Menu-->
+
+@using Newtonsoft.Json
+<!--begin::Aside Menu-->
+@{
+    var stringPaths = Context.User.FindFirst("Paths")?.Value ?? "[]";
+    List<string> pathsList = (JsonConvert.DeserializeObject<string[]>(stringPaths)).ToList();
+}
+
+    <!-- Price Start -->
+    <h5 class="section-title position-relative text-uppercase mb-3">
+        <span class="bg-secondary pr-3">
+            @if (Context.User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value != null)
+            {
+                <span>مرحبا : </span>  @Context.User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value
+                ;
+               
+            }
+        </span>
+    </h5>
+    <div class="bg-light p-4 mb-30">
+        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+            <ul class="list">
+            <li>@Html.ActionLink("حسابي", "AccountCustomer", null, new { @class = "nav-link" })</li>
+            <li>@Html.ActionLink("عنواني", "AllAddress", null, new { @class = "nav-link" })</li>
+            <li>@Html.ActionLink("طلباتي", "AllOrders", null, new { @class = "nav-link" })</li>
+            <li>@Html.ActionLink("اضافة عنوان جديد", "AddAddress", null, new { @class = "nav-link" })</li>
+            <li>@Html.ActionLink("تسجيل طلب ارتجاع", "ReturnOrders", null, new { @class = "nav-link" })</li>
+            <li>@Html.ActionLink(" طلبات الارتجاع", "ReturnOrdersAll", null, new { @class = "nav-link" })</li>
+            <li>@Html.ActionLink("تغيير كلمة المرور", "ChangePassword", null, new { @class = "nav-link" })</li>
+            <li><a href="#" onclick="Site_Module.Logout(); return false;" target="_blank">تسجيل خروج</a></li>
+            </ul>
+        </div>
+    </div>
+        
+
+<script>
+    $(document).ready(function () {
+        var currentPath = window.location.pathname.split("/").pop();
+        $('.sidenav a').each(function () {
+            if ($(this).attr('href').includes(currentPath)) {
+                $(this).addClass('active');
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,540 @@
+﻿@model Kader.DTOs.Cart.Checkout_frontDto
+@using Kader.Infrastructure.Shared;
+@using System.Text.Json
+@{
+    ViewData["Title"] = "View";
+}
+@{
+    Infrastructure.Shared.Interfaces.IKeys _keys = new Infrastructure.Shared.Implementations.Keys();
+}
+
+
+
+
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+               <a class="breadcrumb-item text-dark" asp-controller="Home" asp-action="Index">الصفحة الرئيسية</a>
+                <a class="breadcrumb-item text-dark" href="#">تسوق</a>
+                <span class="breadcrumb-item active">عربة التسوق</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- Checkout Start -->
+
+ 
+  <div class="container-fluid">
+    @if(Model!=null)
+        {
+
+        @if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">
+    @ViewBag.SuccessMessage"]
+    </div>
+}
+    @if(ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-success">
+    @ViewBag.ErrorMessage
+    </div>
+}
+        <form  id="checkoutForm">
+   
+            <div class="row px-xl-5">
+                <div class="col-lg-4  ">
+                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">معلومات الحساب</span></h5>
+                    <div class="bg-light p-30 mb-5">
+
+            @if (Model.AddressId != null || Model.AddressDto != null)
+            {
+               
+                <input type="hidden" name="AddressId" value="@Model.AddressDto.AddressId" />
+                         
+                <table class="table table-light table-borderless table-hover text-center mb-0">
+                    <tr><th>  المدينة</th><td>
+                        @Model.AddressDto.CityName
+                        </td></tr>
+                    <tr>
+                        <th>  الحي</th><td> @Model.AddressDto.Name</td>
+                    </tr>
+                    <tr>
+                        <th>  العنوان</th><td> @Model.AddressDto.AddressStreet</td>
+                    </tr>
+                    <tr>
+                        <th>  رقم المبني</th><td> @Model.AddressDto.BuildingNo</td>
+                    </tr>
+                    <tr>
+                        <th>  الرقم الاضافي</th><td> @Model.AddressDto.SecondryPhone</td>
+                    </tr>
+                    <tr>
+                        <th>  وقت التوصيل المناسب</th>
+                        <td> @if (Model.AddressDto.ShiftDelivary == @_keys.MorningShift())
+                        {
+                            <span>@_keys.MorningShiftText() </span>
+                        }
+                        else if (Model.AddressDto.ShiftDelivary == @_keys.NightShift())
+                        {
+                            <span>@_keys.NightShiftText() </span>
+                        }</td>
+                    </tr>
+                       <tr> 
+                        <td colspan="2">
+                            @Html.ActionLink("تعديل عنوان  ", "AddAddress", new { AddressId = Model.AddressDto.AddressId }, null)
+                            @Html.ActionLink("اضافة عنوان جديد", "AddAddress", "Account", null)
+                        </td>
+                    </tr>
+
+                </table>
+                    
+            }
+            else
+            {
+                @Html.ActionLink("اضافة عنوان جديد", "AddAddress", "Account", null)
+                <span class="padd">لتاكيد الطلب يرجي اضافة عنوان</span>
+            }
+                    </div>
+                </div>
+        @if (Model.Itemslist.Any())
+        {
+            <div class="col-lg-4  ">
+            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">ملخص الطلب</span></h5>
+            <div class="bg-light p-30 mb-5">
+            <table class="table table-light table-borderless table-hover text-center mb-0">
+            @for (int i = 0; i < Model.Itemslist.Count; i++)
+                {
+
+                var item = Model.Itemslist[i];
+                <input type="hidden" name="Itemslist[@i].ProductId" value="@item.ProductId">
+                <tr   id="row-@item.ProductId" class="border-bottom pt-3 pb-2" data="@item.ProductId">
+                    <td class="align-middle">
+                        <input type="hidden" value="@item.CatIdAPI" name="Itemslist[@i].CatIdAPI" />
+                         <input type="hidden" value="@item.typeGomlaOrQt3" name="Itemslist[@i].typeGomlaOrQt3" />
+                            @if (item.ProductImgName != null)
+                            {
+                                <img  style="width: 50px;" src="~/Images/@item.ProductImgName" />
+                            }
+                            else
+                            {
+                                <img  style="width: 50px;" src="~/assets/media/bg/notfound.jpg" />
+                            }
+                        </td>
+                    <td>
+                        <input type="hidden" readonly name="Itemslist[@i].ProductName" value="@item.SubCatogryTitle" />
+
+                        <div>@item.SubCatogryTitle</div>
+                        <div class="price">
+                            <div style="display:none">@item.PriceItem</div>
+                            <input type="hidden" readonly name="Itemslist[@i].PriceItem" class="PriceItem" value="@item.PriceItem" />
+                        </div>
+                       
+                        <div>
+                            <span><span>الكمية : </span>@item.Quantity_user </span>
+                            <input type="hidden" name="Itemslist[@i].Quantity" readonly class="Quantity quantity-@item.ProductId" value="@item.Quantity_user">
+                      
+                        <input type="hidden" name="Itemslist[@i].UnitId" readonly class="UnitId UnitId-@item.ProductId" value="@item.UnitId">
+                      
+                            @item.unit</div>
+                        <div>
+                            <span>السعر : </span>  <span class="item-total" id="item-total-@item.ProductId">0.00</span>
+
+                        </div>
+                       
+                        <div class="clear"></div>
+                   
+
+
+                                 
+                        <div style="display:none">
+                            
+                            
+                            @if (item.ShippingPrice != null)
+                            {
+                                <input type="text" readonly name="Itemslist[@i].ShippingPrice" class="no-border-input" value="@item.ShippingPrice" />
+                                <span class="shipping-price" id="shipping-price-@item.ProductId">@item.ShippingPrice</span>
+                            }
+                            else
+                            {
+                                <input name="Itemslist[@i].ShippingPrice" type="text" class="no-border-input transportprice" id="transportprice-@item.ProductId" />
+
+                            }
+                        </div>
+                    </td> 
+                </tr>
+
+                <script>
+                    $(document).ready(function () {
+                        var maxValue = @item.QuantityAvailable;
+                        var shippingPriceNavigation = @Html.Raw(JsonSerializer.Serialize(item.ShippingPriceNavigation));
+                        $('tr').each(function () {
+                            var productId = $(this).attr('data');
+
+                            updateItemTotal(productId);
+                        });
+                        updateTransportPrice(@item.ProductId);
+      function updateTransportPrice(productId) {
+    var quantity = parseInt($('#row-' + productId).find('.quantity-' + productId).val(), 10);
+    var transportPrice = 0;
+
+    if (quantity === 0) {
+        transportPrice = 0;
+    } else if (shippingPriceNavigation && shippingPriceNavigation.length > 0) {
+        // Sort shippingPriceNavigation by VarQuantity in ascending order
+        shippingPriceNavigation.sort((a, b) => a.VarQuantity - b.VarQuantity);
+
+        // Check if IsODD_Even is true
+        if (shippingPriceNavigation[0].IsODD_Even) {
+            var baseQuantity = shippingPriceNavigation[0].VarQuantity; // Get the first quantity
+            var basePrice = shippingPriceNavigation[0].VarPrice; // Get the first price
+
+            if (baseQuantity > 0) {
+                var multiplier = Math.ceil(quantity / baseQuantity); // Round up the division result
+                transportPrice = multiplier * basePrice; // Multiply by base price
+            }
+        } else {
+            // Normal case when IsODD_Even is false
+            for (var i = 0; i < shippingPriceNavigation.length; i++) {
+                if (quantity <= shippingPriceNavigation[i].VarQuantity) {
+                    transportPrice = shippingPriceNavigation[i].VarPrice;
+                    break;
+                }
+            }
+
+            // If quantity is greater than max VarQuantity, use the max price
+            if (quantity > shippingPriceNavigation[shippingPriceNavigation.length - 1].VarQuantity) {
+                transportPrice = shippingPriceNavigation[shippingPriceNavigation.length - 1].VarPrice;
+            }
+        }
+    } else {
+        $('#transportprice-' + productId).val("N/A"); // Display "N/A" if no data available
+        return;
+    }
+
+    // Update the UI
+    $('#transportprice-' + productId).val(transportPrice.toFixed(2));
+}
+
+                        function updateItemTotal(productId) {
+                            var priceText = $('#row-' + productId).find('.PriceItem').val();
+                              var price = parseFloat(priceText);
+                            var quantity = parseInt($('#row-' + productId).find('.quantity-' + productId).val(), 10);
+
+                            if (!isNaN(price) && !isNaN(quantity)) {
+                                var itemTotal = price * quantity;
+                                $('#item-total-' + productId).text(itemTotal.toFixed(2));
+                            }
+                        }
+
+                        function updateCartTotal() {
+                            var total = 0;
+                            $('tr').each(function () {
+                                var price = parseFloat($(this).find('.price').text().replace('$', '').replace(/,/g, ''));
+
+                                var quantity = parseInt($(this).find('.Quantity').val(), 10);
+                                if (!isNaN(price) && !isNaN(quantity)) {
+                                    total += price * quantity;
+                                }
+                            });
+                            $('#cartTotal').val(total.toFixed(2));
+                        }
+                                 
+                        function updateTotalTransportCost() {
+
+                            var totalTransportCost = 0;
+                            $(' tr').each(function () {
+                              
+                                var productId = $(this).attr('data');
+                                var shippingPrice = parseFloat($('#shipping-price-' + productId).text()) || 0;
+                                var transportPrice = parseFloat($('#transportprice-' + productId).val()) || 0;
+                                totalTransportCost += shippingPrice + transportPrice;
+                            });
+                            $('#totalTransportCost').val(totalTransportCost.toFixed(2));
+                        }
+                        updateTotalTransportCost();
+                        updateCartTotal();
+                        updateTotalOrderCost()
+
+                    });
+                </script>
+                }
+            </table>
+            <div class="border-bottom pt-3 pb-2">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h6>
+                                    <label>  الاجمالي </label>
+                                </h6>
+                                
+                                    <input type="text"  id="cartTotal" class="no-border-input" name="TotalPrice" />
+                                
+                            </div>
+                            <div class="d-flex justify-content-between">
+                              
+                                <h6 class="font-weight-medium">الشحن</h6>
+                                
+                                    <input type="text" id="totalTransportCost" class="no-border-input" name="TotalTransportShippPrice" />
+                              
+                            </div>
+                        </div>
+                        <div class="pt-2 border-bottom pt-3 pb-2 btn btn-block btn-primary font-weight-bold py-3">
+                            <div class="d-flex justify-content-between mt-2">
+                                <span>إجمالي الطلب</span> 
+                                 <span id="totalOrderCost">0.00</span> 
+                            </div>
+                        </div>
+        </div>
+
+    </div>   
+    }
+    <div class="col-lg-4 ">
+                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">طريقة الدفع </span></h5>
+                    <div class="bg-light p-30 mb-5"> 
+                        
+                        <div class="pt-2">
+                        @if (Model.AddressId != null || Model.AddressDto != null)
+                        {
+                            <div class="mysr-form"></div>
+                            }
+                        </div>
+                    </div>
+                    
+                </div>
+
+
+        
+        <div class="clear"></div</div> 
+    </form>
+     }
+     else
+ {<div  style="text-align:center">
+            <p>
+
+                لا يوجد منتجات في قائمة مشترياتك!
+                جينا ماركت مكانك الاول لكل احتياجاتك . تسوق الأن أكبر تشكيلة منتجات و عروض و تسهيلات فالدفع.
+            </p>
+        </div>}
+</div>
+    <div class="clear"></div>
+ 
+</div></div>
+<script>
+    // Define the redirection time in milliseconds (5 minutes = 300,000 ms)
+    const inactivityTimeout = 6000000000; // 5 minutes
+
+    // URL to redirect to after inactivity
+    const redirectUrl = '/Cart/ViewCart'; // Replace with the desired redirect URL
+
+    // Timer variable
+    let inactivityTimer;
+
+    // Function to reset the inactivity timer
+    function resetInactivityTimer() {
+        clearTimeout(inactivityTimer); // Clear the existing timer
+        inactivityTimer = setTimeout(() => {
+            //alert('تمت إعادتك إلى الصفحة السابقة بسبب عدم النشاط.');
+            window.location.href = redirectUrl; // Redirect to the specified URL
+        }, inactivityTimeout); // Start a new timer
+    }
+
+    // List of events to track user activity
+    const activityEvents = ['mousemove', 'keydown', 'mousedown', 'touchstart'];
+
+    // Attach event listeners to reset the timer on user activity
+    activityEvents.forEach(event => {
+        window.addEventListener(event, resetInactivityTimer);
+    });
+
+    // Initialize the inactivity timer when the page loads
+    @* resetInactivityTimer(); *@
+</script>
+
+<script>
+
+   $(document).ready(function () {
+    // Perform updates on page load
+ 
+    updateTotalOrderCost();  // Ensure this is called to recalculate total order cost
+
+       getTotalOrderCost();
+        initializeMoyasar();
+    });
+
+function updateTotalOrderCost() {
+    var totalItemsCost = parseFloat($('#cartTotal').val()) || 0;
+    var totalTransportCost = parseFloat($('#totalTransportCost').val()) || 0;
+    var totalOrderCost = totalItemsCost + totalTransportCost;
+    $('#totalOrderCost').text(totalOrderCost.toFixed(2));
+}
+
+function getTotalOrderCost() {
+    var totalOrderCost = parseFloat($('#totalOrderCost').text()) || 0;
+    var amount = Math.round(totalOrderCost * 100);
+    return amount > 0 ? amount : 0;
+}
+
+function initializeMoyasar() {
+    var totalOrderCost = getTotalOrderCost();
+    fetch(window.location.origin + '/Cart/GetPublishableApiKey')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error fetching API Key: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const publishableApiKey = data.publishable_api_key;
+            
+     Moyasar.init({
+    element: '.mysr-form',
+    amount: totalOrderCost,
+    currency: 'SAR',
+    description: 'مشتريات',
+    publishable_api_key: publishableApiKey,
+    callback_url: window.location.origin + '/Cart/PaymentsRedirect',
+    methods: ['creditcard'],
+    on_completed: function (payment) {
+        return new Promise(async (resolve, reject) => {
+            try {
+              
+              @*   console.log('✅ Payment Completed:', payment); *@
+
+                // 🔄 تجهيز بيانات الطلب
+                var formData = parseQueryString($('form').serialize());
+
+                // 🛠️ تحويل القيم إلى الأنواع المناسبة
+                formData.AddressId = parseInt(formData.AddressId);
+                formData.Itemslist = formData.Itemslist.map(item => ({
+                    ProductId: parseInt(item.ProductId),
+                    ProductName:  item.ProductName ,
+                    UnitId: parseInt(item.UnitId),
+                    typeGomlaOrQt3: parseInt(item.typeGomlaOrQt3),
+                    ShippingPrice: parseFloat(item.ShippingPrice),
+                    Quantity: parseInt(item.Quantity),
+                    PriceItem: parseFloat(item.PriceItem)
+                }));
+                formData.TotalPrice = parseFloat(formData.TotalPrice);
+                formData.TotalTransportShippPrice = parseFloat(formData.TotalTransportShippPrice);
+
+                var combinedDto = {
+                    payment: {
+                        id: payment.id,
+                        status: payment.status,
+                        amount: payment.amount / 100,
+                        currency: payment.currency
+                    },
+                    checkout: formData
+                };
+
+                @* console.log('📌 Combined DTO:', combinedDto); *@
+
+                // 🔄 إرسال البيانات باستخدام `fetch`
+                let response = await fetch(window.location.origin + '/Cart/SavePayment2', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify(combinedDto),
+                    timeout: 30000
+                });
+
+                let result = await response.json();
+                console.log('✅ SavePayment Response:', result);
+
+                if (result.isSuccess) {
+                    setTimeout(() => {
+                        window.location.href = '/OrderDetails/' + result.orderId;
+                    }, 5000);
+                    resolve(result);  // ✅ نجاح العملية
+                } else {
+                    console.log('❌ SavePayment failed:', result.message);
+                    setTimeout(() => {
+                        window.location.href = '/Cart/ViewCart';
+                    }, 5000);
+                    reject(new Error(result.message));  // ❌ فشل العملية
+                }
+            } catch (error) {
+                console.error('⚠️ AJAX Error:', error);
+                setTimeout(() => {
+                    window.location.href = '/Cart/ViewCart/?error=' + encodeURIComponent(error.message);
+                }, 500);
+                reject(error);  // ❌ رفض `Promise` بسبب خطأ
+            }
+        });
+    }
+});
+
+        })
+        .catch(error => console.error('Error fetching the API Key:', error));
+}
+
+    
+
+
+ 
+function checkStockAvailability(callback) {
+    
+    var formData = parseQueryString($('form').serialize());
+
+    $.ajax({
+        method: 'post',
+        @* url: '/Cart/CheckStockAvailability', *@
+        data: formData,
+        success: function (response) {
+            @* if (response.isSuccess) {
+                callback(); // Proceed with payment if stock is available
+            } else {
+                alert('عفوا لقد نفذت بعض المنتجات يرجي المحاولة مرة اخري');
+                window.location.href = '/Cart/ViewCart'; // Redirect to cart if stock check fails
+              } *@
+        },
+   @*      error: function (request, status, error) {
+            console.error('Error:', error);
+            alert('An error occurred while checking stock. Please try again.');
+            window.location.href = '/Cart/ViewCart'; // Redirect to cart if stock check fails
+        } *@
+    });
+}
+ 
+    $(document).ready(function () {
+        var totalOrderCost = parseFloat($('#totalOrderCost').text()) || 0;
+ 
+        // Hide the checkout button if the total order cost is 0
+        if (totalOrderCost <= 0) {
+            $('.mysr-form').hide();
+        }
+    });
+    function deleteCookie(name) {
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    }
+
+    function parseQueryString(queryString) {
+    let obj = {};
+    let params = new URLSearchParams(queryString);
+
+    params.forEach((value, key) => {
+        // Check if the key contains array notation like Itemslist[0].ProductId
+        let match = key.match(/(\w+)\[(\d+)\]\.(\w+)/);
+        if (match) {
+            let [, arrayKey, index, propKey] = match;
+
+            // Initialize the array and the object at the given index if not already present
+            obj[arrayKey] = obj[arrayKey] || [];
+            obj[arrayKey][index] = obj[arrayKey][index] || {};
+
+            // Set the property value
+            obj[arrayKey][index][propKey] = value;
+        } else {
+            // Otherwise, just set the property on the root object
+            obj[key] = value;
+        }
+    });
+
+    return obj;
+}
+
+ 
+</script>

@@ -1,0 +1,170 @@
+﻿ 
+@model  Kader.DTOs.Catogry.Catogry_backendDto 
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>الفئات الفرعية</span>
+    </nav>
+</div>
+<fieldset>
+    <legend>
+        <h2 class="text-dark font-weight-bold mt-2 mb-2 mr-5 din-bold d-inline">
+            @if (string.IsNullOrEmpty(Context.Request.Query["Id"]))
+            {
+                <span>اضافة فئة فرعي جديد</span>
+            }
+            else
+            {
+                <span>تعديل فئة فرعي جديد</span>
+            }
+        </h2>
+    </legend>
+    @* @Html.Partial("_SubCatogry", Model) *@
+</fieldset>
+<fieldset>
+    <legend><h2>الفئات الفرعية</h2></legend>
+    <div class="float-right col-sm-12 col-md-5">
+    <div id="treeview1">
+        </div>
+    </div>
+    <div class="float-right col-sm-12 col-md-7">
+    <div class="page-section">
+        <div class="container"> 
+        <table id="example" border="1" class="display table table-separate table-head-custom table-foot-custom">
+            <thead>
+                <tr>
+                    <th>الفئة</th>
+                    <th>
+                            الفئة
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                        @if (Model.ExistingItems != null)
+                {
+                    foreach (var item2 in Model.ExistingItems.OrderBy(g => g.CatName) )
+                    {
+                            
+            string word = "";
+
+                                @if (item2.CatogryId != 0)
+        {
+                                    word = item2.CatogryName;
+                                    // Replace with your actual model property
+            @if (word.EndsWith("-قطاعي"))
+            {
+                word = word.Substring(0, word.Length - "-قطاعي".Length);
+            }
+        }
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.CatName) 
+                            </td>
+                                <td>
+                                    <div class="edit" id=y-@item2.CatogryId>
+                                            @word
+                                        </div>
+                                        <div class="targetEdit" style="display:none" id=x-@item2.CatogryId>
+                                            <form asp-controller="Catogry_qta3a" asp-action="AddCatogry" method="post">
+                                                <input type="hidden" asp-for="CatId" name="CatId" value="@item2.CatId" class="form-control" />
+                                                <input type="hidden" asp-for="CatogryId" name="CatogryId" value="@item2.CatogryId" class="form-control" />
+                                                <input type="text" asp-for="CatogryName" value="@item2.CatogryName" name="CatogryName" class="form-control" />
+                                                <button type="submit">تعديل الفئة</button>
+                                            </form>
+                                        </div>
+                                </td>
+                                    <td>
+                                        <div class="showSingle" target="@item2.CatogryId">اضافة فئة فرعي</div>
+                                        <div class="showEdit" target="@item2.CatogryId">تعديل</div>
+
+                                        <div class="Delete showSingle2 btn2 btn-default" data="@item2.CatogryId">حذف</div>
+                                <div class="targetDiv" style="display:none" id=z-@item2.CatogryId>
+                                            <form asp-controller="Catogry_qta3a" asp-action="SubCatogry" method="post">
+                                        @{
+                                            var levels = @item2.CatLevel + 1;
+                                        }
+                                                <input type="hidden" asp-for="CatLevel" name="CatLevel" class="form-control" value="@levels" />
+                                        <input type="hidden" asp-for="CatId" name="CatId" value="@item2.CatogryId" class="form-control" />
+                                        <input type="text" asp-for="CatogryName" name="CatogryName" class="form-control" />
+                                        <button type="submit">حفظ الفئة</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                }
+                }
+            </tbody>
+        </table>
+
+        </div>
+    </div>
+    </div>
+</fieldset>
+<script>
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الحذف")) {
+            var requrl = '@Url.Action("DeleteCat")';
+
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+                cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data') },
+                success: function (json) {
+
+                    alert(JSON.stringify(json));
+                    location.reload();
+
+                     
+
+                },
+                error: function (failure) {
+
+                    alert(failure.responseText);
+                }
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+jQuery(function(){
+        
+        jQuery('.showEdit').click(function () {
+            jQuery('.edit').show();
+            jQuery('#y-' + $(this).attr('target')).hide();
+       
+            jQuery('.targetEdit').hide(); 
+            jQuery('#x-' + $(this).attr('target')).show();
+        });
+        jQuery('.showSingle').click(function(){
+           
+              jQuery('.targetDiv').hide();
+              jQuery('#z-'+$(this).attr('target')).show();
+        });
+    });
+
+
+    $(document).on('click', '.jstree-anchor', function (e) {
+        // Get the selected node's ID
+        var nodeId = $(this).parent().attr('id');
+        // Extract the relevant part of the ID (if needed)
+        var selectedValue = nodeId.substring(nodeId.indexOf('_') + 1);
+        // Use the selected value as needed (e.g., display it)
+        $('#CatogryId').val(selectedValue);
+    });
+
+</script>

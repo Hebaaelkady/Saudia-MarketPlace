@@ -1,0 +1,619 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Updates and statistics" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>متجر جينا الالكتروني</title>
+    <meta charset="UTF-8">
+
+
+    @using System.Security.Claims;
+    @using Microsoft.AspNetCore.Http
+    @using Newtonsoft.Json;
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="~/js/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+    <link href="~/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" />
+    <link href="~/assets/css/style-front.css" rel="stylesheet" type="text/css" />
+
+    <link href="~/assets/plugins/custom/jstree/jstree.bundle.rtl.css" rel="stylesheet" type="text/css" />
+    <!--begin::Page Vendors Styles(used by this page)-->
+    <link href="~/assets/plugins/custom/fullcalendar/fullcalendar.bundle.rtl.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" />
+    <!--end::Page Vendors Styles-->
+    @RenderSection("Heads", required: false)
+    <link href="~/assets/css/scrollingcarousel/jquery.gscrollingcarousel.css" rel="stylesheet" />
+
+
+    <link href="~/assets/css/fonts/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/assets/css/fonts/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/slick/slick.css">
+    <link rel="stylesheet" type="text/css" href="~/slick/slick-theme.css">
+    <style>
+        .submenu {
+            display: none;
+        }
+
+        #menu {
+            display: none; /* Hide the menu initially */
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+
+        #searchResults #searchResults1{
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #searchResults li, #searchResults1 li {
+                padding: 10px;
+                cursor: pointer;
+            }
+
+            #searchResults li:hover, #searchResults1 li:hover {
+                    background-color: #f1f1f1;
+                }
+
+    </style>
+    <link rel="stylesheet" href="https://cdn.moyasar.com/mpf/1.14.0/moyasar.css" />
+
+    <!-- Moyasar Scripts -->
+    <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=fetch"></script>
+    <script src="https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"></script>
+
+</head>
+<body>
+    <div class="page-wrapper">
+        <!--begin::Page-->
+        <div class="page-header">
+            <div class="panel wrapper">
+                <ul class="header container">
+                    <li> اشتري من جينا ماركت   </li>
+
+                    <li class="call-link">
+                        <span class="fa fa-phone"></span>
+                        <a href="tel:19944">
+                            اتصل على 19944
+                        </a>
+                    </li>
+                </ul>
+                <div class="clear"></div>
+            </div>
+            <div class="container">
+                <a class="logo  col-2" href="" title="Jina market" aria-label="store logo">
+                    <img src="~/assets/media/logo.png" title="jina-market" alt="jina-market" width="130" />
+
+                </a>
+                <div class="  col-3 block-search ">
+                    <div class="search-container">
+                        <input type="text"
+                               id="searchBox"
+                               placeholder="ابحث عن منتج جملة"
+                               class="form-control"
+                               autocomplete="off" />
+                        <ul id="searchResults" class="dropdown-menu"></ul>
+                    </div>
+
+                </div>
+                <div class="  col-3 block-search ">
+                    <div class="search-container">
+                        <input type="text"
+                               id="searchBox1"
+                               placeholder="ابحث عن منتج قطاعي"
+                               class="form-control"
+                               autocomplete="off" />
+                        <ul id="searchResults1" class="dropdown-menu"></ul>
+                    </div>
+
+                </div>
+                <div class="my-account  col-1 ">
+                    <a href=" @Url.Action("AccountCustomer", "Account")" class="fa fa-user ">
+                        <span class="text">حسابي</span>
+                        
+                    </a>
+                    @if(Context.User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value!=null)
+                    {
+ <a href="#" class="float-right"> <span>مرحيا : </span>  @Context.User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value;</a>
+         
+                    }
+                          </div>
+                <div class="minicart-wrapper   col-1">
+
+                    <a class="action fa fa-shopping-cart cart-icon-green" href="@Url.Action("ViewCart", "Cart")">
+                        <span class="text">مشترياتي</span>
+                        <span class="counter qty">
+                            <span class="counter-number" id="checkoutIcon"></span>
+
+                        </span>
+                    </a>
+
+
+
+                </div>
+                <div class="clear"></div>
+            </div>
+     
+            </div>       <div class=" white-color">
+                <div class="container   ">
+            <div class="container1  ">
+                <ul> <li   > <a href="@Url.Action("Index", "Home")" class="btn btn-primary ">الرئيسية</a>
+                        </li>
+                    <li class="subnavbtn" id="menu-trigger">منتجات جملة
+                        <div id="menu"  class="subnav-content"></div></li>
+                      <li class="subnavbtn" id="menu-trigger1"> منتجات قطاعي 
+                             <div id="menu1"  class="subnav-content"></div>
+                      </li>
+                        <li class="subnavbtn" id="">
+                            @if (Context.User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value != null)
+                            {
+                                <a href="#" onclick="Site_Module.Logout(); return false;" target="_blank">تسجيل خروج</a>
+
+                            }
+                            else
+                            {
+                                <a asp-controller="Account" asp-action="Login">تسجيل دخول</a>
+                            }
+                          
+
+                         
+                        </li>
+                </ul>
+            
+        </div>    </div>
+
+        @{
+            var stringPaths = Context.User.FindFirst("Paths")?.Value ?? "[]";
+            List<string> pathsList = (JsonConvert.DeserializeObject<string[]>(stringPaths)).ToList();
+        }  
+      
+         <div  >
+                <!--begin::Container-->
+                <div class="container">
+
+                    @RenderBody()
+                </div>
+        </div>
+        <!--end::Content-->
+        <!--begin::Footer-->
+        <div class="footer" style="text-align:center;background:crimson;padding:10px 0" id="kt_footer">
+            <span style="text-align:center">2024 ©</span>
+        </div> 
+
+
+        <partial name="_ValidationScriptsPartial" />
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+
+        <script src="~/lib/jquery/dist/jquery-ui.min.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+        <script src="~/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+        <script>
+
+            var Site_Module = (function () {
+                function Logout() {
+
+                    Cookies.remove('user');
+                    window.location.href = '/Home/Index'; // Replace 'your-redirect-url' with the URL you
+                }
+                return {
+                    Logout: Logout
+                };
+            })();
+
+
+        </script>
+        <script>
+            $(document).ready(function () {
+                Cookies.remove('userSession');
+                $('#myTable').DataTable();
+
+            });
+
+        </script>
+        <script src="~/assets/plugins/custom/jstree/jstree.min.js"></script>
+        <script src="~/assets/plugins/custom/jstree/jstree.js"></script>
+        <script>
+
+            // var isProgrammaticCheck = false;
+            // $('#treeview').jstree({
+            //     plugins: ['search', 'wholerow'],
+            //     core: {
+
+            //         data: {
+            //             url: function (node) {
+            //                 return node.id === '#' ? '../Gomla/GetRoot_gomla' : '../Gomla/GetChildren_gomla/' + node.id;
+            //             },
+            //             data: function (node) {
+            //                 return { id: node.id };
+            //             }
+            //         }
+            //     }, 'plugins': ['checkbox'],
+            //     'checkbox': {
+            //         'whole_node': false,
+            //         'tie_selection': false
+            //     }
+            // }).on('check_node.jstree', function (e, data) {
+            //     if (!isProgrammaticCheck) {
+            //         var node = data.node.id
+            //         $('#CatogryId').val(node);
+            //         isProgrammaticCheck = true;
+            //         $('#treeview').jstree('uncheck_all');
+            //         $('#treeview').jstree('check_node', data.node);
+            //         isProgrammaticCheck = false;
+            //     }
+
+            // });
+
+            $('#treeview1').jstree({
+                plugins: ['search', 'wholerow'],
+                core: {
+
+                    data: {
+                        url: function (node) {
+                            return node.id === '#' ? '../product/GetRoot_qta3a' : '../product/GetChildren_qta3a/' + node.id;
+                        },
+                        data: function (node) {
+                            return { id: node.id };
+                        }
+                    }
+                }, 'plugins': ['checkbox'],
+                'checkbox': {
+                    'whole_node': false,
+                    'tie_selection': false
+                }
+            }).on('check_node.jstree', function (e, data) {
+                if (!isProgrammaticCheck) {
+                    var node = data.node.id
+                    $('#CatogryId').val(node);
+                    isProgrammaticCheck = true;
+                    $('#treeview1').jstree('uncheck_all');
+                    $('#treeview1').jstree('check_node', data.node);
+                    isProgrammaticCheck = false;
+                }
+
+            });
+            $('#yourForm').on('submit', function (e) {
+                // Prevent the default form submission
+                e.preventDefault();
+
+                // Now submit the form with the selected category ID
+                this.submit();
+            });
+
+            //اضافة عدد المشتريات للسلة من خلال cookie في جميع الصفحات
+            function getCookie(name) {
+                var value = "; " + document.cookie;
+                var parts = value.split("; " + name + "=");
+
+                if (parts.length == 2) return parts.pop().split(";").shift();
+
+            }
+            function updateCheckoutIcon() {
+
+                // Retrieve the cart data from cookies
+                var cartDataString = getCookie('cartData');
+
+                // Decode the URL-encoded string
+                var decodedString = decodeURIComponent(cartDataString);
+
+                // Parse the cart data string into an array of items
+                var cartData = decodedString ? JSON.parse(decodedString) : [];
+
+                // Calculate the total quantity of items in the cart
+                var totalQuantity = cartData.reduce(function (accumulator, currentItem) {
+                    return accumulator + Number(currentItem.Quantity);
+                }, 0);
+
+                // Update the checkout icon with the total quantity
+                var checkoutIcon = $('#checkoutIcon'); // Use jQuery selector
+
+                if (checkoutIcon.length) { // Check if element exists before accessing content
+                    checkoutIcon.text(totalQuantity); // Set text using jQuery's .text() method
+                } else {
+                    console.error('Element with id "checkoutIcon" not found');
+                }
+            }
+
+            // Call this function on page load and after updating the cart
+            updateCheckoutIcon();
+            //انتهاء اضافة عدد المشتريات للسلة من خلال cookie في جميع الصفحات
+            function myFunction() {
+                var x = document.getElementById("myTopnav");
+                if (x.className === "topnav") {
+                    x.className += " responsive";
+                } else {
+                    x.className = "topnav";
+                }
+            }
+
+            $(document).ready(function () {
+                var currentPath = window.location.pathname.split("/").pop();
+                $('.sidenav a').each(function () {
+                    if ($(this).attr('href').includes(currentPath)) {
+                        $(this).addClass('active');
+                    }
+                });
+            });
+
+
+        </script>
+
+        @RenderSection("Scripts", required: false)
+@* 
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" type="text/javascript"></script>
+        <script src="https://code.jquery.com/jquery-migrate-3.4.0.min.js"></script> *@
+        <script src="~/slick/slick.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript">
+            $(document).on('ready', function () {
+                $(".vertical-center-4").slick({
+                    dots: true,
+                    vertical: true,
+                    centerMode: true,
+                    slidesToShow: 4,
+                    slidesToScroll: 2
+                });
+                $(".vertical-center-3").slick({
+                    dots: true,
+                    vertical: true,
+                    centerMode: true,
+                    slidesToShow: 3,
+                    slidesToScroll: 3
+                });
+                $(".vertical-center-2").slick({
+                    dots: true,
+                    vertical: true,
+                    centerMode: true,
+                    slidesToShow: 2,
+                    slidesToScroll: 2
+                });
+                $(".vertical-center").slick({
+                    dots: true,
+                    vertical: true,
+                    centerMode: true,
+                });
+                $(".vertical").slick({
+                    dots: true,
+                    vertical: true,
+                    slidesToShow: 3,
+                    slidesToScroll: 3
+                });
+                $(".regular").slick({
+                    dots: true,
+                    infinite: true,
+                    slidesToShow: 5,
+                    slidesToScroll: 5
+                });
+                $(".center").slick({
+                    dots: true,
+                    infinite: true,
+                    centerMode: true,
+                    slidesToShow: 5,
+                    slidesToScroll: 3
+                });
+                $(".variable").slick({
+                    dots: true,
+                    infinite: true,
+                    variableWidth: true
+                });
+                $(".lazy").slick({
+                    lazyLoad: 'ondemand', // ondemand progressive anticipated
+                    infinite: true
+                });
+            });
+
+$(document).ready(function () {
+    $.ajax({
+        url: '@Url.Action("GetRoot", "Home")',
+        method: 'GET',
+        success: function (data) {
+            var menuHtml = generateMenu(data);
+            $('#menu').html(menuHtml);
+                        var menuHtml1 = generateMenu1(data);
+                        $('#menu1').html(menuHtml1);
+        }
+    });
+
+    function generateMenu(nodes) {
+        var html = '<ul>'; 
+        html += '<li class="menu-item"><a href="@Url.Content("~/Gomla/Index/")">كل المنتجات</a></li>';
+         
+        nodes.forEach(function (node) {
+            var url = '@Url.Content("~/Gomla/Index/")' + node.id;
+                        html += '<li class="menu-item" data-id="' + node.id + '"><a href="' + url + '">' + node.name + '</a>';
+            if (node.Children) {
+                html += '<ul class="submenu" id="submenu-' + node.id + '"></ul>';
+            }
+            html += '</li>';
+        });
+        // Add the "all" link at the end of the menu
+ 
+        html += '</ul>';
+        return html;
+    }
+                function generateMenu1(nodes) {
+                    var html = '<ul>';
+                    html += '<li class="menu-item"><a href="@Url.Content("~/Qt3/Index/")">كل المنتجات</a></li>';
+
+                    nodes.forEach(function (node) {
+                        var url = '@Url.Content("~/Qt3/Index/")' + node.id;
+                        html += '<li class="menu-item" data-id="' + node.id + '"><a href="' + url + '">' + node.name + '</a>';
+                        if (node.Children) {
+                            html += '<ul class="submenu" id="submenu-' + node.id + '"></ul>';
+                        }
+                        html += '</li>';
+                    });
+                    // Add the "all" link at the end of the menu
+
+                    html += '</ul>';
+                    return html;
+                }
+    // Event delegation to handle click events on dynamically generated elements
+    $(document).on('click', '#menu li > a', function (e) {
+        if ($(this).siblings('.submenu').length > 0) {
+            e.preventDefault(); // Prevent the default action (navigation) only if there is a submenu
+            $(this).siblings('.submenu').toggle(); // Toggle the visibility of the submenu
+        }
+    });
+
+    $('#menu-trigger').on('click', function () {
+        $('#menu').toggle(); // Toggle the visibility of the menu
+         $('#menu1').hide(); // Hide the other menu
+    });
+});
+
+$(document).ready(function () {
+
+    // Event delegation to handle click events on dynamically generated elements
+    $(document).on('click', '#menu1 li > a', function (e) {
+        if ($(this).siblings('.submenu').length > 0) {
+            e.preventDefault(); // Prevent the default action (navigation) only if there is a submenu
+            $(this).siblings('.submenu').toggle(); // Toggle the visibility of the submenu
+        }
+    });
+
+    $('#menu-trigger1').on('click', function () {
+        $('#menu1').toggle(); // Toggle the visibility of the menu
+         $('#menu').hide(); // Hide the other menu
+    });
+});
+
+        </script>
+
+        @* search Gomla *@
+        <script>
+                $(document).ready(function () {
+                    $('#searchBox').on('input', function () {
+                        let query = $(this).val();
+
+                        if (query.length >= 1) {
+                            // Call the API to fetch products
+                            // Example: Display search results in a dropdown
+                            $.ajax({
+                                url: '/Gomla/SearchGomla',
+                                type: 'GET',
+                                data: { searchTerm: query },
+                                success: function (response) {
+                                    const products = response.products; // Use the filtered product list
+                                    const $results = $('#searchResults');
+
+                                    $results.empty(); // Clear old results
+
+                                    if (products.length > 0) {
+                                        products.forEach(product => {
+                                            $results.append(
+                                                `<li data-id="${product.productId}">${product.subCatogryTitle}</li>`
+                                            );
+                                        });
+                                        $results.show();
+                                    } else {
+                                        $results.hide();
+                                    }
+                                },
+                                error: function () {
+                                    console.error('Error fetching products');
+                                }
+                            });
+
+                        } else {
+                            $('#searchResults').hide();
+                        }
+                    });
+
+                    // Handle click on dropdown item
+                    $('#searchResults').on('click', 'li', function () {
+                        const productId = $(this).data('id'); // Get product ID from the clicked item
+
+                        // Redirect to product details page
+                        window.location.href = `/Gomla/Details/${productId}`;
+                    });
+
+                    // Hide dropdown when clicking outside
+                    $(document).on('click', function (e) {
+                        if (!$(e.target).closest('#searchBox, #searchResults').length) {
+                            $('#searchResults').hide();
+                        }
+                    });
+                });
+
+        </script>
+            <script>
+                $(document).ready(function () {
+                    $('#searchBox1').on('input', function () {
+                        let query = $(this).val();
+
+                        if (query.length >= 1) {
+                            // Call the API to fetch products
+                            // Example: Display search results in a dropdown
+                            $.ajax({
+                                url: '/Gomla/SearchQt3a',
+                                type: 'GET',
+                                data: { searchTerm: query },
+                                success: function (response) {
+                                    const products = response.products; // Use the filtered product list
+                                    const $results = $('#searchResults1');
+
+                                    $results.empty(); // Clear old results
+
+                                    if (products.length > 0) {
+                                        products.forEach(product => {
+                                            $results.append(
+                                                `<li data-id="${product.productId}">${product.subCatogryTitle}</li>`
+                                            );
+                                        });
+                                        $results.show();
+                                    } else {
+                                        $results.hide();
+                                    }
+                                },
+                                error: function () {
+                                    console.error('Error fetching products');
+                                }
+                            });
+
+                        } else {
+                            $('#searchResults1').hide();
+                        }
+                    });
+
+                    // Handle click on dropdown item
+                    $('#searchResults1').on('click', 'li', function () {
+                        const productId = $(this).data('id'); // Get product ID from the clicked item
+
+                        // Redirect to product details page
+                        window.location.href = `/Qt3/Details/${productId}`;
+                    });
+
+                    // Hide dropdown when clicking outside
+                    $(document).on('click', function (e) {
+                        if (!$(e.target).closest('#searchBox, #searchResults').length) {
+                            $('#searchResults1').hide();
+                        }
+                    });
+                });
+
+            </script>
+</body>
+</html>

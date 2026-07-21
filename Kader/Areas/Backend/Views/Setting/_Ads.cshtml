@@ -1,0 +1,30 @@
+﻿@model List<Kader.DTOs.Ads.AdsDto>
+<form asp-controller="Setting" asp-action="AdsAsync" method="post" enctype="multipart/form-data">
+
+     <div class="form-group">
+        <label>الاعلانات</label>
+
+
+        <div class="form-group"><label>اعلان رقم1</label>
+            <input type="file" accept="image/*" name="ProductImg" multiple>
+        </div>
+        <div class="form-group">
+            <label>اعلان رقم2</label>
+            <input type="file" accept="image/*" name="ProductImg1" multiple>
+        </div>
+       </div>
+         
+    
+             
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                    <button type="submit">حفظ  </button>
+                    </div>
+                </div>
+
+     </form>
+ 
+  
+
+    
+  

@@ -1,0 +1,253 @@
+﻿@model Kader.DTOs.Product.ApiEditProductDto
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/BackEnd/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav aria-label="Breadcrumb">
+        <span><a asp-controller="home" asp-action="Index">الصفحة الرئيسية  </a></span> /
+        <span>المنتجات الرئيسية (قطاعي (</span>
+    </nav>
+</div>
+
+<div class="page-section">
+    <div class="container">
+        @if (Model != null)
+        {
+            <fieldset>
+                <legend> @Model.title </legend>
+                <table id="myTable" border="1" width="50%" class="custome display table table-separate table-head-custom table-foot-custom">
+                    <tr>
+                        <th>العنوان الفرعي</th>
+                        <td>  @Model.SubCatogryTitle </td>
+                    </tr>
+                    <tr>
+                        <th>الكود</th>
+                        <td> @Html.DisplayFor(modelItem => Model.barcode) </td>
+                    </tr>
+                    <tr>
+                        <th>الكمية المتاحة</th>
+                        <td> @Html.DisplayFor(modelItem => Model.stock) </td>
+                    </tr>
+                    <tr>
+                        <th> وحدة الكمية</th>
+                        <td> @Html.DisplayFor(modelItem => Model.unites1) </td>
+                    </tr>
+                    <tr>
+                        <th>الوصف التفصيلي</th>
+                        <td> @Html.DisplayFor(modelItem => Model.Description) </td>
+                    </tr>
+                    <tr>
+                        <th>نسبة اكبر كمية للشحن مقارنة باجمالي الكمية</th>
+                        <td> @Html.DisplayFor(modelItem => Model.MaxQuantityToShipQta3a)<span>%</span> </td>
+                    </tr>
+                    <tr>
+                        <th>اكبر كمية لشحن الكمية القطاعي</th>
+                        <td>
+
+                            @if (Model.MaxQuantityToShipQta3a != null)
+                            {
+                                var minQuantityToShipJomla = double.Parse(@Model.MaxQuantityToShipQta3a.Value.ToString());
+                                var t = @Model.stock - (@Model.stock - (@Model.stock * minQuantityToShipJomla / 100));
+
+                                // Use 't' in a valid statement, for example, assigning it to a view model property
+                                ViewBag.CalculatedStock = t;
+                            }@ViewBag.CalculatedStock
+                        </td>
+                    </tr>
+
+                </table>
+            </fieldset>
+            <fieldset>
+                <legend>الاسعار</legend>
+                <table id="myTable1" border="1" width="50%" class="custome display table table-separate table-head-custom table-foot-custom">
+                    <tr><th colspan="2">السعر والتخفيضات الحالية</th></tr>
+                    <tr>
+                        <th>السعر قبل الخصم</th>
+
+                        <td> @Html.DisplayFor(modelItem => Model.price)  <span>ر.س.</span></td>
+                    </tr>
+                    <tr>
+                        <th>السعر بعد الخصم</th>
+
+                        <td>
+                            @{
+                                decimal afterDiscount1 = 0;
+                                if (Model.AfterDiscount != null)
+                                {
+                                    decimal price = Model.price;
+                                    decimal AfterDiscount = (decimal)Model.AfterDiscount.Value;   // No need to parse, it's already a number
+                                    decimal afterDiscount = price - (price * AfterDiscount / 100);
+                                    afterDiscount1 = Math.Round(afterDiscount, 2);
+                                }
+
+                            }
+
+                            @afterDiscount1  <span>ر.س.</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>تاريخ بدء الخصم</th>
+
+                        <td> @Html.DisplayFor(modelItem => Model.discountBeginDate) </td>
+                    </tr>
+                    <tr>
+                        <th>تاريخ نهاية الخصم</th>
+
+                        <td> @Html.DisplayFor(modelItem => Model.DiscountEndDate) </td>
+                    </tr>
+                </table>
+                @if (Model.LogPriceDto.Count != 0)
+                {
+                    <br />
+                    <table id="myTable1" border="1" width="50%" class="custome display table table-separate table-head-custom table-foot-custom">
+                        <tr><th colspan="4" style="text-align:center">الاسعار  السابقة</th></tr>
+                        <tr>
+                            <th>تاريخ بدء الخصم</th>
+                            <th>تاريخ نهاية الخصم</th>
+                            <th>السعر قبل الخصم</th>
+                            <th>السعر بعد الخصم</th>
+                        </tr>
+                        @foreach (var item1 in Model.LogPriceDto)
+                        {
+
+
+                            <tr>
+                                <td>
+                                    @{
+                                        var formattedDate = item1.discountBeginDate.HasValue ? item1.discountBeginDate.Value.ToString("dd/MM/yyyy") : "";
+                                    }
+                                    @Html.DisplayFor(modelItem => formattedDate)
+
+                                </td>
+
+                                <td>
+                                    @{
+                                        var formattedDate1 = item1.discountEndDat.HasValue ? item1.discountEndDat.Value.ToString("dd/MM/yyyy") : "";
+                                    }
+                                    @Html.DisplayFor(modelItem => formattedDate1)
+                                </td>
+                                <td> @Html.DisplayFor(modelItem => item1.BeforeDiscount) <span>ر.س.</span></td>
+                                @{
+                                    decimal afterDiscount2 = 0;
+                                    if (Model.AfterDiscount != null)
+                                    {
+                                        decimal price = (decimal)item1.BeforeDiscount;
+                                        decimal AfterDiscount = (decimal)item1.AfterDiscount.Value;   // No need to parse, it's already a number
+                                        decimal afterDiscount = price - (price * AfterDiscount / 100);
+                                        afterDiscount2 = Math.Round(afterDiscount, 2);
+                                    }
+
+                                }
+
+                                @afterDiscount2
+                                <span>ر.س.</span>
+                            </tr>
+                        }
+                    </table>
+                }
+
+            </fieldset>
+
+            <fieldset>
+                <legend>اسعار الشحن</legend>
+                <table id="myTable1" border="0" width="100%" class="custome display table table-separate table-head-custom table-foot-custom">
+
+                    <tr>
+                        <td>
+                            @if (Model.ShippingPrice != null)
+                            {
+                                @Html.DisplayFor(modelItem => Model.ShippingPrice)
+                            }
+                            else
+                            {
+                                @if (Model.ShippingPriceDto.Count != 0)
+                                {
+                                    <table border="1" width="50%" class="custome">
+                                        <tr><th>الكمية</th><th>السعر</th></tr>
+                                        @foreach (var item1 in Model.ShippingPriceDto)
+                                        {
+                                            <tr>
+                                                <td>@item1.VarQuantity</td>
+                                                <td>   @item1.VarPrice</td>
+                                            </tr>
+                                        }
+                                    </table>
+                                }
+                            }
+
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <fieldset>
+                <legend>الصور</legend>
+                <table id="myTable1" border="1" width="50%" class="custome display table table-separate table-head-custom table-foot-custom">
+                    <tr>
+                        <td>
+                            @if (Model.ProductImgDto.Count != 0)
+                            {
+                                foreach (var item2 in Model.ProductImgDto)
+                                {
+                                    <a href="~/Images/@item2.ProductImgName">
+                                        <img width="200px" height="200" src=~/Images/@item2.ProductImgName />
+                                    </a>
+                                }
+                            }
+                        </td>
+                        @* <td>    @Html.ActionLink("تعديل", "Product_gomla", new { ProductId = Model.NewItem.ProductId }, null) </td>
+                    <td>   @Html.ActionLink("تعديل اسعار الشحن المتغيرة", "EditShippingPrice", new { id = Model.NewItem.ProductId }, null) </td>
+                    <td>   <input type="button" value="حذف المنتج" class="Delete btn2 btn-default" data-val="@Model.NewItem.ProductId" /></td>
+                    *@
+                    </tr>
+                </table>
+            </fieldset>
+        }
+
+
+
+    </div>
+</div>
+
+
+
+
+<script>
+    $(".btn2").on("click", function () {
+        if (confirm("هل انت متاكد من الحذف")) {
+            var requrl = "/Backend/Product/DeleteProduct";
+
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+                // cashe: true,
+                url: requrl,
+                data: { id: $(this).attr('data-val') },
+                success: function (json1) {
+                    console.log(json1);
+                    alert(JSON.stringify(json1));
+                    location.reload();
+                },
+
+                error: function (xhr, status, error) {
+                    console.log("XHR Response: " + xhr.responseText);
+                    console.log("Status: " + status);
+                    console.log("Error: " + error);
+                    alert("حدث خطأ: " + xhr.responseText);
+                }
+
+            });
+        } else {
+            // User clicked Cancel
+            // Handle accordingly
+        }
+
+
+    });
+
+</script>
