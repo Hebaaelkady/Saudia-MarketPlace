@@ -1,4 +1,4 @@
-﻿
+
 using Kader.Data.DataAccessLayer.Entities;
 using Kader.DTOs;
 using Kader.DTOs.Catogry;
@@ -77,13 +77,13 @@ namespace Kader.Controllers
 
                 model.GoodPriceQt3 = GoodPriceQt3.Result;
             }
-            var BannerImgs  = _BannerImgs.GetBannerImg().Result;
+            var BannerImgs  = await _BannerImgs.GetBannerImg();
             if (BannerImgs.isSuccess)
             {
                 model.BannerImgsDto = BannerImgs.Result;
             }
 
-            var AdsDto = _Ads.GetLatestAds().Result;
+            var AdsDto = await _Ads.GetLatestAds();
             if (AdsDto.isSuccess)
             {
                 model.AdsDto =  AdsDto.Result;

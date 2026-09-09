@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Kader.Data.DataAccessLayer.Entities;
@@ -63,8 +63,7 @@ namespace Kader.Data.DataAccessLayer
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=192.250.231.37;User=egyhubc2_jina;Password=%G3qW5F0Ncj$6i;Database=jina-db;");
+                // Connection string is configured via Dependency Injection in Startup.cs
             }
         }
 

@@ -1,4 +1,4 @@
-﻿
+
 using Autofac;
 using Kader.Data.DataAccessLayer;
 using Kader.Extensions;
@@ -43,12 +43,17 @@ namespace Kader
         {
             _env = env;
             var builder = new ConfigurationBuilder()
-       .SetBasePath(env.ContentRootPath)
-       .AddJsonFile("appsettings1.json", optional: false, reloadOnChange: true)
-       .AddJsonFile($"appsettings1.{env.EnvironmentName}.json", optional: true)
-       .AddEnvironmentVariables();
-            this.Configuration = builder.Build();
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings1.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings1.{env.EnvironmentName}.json", optional: true);
 
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>(optional: true);
+            }
+
+            builder.AddEnvironmentVariables();
+            this.Configuration = builder.Build();
         }
 
 

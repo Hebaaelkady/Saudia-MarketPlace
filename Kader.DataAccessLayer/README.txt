@@ -1,6 +1,6 @@
-dotnet ef dbcontext scaffold "Server=.;User=sa;Password=123456;Database=Production;" -o Entities -f -c DBContext --context-dir ./ Microsoft.EntityFrameworkCore.SqlServer
+dotnet ef dbcontext scaffold "Server=.;User=sa;Password=YOUR_PASSWORD;Database=Production;" -o Entities -f -c DBContext --context-dir ./ Microsoft.EntityFrameworkCore.SqlServer
 
-dotnet ef dbcontext scaffold "Server=192.250.231.37;User=egyhubc2_jina;Password=%G3qW5F0Ncj$6i;Database=jina-db;" -o Entities -f -c DBContext --context-dir ./ Microsoft.EntityFrameworkCore.SqlServer
+dotnet ef dbcontext scaffold "Server=YOUR_SERVER;User=YOUR_USER;Password=YOUR_PASSWORD;Database=YOUR_DATABASE;" -o Entities -f -c DBContext --context-dir ./ Microsoft.EntityFrameworkCore.SqlServer
 
 
 in dbcontext
